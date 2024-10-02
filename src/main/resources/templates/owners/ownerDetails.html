@@ -3,6 +3,13 @@
 <html xmlns:th="https://www.thymeleaf.org"
   th:replace="~{fragments/layout :: layout (~{::body},'owners')}">
 
+  <head>
+    <style>
+      .align-top {
+        vertical-align: top;
+      }
+    </style>
+  </head>
   <body>
   
   
@@ -20,22 +27,30 @@
 
 
     <table class="table table-striped" th:object="${owner}">
-      <tr>
-        <th>Name</th>
-        <td><b th:text="*{firstName + ' ' + lastName}"></b></td>
-      </tr>
-      <tr>
-        <th>Address</th>
-        <td th:text="*{address}"></td>
-      </tr>
-      <tr>
-        <th>City</th>
-        <td th:text="*{city}"></td>
-      </tr>
-      <tr>
-        <th>Telephone</th>
-        <td th:text="*{telephone}"></td>
-      </tr>
+      <thead>
+        <tr>
+          <th>Field</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>Name</th>
+          <td><b th:text="*{firstName + ' ' + lastName}"></b></td>
+        </tr>
+        <tr>
+          <th>Address</th>
+          <td th:text="*{address}"></td>
+        </tr>
+        <tr>
+          <th>City</th>
+          <td th:text="*{city}"></td>
+        </tr>
+        <tr>
+          <th>Telephone</th>
+          <td th:text="*{telephone}"></td>
+        </tr>
+      </tbody>
     </table>
   
     <a th:href="@{__${owner.id}__/edit}" class="btn btn-primary">Edit
@@ -51,7 +66,7 @@
     <table class="table table-striped">
   
       <tr th:each="pet : ${owner.pets}">
-        <td valign="top">
+        <td class="align-top">
           <dl class="dl-horizontal">
             <dt>Name</dt>
             <dd th:text="${pet.name}"></dd>
