@@ -52,15 +52,22 @@
   
       <tr th:each="pet : ${owner.pets}">
         <td valign="top">
-          <dl class="dl-horizontal">
-            <dt>Name</dt>
-            <dd th:text="${pet.name}"></dd>
-            <dt>Birth Date</dt>
-            <dd
-              th:text="${#temporals.format(pet.birthDate, 'yyyy-MM-dd')}"></dd>
-            <dt>Type</dt>
-            <dd th:text="${pet.type}"></dd>
-          </dl>
+          <table class="table-condensed">
+            <thead>
+              <tr>
+                <th scope="row">Name</th>
+                <td th:text="${pet.name}"></td>
+              </tr>
+              <tr>
+                <th scope="row">Birth Date</th>
+                <td th:text="${#temporals.format(pet.birthDate, 'yyyy-MM-dd')}"></td>
+              </tr>
+              <tr>
+                <th scope="row">Type</th>
+                <td th:text="${pet.type}"></td>
+              </tr>
+            </thead>
+          </table>
         </td>
         <td valign="top">
           <table class="table-condensed">
