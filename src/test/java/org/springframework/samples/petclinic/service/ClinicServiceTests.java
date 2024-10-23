@@ -159,10 +159,9 @@ class ClinicServiceTests {
 
 		this.owners.save(owner6);
 
-		owner6 = this.owners.findById(6);
 		assertThat(owner6.getPets()).hasSize(found + 1);
 		// checks that id has been generated
-		pet = owner6.getPet("bowser");
+		pet = this.owners.findById(6).getPet("bowser");
 		assertThat(pet.getId()).isNotNull();
 	}
 
