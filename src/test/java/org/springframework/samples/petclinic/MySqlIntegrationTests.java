@@ -58,7 +58,7 @@ class MySqlIntegrationTests {
 	private RestTemplateBuilder builder;
 
 	@Test
-	void testFindAll() throws Exception {
+	void testFindAll() throws DataAccessException {
 		vets.findAll();
 		vets.findAll(); // served from cache
 	}

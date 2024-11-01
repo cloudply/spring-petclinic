@@ -32,6 +32,10 @@ import java.util.Collection;
  */
 public abstract class EntityUtils {
 
+	private EntityUtils() {
+		// Private constructor to hide the implicit public one
+	}
+
 	/**
 	 * Look up the entity of the given class with the given id in the given collection.
 	 * @param entities the collection to search
