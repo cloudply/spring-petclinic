@@ -58,9 +58,13 @@ class MySqlIntegrationTests {
 	private RestTemplateBuilder builder;
 
 	@Test
-	void testFindAll() throws Exception {
-		vets.findAll();
-		vets.findAll(); // served from cache
+	void testFindAll() {
+		try {
+			vets.findAll();
+			vets.findAll(); // served from cache
+		} catch (Exception e) {
+			throw new VetRepositoryException("Error occurred while finding all vets");
+		}
 	}
 
 	@Test
