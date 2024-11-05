@@ -36,6 +36,7 @@
         <th>Telephone</th>
         <td th:text="*{telephone}"></td>
       </tr>
+      </tbody>
     </table>
   
     <a th:href="@{__${owner.id}__/edit}" class="btn btn-primary">Edit
@@ -49,8 +50,16 @@
     <h2>Pets and Visits</h2>
   
     <table class="table table-striped">
-  
-      <tr th:each="pet : ${owner.pets}">
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Birth Date</th>
+          <th scope="col">Type</th>
+          <th scope="col">Visits</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="pet : ${owner.pets}">
         <td valign="top">
           <dl class="dl-horizontal">
             <dt>Name</dt>
