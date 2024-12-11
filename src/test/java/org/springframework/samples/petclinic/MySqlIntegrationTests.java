@@ -58,7 +58,7 @@ class MySqlIntegrationTests {
 	private RestTemplateBuilder builder;
 
 	@Test
-	void testFindAll() throws Exception {
+	void testFindAll() throws CustomDatabaseException {
 		vets.findAll();
 		vets.findAll(); // served from cache
 	}
@@ -70,4 +70,11 @@ class MySqlIntegrationTests {
 		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
+}
+class CustomDatabaseException extends RuntimeException {
+	private static final long serialVersionUID = 1L;
+
+	public CustomDatabaseException(String message, Throwable cause) {
+		super(message, cause);
+	}
 }
