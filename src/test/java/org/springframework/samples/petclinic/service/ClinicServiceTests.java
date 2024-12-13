@@ -83,11 +83,11 @@ class ClinicServiceTests {
 
 	@Test
 	void shouldFindOwnersByLastName() {
-		Page<Owner> owners = this.owners.findByLastName("Davis", pageable);
-		assertThat(owners).hasSize(2);
+		Page<Owner> foundOwners = this.owners.findByLastName("Davis", pageable);
+		assertThat(foundOwners).hasSize(2);
 
-		owners = this.owners.findByLastName("Daviss", pageable);
-		assertThat(owners).isEmpty();
+		foundOwners = this.owners.findByLastName("Daviss", pageable);
+		assertThat(foundOwners).isEmpty();
 	}
 
 	@Test
@@ -204,8 +204,6 @@ class ClinicServiceTests {
 
 		owner6.addVisit(pet7.getId(), visit);
 		this.owners.save(owner6);
-
-		owner6 = this.owners.findById(6);
 
 		assertThat(pet7.getVisits()) //
 			.hasSize(found + 1) //
