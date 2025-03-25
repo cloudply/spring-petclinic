@@ -32,9 +32,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-
+import org.springframework.web.bind.annotation.ResponseBody;
 import jakarta.validation.Valid;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.util.stream.Collectors;
 
 /**
  * @author Juergen Hoeller
@@ -154,6 +155,22 @@ class OwnerController {
 	 * @param ownerId the ID of the owner to display
 	 * @return a ModelMap with the model attributes for the view
 	 */
+	/**
+	 * Get owner counts by city
+	 * @param city Optional city to filter by
+	 * @return Map of cities to owner counts
+	 */
+	@GetMapping("/owners/by-city")
+	@ResponseBody
+	public Map<String, Long> getOwnersByCity(@RequestParam(required = false) String city) {
+		List<Object[]> results = owners.findOwnerCountByCity(city);
+		return results.stream()
+			.collect(Collectors.toMap(
+				row -> (String) row[0],
+				row -> (Long) row[1]
+			));
+	}
+
 	@GetMapping("/owners/{ownerId}")
 	public ModelAndView showOwner(@PathVariable("ownerId") int ownerId) {
 		ModelAndView mav = new ModelAndView("owners/ownerDetails");

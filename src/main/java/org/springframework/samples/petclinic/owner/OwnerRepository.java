@@ -23,6 +23,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.Map;
 
 /**
  * Repository class for <code>Owner</code> domain objects All method names are compliant
@@ -78,5 +79,14 @@ public interface OwnerRepository extends Repository<Owner, Integer> {
 	@Query("SELECT owner FROM Owner owner")
 	@Transactional(readOnly = true)
 	Page<Owner> findAll(Pageable pageable);
+
+	/**
+	 * Find owners by city with count
+	 * @param city the city to search for
+	 * @return count of owners in that city
+	 */
+	@Query("SELECT o.city, COUNT(o) FROM Owner o WHERE (:city IS NULL OR o.city = :city) GROUP BY o.city")
+	@Transactional(readOnly = true)
+	List<Object[]> findOwnerCountByCity(@Param("city") String city);
 
 }
