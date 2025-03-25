@@ -42,11 +42,12 @@ class VetController {
 	}
 
 	@GetMapping("/vets.html")
-	public String showVetList(@RequestParam(defaultValue = "1") int page, Model model) {
+	public String showVetList(@RequestParam(defaultValue = "1") int page,
+			@RequestParam(required = false) String lastName, Model model) {
 		// Here we are returning an object of type 'Vets' rather than a collection of Vet
 		// objects so it is simpler for Object-Xml mapping
 		Vets vets = new Vets();
-		Page<Vet> paginated = findPaginated(page);
+		Page<Vet> paginated = findPaginated(page, lastName);
 		vets.getVetList().addAll(paginated.toList());
 		return addPaginationModel(page, paginated, model);
 	}
@@ -60,10 +61,15 @@ class VetController {
 		return "vets/vetList";
 	}
 
-	private Page<Vet> findPaginated(int page) {
+	private Page<Vet> findPaginated(int page, String lastName) {
 		int pageSize = 5;
 		Pageable pageable = PageRequest.of(page - 1, pageSize);
-		return vetRepository.findAll(pageable);
+		if (lastName != null) {
+			return vetRepository.findByLastName(lastName, pageable);
+		}
+		else {
+			return vetRepository.findAll(pageable);
+		}
 	}
 
 	@GetMapping({ "/vets" })
