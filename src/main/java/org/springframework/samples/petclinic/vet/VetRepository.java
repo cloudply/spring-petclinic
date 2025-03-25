@@ -38,6 +38,29 @@ import java.util.Collection;
 public interface VetRepository extends Repository<Vet, Integer> {
 
 	/**
+	 * Find vets sorted by number of pets they are treating
+	 * @return List of vets ordered by number of treated pets (descending)
+	 */
+	@Query("SELECT v, COUNT(DISTINCT vis.pet) as petCount " +
+		   "FROM Vet v " +
+		   "LEFT JOIN Visit vis WITH vis.vet = v " +
+		   "GROUP BY v " +
+		   "ORDER BY petCount DESC")
+	@Transactional(readOnly = true)
+	List<Object[]> findVetsWithPetCounts();
+
+	/**
+	 * Find all vets with their treated pets
+	 * @return List of vets with their associated pets through visits
+	 */
+	@Query("SELECT DISTINCT v, p " +
+		   "FROM Vet v " +
+		   "LEFT JOIN Visit vis WITH vis.vet = v " +
+		   "LEFT JOIN vis.pet p")
+	@Transactional(readOnly = true)
+	List<Object[]> findVetsWithTreatedPets();
+
+	/**
 	 * Retrieve all <code>Vet</code>s from the data store.
 	 * @return a <code>Collection</code> of <code>Vet</code>s
 	 */
