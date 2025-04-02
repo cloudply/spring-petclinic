@@ -79,4 +79,15 @@ public interface OwnerRepository extends Repository<Owner, Integer> {
 	@Transactional(readOnly = true)
 	Page<Owner> findAll(Pageable pageable);
 
+	/**
+	 * Find pets with the most visits in a given month and year
+	 * @param month the month (1-12)
+	 * @param year the year
+	 * @return list of pets with visit counts
+	 */
+	@Query("SELECT p, COUNT(v) as visitCount FROM Pet p JOIN p.visits v " +
+		   "WHERE FUNCTION('MONTH', v.date) = :month AND FUNCTION('YEAR', v.date) = :year " +
+		   "GROUP BY p ORDER BY visitCount DESC")
+	@Transactional(readOnly = true)
+	List<Object[]> findPetsWithMostVisitsInMonth(@Param("month") int month, @Param("year") int year, Pageable pageable);
 }
