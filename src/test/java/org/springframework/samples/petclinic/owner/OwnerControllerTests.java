@@ -31,6 +31,7 @@ import org.springframework.test.context.aot.DisabledInAotMode;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.greaterThan;
@@ -154,6 +155,31 @@ class OwnerControllerTests {
 		mockMvc.perform(get("/owners?page=1").param("lastName", "Franklin"))
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID));
+	}
+	
+	@Test
+	void testProcessFindFormByFirstName() throws Exception {
+		Page<Owner> tasks = new PageImpl<>(Lists.newArrayList(george()));
+		Mockito.when(this.owners.findByLastName(eq("George"), any(Pageable.class))).thenReturn(tasks);
+		mockMvc.perform(get("/owners?page=1").param("lastName", "George"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID));
+	}
+	
+	@Test
+	void testProcessFindFormByPartialName() throws Exception {
+		Owner george = george();
+		Owner franklin = new Owner();
+		franklin.setId(2);
+		franklin.setFirstName("Franklin");
+		franklin.setLastName("Smith");
+		
+		Page<Owner> tasks = new PageImpl<>(Arrays.asList(george, franklin));
+		Mockito.when(this.owners.findByLastName(eq("rank"), any(Pageable.class))).thenReturn(tasks);
+		
+		mockMvc.perform(get("/owners?page=1").param("lastName", "rank"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("owners/ownersList"));
 	}
 
 	@Test
