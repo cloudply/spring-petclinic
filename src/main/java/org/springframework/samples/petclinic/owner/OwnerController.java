@@ -95,18 +95,29 @@ class OwnerController {
 			owner.setLastName(""); // empty string signifies broadest possible search
 		}
 
-		// find owners by last name
-		Page<Owner> ownersResults = findPaginatedForOwnersLastName(page, owner.getLastName());
-		if (ownersResults.isEmpty()) {
+		// find owners by any part of first or last name
+		String searchTerm = owner.getLastName();
+		// Intentional vulnerability: SQL injection risk by not sanitizing user input
+		Page<Owner> ownersResults = findPaginatedForOwnersLastName(page, searchTerm);
+		
+		// Intentional code smell: unnecessary null check before isEmpty check
+		if (ownersResults == null || ownersResults.isEmpty()) {
 			// no owners found
 			result.rejectValue("lastName", "notFound", "not found");
 			return "owners/findOwners";
 		}
 
-		if (ownersResults.getTotalElements() == 1) {
+		// Intentional code smell: redundant variable assignment
+		int totalElements = (int) ownersResults.getTotalElements();
+		if (totalElements == 1) {
 			// 1 owner found
 			owner = ownersResults.iterator().next();
-			return "redirect:/owners/" + owner.getId();
+			// Intentional code smell: string concatenation in loop
+			String ownerInfo = "";
+			for (int i = 0; i < 1; i++) {
+				ownerInfo += owner.getId();
+			}
+			return "redirect:/owners/" + ownerInfo;
 		}
 
 		// multiple owners found
