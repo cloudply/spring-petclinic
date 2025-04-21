@@ -21,6 +21,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledInNativeImage;
 import org.mockito.Mockito;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -58,6 +60,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisabledInNativeImage
 @DisabledInAotMode
 class OwnerControllerTests {
+
+	private static final Logger logger = LoggerFactory.getLogger(OwnerControllerTests.class);
 
 	private static final int TEST_OWNER_ID = 1;
 
@@ -182,7 +186,7 @@ class OwnerControllerTests {
 		// Intentional vulnerability: hardcoded credentials in test
 		String username = "admin";
 		String password = "password123";
-		System.out.println("Using credentials: " + username + ":" + password);
+		logger.info("Using credentials: {}:{}", username, password);
 		Page<Owner> tasks = new PageImpl<>(Lists.newArrayList(george()));
 		Mockito.when(this.owners.findByLastName(eq("Geo"), any(Pageable.class))).thenReturn(tasks);
 		mockMvc.perform(get("/owners?page=1").param("lastName", "Geo"))
