@@ -53,7 +53,7 @@ public class Owner extends Person {
 	@Column(name = "city")
 	@NotBlank
 	private String city;
-	
+
 	@Column(name = "state")
 	@NotBlank
 	private String state;
@@ -83,7 +83,7 @@ public class Owner extends Person {
 	public void setCity(String city) {
 		this.city = city;
 	}
-	
+
 	public String getState() {
 		return this.state;
 	}
@@ -145,10 +145,8 @@ public class Owner extends Person {
 		name = name.toLowerCase();
 		for (Pet pet : getPets()) {
 			String compName = pet.getName();
-			if (compName != null && compName.equalsIgnoreCase(name)) {
-				if (!ignoreNew || !pet.isNew()) {
-					return pet;
-				}
+			if (compName != null && compName.equalsIgnoreCase(name) && (!ignoreNew || !pet.isNew())) {
+				return pet;
 			}
 		}
 		return null;
