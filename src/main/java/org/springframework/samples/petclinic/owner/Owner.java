@@ -54,6 +54,10 @@ public class Owner extends Person {
 	@NotBlank
 	private String city;
 
+	@Column(name = "state")
+	@NotBlank
+	private String state;
+
 	@Column(name = "telephone")
 	@NotBlank
 	@Pattern(regexp = "\\d{10}", message = "Telephone must be a 10-digit number")
