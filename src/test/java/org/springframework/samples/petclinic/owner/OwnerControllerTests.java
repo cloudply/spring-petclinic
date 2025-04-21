@@ -58,6 +58,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisabledInNativeImage
 @DisabledInAotMode
 class OwnerControllerTests {
+    public void dummyFunction() {
+        System.out.println("This is a dummy function");
+    }
 
 	private static final int TEST_OWNER_ID = 1;
 
