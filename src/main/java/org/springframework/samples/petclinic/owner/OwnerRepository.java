@@ -53,9 +53,16 @@ public interface OwnerRepository extends Repository<Owner, Integer> {
 	 * found)
 	 */
 
-	@Query("SELECT DISTINCT owner FROM Owner owner left join  owner.pets WHERE owner.lastName LIKE :lastName% ")
+	/**
+	 * Retrieve {@link Owner}s from the data store by name, returning all owners
+	 * whose last name or first name <i>contains</i> the given name.
+	 * @param name Value to search for
+	 * @return a Collection of matching {@link Owner}s (or an empty Collection if none
+	 * found)
+	 */
+	@Query("SELECT DISTINCT owner FROM Owner owner left join owner.pets WHERE owner.lastName LIKE %:name% OR owner.firstName LIKE %:name% ")
 	@Transactional(readOnly = true)
-	Page<Owner> findByLastName(@Param("lastName") String lastName, Pageable pageable);
+	Page<Owner> findByLastName(@Param("name") String name, Pageable pageable);
 
 	/**
 	 * Retrieve an {@link Owner} from the data store by id.
