@@ -66,6 +66,11 @@ public interface OwnerRepository extends Repository<Owner, Integer> {
 	@Transactional(readOnly = true)
 	Owner findById(@Param("id") Integer id);
 
+	@Modifying
+	@Query("UPDATE Owner o SET o.state = :state WHERE o.id = :id")
+	@Transactional
+	void updateState(@Param("id") Integer id, @Param("state") String state);
+
 	/**
 	 * Save an {@link Owner} to the data store, either inserting or updating it.
 	 * @param owner the {@link Owner} to save
