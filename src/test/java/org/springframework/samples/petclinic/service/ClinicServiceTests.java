@@ -89,6 +89,15 @@ class ClinicServiceTests {
 		owners = this.owners.findByLastName("Daviss", pageable);
 		assertThat(owners).isEmpty();
 	}
+	
+	@Test
+	void shouldFindOwnersByPartialLastName() {
+		Page<Owner> owners = this.owners.findByLastName("avi", pageable);
+		assertThat(owners).hasSize(2);
+		
+		owners = this.owners.findByLastName("vis", pageable);
+		assertThat(owners).hasSize(2);
+	}
 
 	@Test
 	void shouldFindSingleOwnerWithPet() {
