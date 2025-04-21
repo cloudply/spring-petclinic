@@ -229,4 +229,13 @@ class OwnerControllerTests {
 			.andExpect(view().name("owners/ownerDetails"));
 	}
 
+    @Test
+    void testOwner() {
+        // Test code for owner
+        Owner owner = new Owner();
+        owner.setFirstName("John");
+        owner.setLastName("Doe");
+        // Add more test code as needed
+        assertNotNull(owner);
+    }
 }
