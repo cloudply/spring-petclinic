@@ -110,6 +110,7 @@ class ClinicServiceTests {
 		owner.setLastName("Schultz");
 		owner.setAddress("4, Evans Street");
 		owner.setCity("Wollongong");
+		owner.setState("NSW");
 		owner.setTelephone("4444444444");
 		this.owners.save(owner);
 		assertThat(owner.getId()).isNotZero();
@@ -131,6 +132,21 @@ class ClinicServiceTests {
 		// retrieving new name from database
 		owner = this.owners.findById(1);
 		assertThat(owner.getLastName()).isEqualTo(newLastName);
+	}
+	
+	@Test
+	@Transactional
+	void shouldUpdateOwnerState() {
+		Owner owner = this.owners.findById(1);
+		String oldState = owner.getState();
+		String newState = "CA";
+		
+		owner.setState(newState);
+		this.owners.save(owner);
+		
+		// retrieving new state from database
+		owner = this.owners.findById(1);
+		assertThat(owner.getState()).isEqualTo(newState);
 	}
 
 	@Test

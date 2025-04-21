@@ -53,6 +53,10 @@ public class Owner extends Person {
 	@Column(name = "city")
 	@NotBlank
 	private String city;
+	
+	@Column(name = "state")
+	@NotBlank
+	private String state;
 
 	@Column(name = "telephone")
 	@NotBlank
@@ -78,6 +82,14 @@ public class Owner extends Person {
 
 	public void setCity(String city) {
 		this.city = city;
+	}
+	
+	public String getState() {
+		return this.state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
 	}
 
 	public String getTelephone() {
@@ -150,6 +162,7 @@ public class Owner extends Person {
 			.append("firstName", this.getFirstName())
 			.append("address", this.address)
 			.append("city", this.city)
+			.append("state", this.state)
 			.append("telephone", this.telephone)
 			.toString();
 	}
