@@ -89,6 +89,23 @@ class ClinicServiceTests {
 		owners = this.owners.findByLastName("Daviss", pageable);
 		assertThat(owners).isEmpty();
 	}
+	
+	@Test
+	void shouldFindOwnersByFirstName() {
+		Page<Owner> owners = this.owners.findByLastName("George", pageable);
+		assertThat(owners).hasSize(1);
+		assertThat(owners.getContent().get(0).getFirstName()).isEqualTo("George");
+	}
+	
+	@Test
+	void shouldFindOwnersByPartialName() {
+		Page<Owner> owners = this.owners.findByLastName("Dav", pageable);
+		assertThat(owners).hasSize(2);
+		
+		owners = this.owners.findByLastName("eo", pageable);
+		assertThat(owners).hasSize(1);
+		assertThat(owners.getContent().get(0).getFirstName()).isEqualTo("George");
+	}
 
 	@Test
 	void shouldFindSingleOwnerWithPet() {
