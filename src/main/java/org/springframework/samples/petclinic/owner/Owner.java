@@ -46,6 +46,10 @@ import jakarta.validation.constraints.NotBlank;
 @Table(name = "owners")
 public class Owner extends Person {
 
+    @Column(name = "state")
+    @NotBlank
+    private String state;
+
 	@Column(name = "address")
 	@NotBlank
 	private String address;
