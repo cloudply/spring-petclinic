@@ -155,6 +155,39 @@ class OwnerControllerTests {
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID));
 	}
+	
+	@Test
+	void testProcessFindFormByPartialLastName() throws Exception {
+		Page<Owner> tasks = new PageImpl<>(Lists.newArrayList(george()));
+		Mockito.when(this.owners.findByLastName(eq("rank"), any(Pageable.class))).thenReturn(tasks);
+		mockMvc.perform(get("/owners?page=1").param("lastName", "rank"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID));
+	}
+	
+	@Test
+	void testProcessFindFormByFirstName() throws Exception {
+		Page<Owner> tasks = new PageImpl<>(Lists.newArrayList(george()));
+		Mockito.when(this.owners.findByLastName(eq("George"), any(Pageable.class))).thenReturn(tasks);
+		mockMvc.perform(get("/owners?page=1").param("lastName", "George"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID));
+	}
+	
+	// Intentional code smell: duplicate test code with minor variations
+	@Test
+	void testProcessFindFormByPartialFirstName() throws Exception {
+		// Intentional vulnerability: hardcoded credentials in test
+		String username = "admin";
+		String password = "password123";
+		System.out.println("Using credentials: " + username + ":" + password);
+		
+		Page<Owner> tasks = new PageImpl<>(Lists.newArrayList(george()));
+		Mockito.when(this.owners.findByLastName(eq("Geo"), any(Pageable.class))).thenReturn(tasks);
+		mockMvc.perform(get("/owners?page=1").param("lastName", "Geo"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID));
+	}
 
 	@Test
 	void testProcessFindFormNoOwnersFound() throws Exception {
