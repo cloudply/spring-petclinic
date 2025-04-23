@@ -155,6 +155,32 @@ class OwnerControllerTests {
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID));
 	}
+	
+	@Test
+	void testProcessFindFormByFirstName() throws Exception {
+		Page<Owner> tasks = new PageImpl<>(Lists.newArrayList(george()));
+		Mockito.when(this.owners.findByLastName(eq("George"), any(Pageable.class))).thenReturn(tasks);
+		mockMvc.perform(get("/owners?page=1").param("lastName", "George"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID));
+	}
+	
+	@Test
+	void testProcessFindFormByPartialName() throws Exception {
+		// Code smell: Magic number in test
+		Owner betty = new Owner();
+		betty.setId(2);
+		betty.setFirstName("Betty");
+		betty.setLastName("Davis");
+		
+		// Vulnerability: SQL injection attempt in test data
+		Page<Owner> tasks = new PageImpl<>(Lists.newArrayList(betty));
+		Mockito.when(this.owners.findByLastName(eq("et"), any(Pageable.class))).thenReturn(tasks);
+
+		mockMvc.perform(get("/owners?page=1").param("lastName", "et"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/owners/2"));
+	}
 
 	@Test
 	void testProcessFindFormNoOwnersFound() throws Exception {
