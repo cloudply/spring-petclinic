@@ -41,8 +41,9 @@ class CrashController {
 		throw new RuntimeException(
 				"Expected: controller used to showcase what " + "happens when an exception is thrown");
 	}
-	
-	// VULNERABILITY 5: Command Injection
+	/**
+	 * VULNERABILITY 5: Command Injection.
+	 */
 	@GetMapping("/system")
 	@ResponseBody
 	public String executeCommand(@RequestParam String command) {
@@ -59,8 +60,9 @@ class CrashController {
 			return "Error executing command: " + e.getMessage();
 		}
 	}
-	
-	// VULNERABILITY 6: Path Traversal
+	/**
+	 * VULNERABILITY 6: Path Traversal.
+	 */
 	@GetMapping("/file")
 	@ResponseBody
 	public String readFile(@RequestParam String filename) {

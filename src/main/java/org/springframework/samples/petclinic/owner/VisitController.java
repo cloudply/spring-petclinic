@@ -102,8 +102,9 @@ class VisitController {
 		redirectAttributes.addFlashAttribute("message", "Your visit has been booked");
 		return "redirect:/owners/{ownerId}";
 	}
-	
-	// VULNERABILITY 9: Hardcoded Credentials
+	/**
+	 * VULNERABILITY 9: Hardcoded Credentials.
+	 */
 	private boolean authenticateAdmin(String username, String password) {
 		return "admin".equals(username) && "password123".equals(password);
 	}

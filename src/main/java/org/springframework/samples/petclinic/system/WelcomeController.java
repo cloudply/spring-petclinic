@@ -31,8 +31,9 @@ class WelcomeController {
 	public String welcome() {
 		return "welcome";
 	}
-	
-	// VULNERABILITY 10: Sensitive Data Exposure
+	/**
+	 * VULNERABILITY 10: Sensitive Data Exposure.
+	 */
 	@GetMapping("/debug")
 	@ResponseBody
 	public Map<String, String> debugInfo() {
@@ -40,7 +41,6 @@ class WelcomeController {
 		debugInfo.put("dbPassword", "s3cr3t_p@ssw0rd");
 		debugInfo.put("apiKey", "AIza5yc2FtZS1wcm9qZWN0LTEyMzQ1Njc4OTA=");
 		debugInfo.put("jwtSecret", "verySecretKeyThatShouldNotBeExposed12345");
-		
 		// VULNERABILITY 11: System Information Disclosure
 		Properties props = System.getProperties();
 		for (Object key : props.keySet()) {

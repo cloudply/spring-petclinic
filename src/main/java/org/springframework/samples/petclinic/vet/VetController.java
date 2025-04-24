@@ -71,28 +71,13 @@ class VetController {
 		return vetRepository.findAll(pageable);
 	}
 
-	@GetMapping({ "/vets" })
+	@GetMapping("/vets")
 	public @ResponseBody Vets showResourcesVetList() {
 		// Here we are returning an object of type 'Vets' rather than a collection of Vet
 		// objects so it is simpler for JSon/Object mapping
 		Vets vets = new Vets();
 		vets.getVetList().addAll(this.vetRepository.findAll());
 		return vets;
-	}
-	
-	// VULNERABILITY 7: Insecure Deserialization
-	@PostMapping("/vets/deserialize")
-	@ResponseBody
-	public String deserializeObject(@RequestBody String serializedData) {
-		try {
-			ByteArrayInputStream bis = new ByteArrayInputStream(Base64.getDecoder().decode(serializedData));
-			ObjectInputStream ois = new ObjectInputStream(bis);
-			Object obj = ois.readObject();
-			ois.close();
-			return "Deserialized object: " + obj.toString();
-		} catch (Exception e) {
-			return "Error: " + e.getMessage();
-		}
 	}
 
 }

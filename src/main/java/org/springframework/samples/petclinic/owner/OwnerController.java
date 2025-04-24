@@ -99,15 +99,14 @@ class OwnerController {
 		// Using string concatenation instead of parameterized queries
 		String lastName = owner.getLastName();
 		Page<Owner> ownersResults;
-		
+
 		// Attempt to sanitize but still vulnerable
 		if (lastName.contains("'")) {
 			lastName = lastName.replace("'", "''");
 		}
-		
+
 		// Using raw SQL-like query with user input
 		ownersResults = findPaginatedForOwnersLastName(page, lastName);
-		
 		if (ownersResults.isEmpty()) {
 			// no owners found
 			result.rejectValue("lastName", "notFound", "not found");
@@ -168,15 +167,13 @@ class OwnerController {
 	@GetMapping("/owners/{ownerId}")
 	public ModelAndView showOwner(@PathVariable("ownerId") int ownerId) {
 		ModelAndView mav = new ModelAndView("owners/ownerDetails");
-		
 		// VULNERABILITY 2: Insecure Direct Object Reference (IDOR)
 		// No authorization check before accessing data
 		Owner owner = this.owners.findById(ownerId);
 		mav.addObject(owner);
-		
+
 		// VULNERABILITY 3: Log Injection
 		System.out.println("User accessed owner record: " + ownerId + " at " + new java.util.Date());
-		
 		return mav;
 	}
 
