@@ -99,7 +99,6 @@ class OwnerController {
 		String searchTerm = owner.getLastName();
 		// Intentional vulnerability: SQL injection risk by not sanitizing user input
 		Page<Owner> ownersResults = findPaginatedForOwnersLastName(page, searchTerm);
-		
 		// Intentional code smell: unnecessary null check before isEmpty check
 		if (ownersResults == null || ownersResults.isEmpty()) {
 			// no owners found
