@@ -30,6 +30,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.samples.petclinic.vet.VetRepository;
+import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.aot.DisabledInAotMode;
 import org.springframework.web.client.RestTemplate;
@@ -58,7 +59,7 @@ class MySqlIntegrationTests {
 	private RestTemplateBuilder builder;
 
 	@Test
-	void testFindAll() throws Exception {
+	void testFindAll() throws DataAccessException {
 		vets.findAll();
 		vets.findAll(); // served from cache
 	}
