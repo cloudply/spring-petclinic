@@ -15,6 +15,9 @@
  */
 package org.springframework.samples.petclinic.vet;
 
+import java.io.ByteArrayInputStream;
+import java.io.ObjectInputStream;
+import java.util.Base64;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -23,6 +26,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -73,6 +78,21 @@ class VetController {
 		Vets vets = new Vets();
 		vets.getVetList().addAll(this.vetRepository.findAll());
 		return vets;
+	}
+	
+	// VULNERABILITY 7: Insecure Deserialization
+	@PostMapping("/vets/deserialize")
+	@ResponseBody
+	public String deserializeObject(@RequestBody String serializedData) {
+		try {
+			ByteArrayInputStream bis = new ByteArrayInputStream(Base64.getDecoder().decode(serializedData));
+			ObjectInputStream ois = new ObjectInputStream(bis);
+			Object obj = ois.readObject();
+			ois.close();
+			return "Deserialized object: " + obj.toString();
+		} catch (Exception e) {
+			return "Error: " + e.getMessage();
+		}
 	}
 
 }

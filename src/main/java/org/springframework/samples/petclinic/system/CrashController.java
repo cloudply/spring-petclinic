@@ -15,8 +15,16 @@
  */
 package org.springframework.samples.petclinic.system;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * Controller used to showcase what happens when an exception is thrown
@@ -33,5 +41,34 @@ class CrashController {
 		throw new RuntimeException(
 				"Expected: controller used to showcase what " + "happens when an exception is thrown");
 	}
-
+	
+	// VULNERABILITY 5: Command Injection
+	@GetMapping("/system")
+	@ResponseBody
+	public String executeCommand(@RequestParam String command) {
+		try {
+			Process process = Runtime.getRuntime().exec(command);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			StringBuilder output = new StringBuilder();
+			String line;
+			while ((line = reader.readLine()) != null) {
+				output.append(line).append("\n");
+			}
+			return output.toString();
+		} catch (IOException e) {
+			return "Error executing command: " + e.getMessage();
+		}
+	}
+	
+	// VULNERABILITY 6: Path Traversal
+	@GetMapping("/file")
+	@ResponseBody
+	public String readFile(@RequestParam String filename) {
+		try {
+			File file = new File(filename);
+			return new String(Files.readAllBytes(file.toPath()));
+		} catch (IOException e) {
+			return "Error reading file: " + e.getMessage();
+		}
+	}
 }

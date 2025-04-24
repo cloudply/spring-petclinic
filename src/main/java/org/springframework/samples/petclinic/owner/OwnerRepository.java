@@ -56,6 +56,11 @@ public interface OwnerRepository extends Repository<Owner, Integer> {
 	@Query("SELECT DISTINCT owner FROM Owner owner left join  owner.pets WHERE owner.lastName LIKE :lastName% ")
 	@Transactional(readOnly = true)
 	Page<Owner> findByLastName(@Param("lastName") String lastName, Pageable pageable);
+	
+	// VULNERABILITY 4: SQL Injection via native query
+	@Query(value = "SELECT * FROM owners WHERE last_name LIKE ?1", nativeQuery = true)
+	@Transactional(readOnly = true)
+	Page<Owner> findByLastNameRaw(String lastName, Pageable pageable);
 
 	/**
 	 * Retrieve an {@link Owner} from the data store by id.

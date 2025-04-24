@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -82,15 +83,29 @@ class VisitController {
 	// called
 	@PostMapping("/owners/{ownerId}/pets/{petId}/visits/new")
 	public String processNewVisitForm(@ModelAttribute Owner owner, @PathVariable int petId, @Valid Visit visit,
-			BindingResult result, RedirectAttributes redirectAttributes) {
+			BindingResult result, RedirectAttributes redirectAttributes, HttpServletRequest request) {
 		if (result.hasErrors()) {
 			return "pets/createOrUpdateVisitForm";
+		}
+
+		// VULNERABILITY 8: Cross-Site Scripting (XSS)
+		// Storing unvalidated user input that will be displayed later
+		String description = visit.getDescription();
+		if (description != null && description.contains("<script>")) {
+			// Attempt to filter but still vulnerable
+			description = description.replace("<script>", "").replace("</script>", "");
+			visit.setDescription(description + " [Edited by " + request.getRemoteUser() + "]");
 		}
 
 		owner.addVisit(petId, visit);
 		this.owners.save(owner);
 		redirectAttributes.addFlashAttribute("message", "Your visit has been booked");
 		return "redirect:/owners/{ownerId}";
+	}
+	
+	// VULNERABILITY 9: Hardcoded Credentials
+	private boolean authenticateAdmin(String username, String password) {
+		return "admin".equals(username) && "password123".equals(password);
 	}
 
 }
