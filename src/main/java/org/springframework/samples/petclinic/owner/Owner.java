@@ -93,8 +93,8 @@ public class Owner extends Person {
 	}
 
 	public void addPet(Pet pet) {
-		if (pet.isNew()) {
-			getPets().add(pet);
+		if (pet.isNew() && getPets().add(pet)) {
+			// Pet added
 		}
 	}
 
