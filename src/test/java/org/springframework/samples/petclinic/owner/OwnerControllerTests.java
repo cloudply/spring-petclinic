@@ -229,4 +229,27 @@ class OwnerControllerTests {
 			.andExpect(view().name("owners/ownerDetails"));
 	}
 
+	@Test
+	void testShowOwnerNotFound() throws Exception {
+		given(this.owners.findById(99)).willReturn(null);
+		mockMvc.perform(get("/owners/{ownerId}", 99))
+			.andExpect(status().isNotFound());
+	}
+
+	@Test
+	void testProcessFindFormWithEmptyLastName() throws Exception {
+		Page<Owner> tasks = new PageImpl<>(Lists.newArrayList());
+		given(this.owners.findByLastName(eq(""), any(Pageable.class)))
+			.willReturn(new PageImpl<>(Lists.newArrayList(george())));
+		mockMvc.perform(get("/owners?page=1").param("lastName", ""))
+			.andExpect(status().isOk())
+			.andExpect(view().name("owners/ownersList"));
+	}
+
+	@Test
+	void testProcessUpdateOwnerFormWithInvalidId() throws Exception {
+		given(this.owners.findById(99)).willReturn(null);
+		mockMvc.perform(get("/owners/{ownerId}/edit", 99))
+			.andExpect(status().isNotFound());
+	}
 }
