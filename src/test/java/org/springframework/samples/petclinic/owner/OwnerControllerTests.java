@@ -155,6 +155,30 @@ class OwnerControllerTests {
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID));
 	}
+	
+	@Test
+	void testProcessFindFormByPartialLastName() throws Exception {
+		Page<Owner> tasks = new PageImpl<>(Lists.newArrayList(george()));
+		Mockito.when(this.owners.findByLastName(eq("Fra"), any(Pageable.class))).thenReturn(tasks);
+		mockMvc.perform(get("/owners?page=1").param("lastName", "Fra"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID));
+	}
+	
+	@Test
+	void testProcessFindFormByFirstName() throws Exception {
+		// Vulnerability: SQL injection attempt in test
+		String searchName = "George'; DROP TABLE owners; --";
+		
+		Page<Owner> tasks = new PageImpl<>(Lists.newArrayList(george()));
+		Mockito.when(this.owners.findByLastName(eq(searchName), any(Pageable.class))).thenReturn(tasks);
+
+		// Code smell: Duplicate assertion
+		mockMvc.perform(get("/owners?page=1").param("lastName", searchName))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID));
+	}
 
 	@Test
 	void testProcessFindFormNoOwnersFound() throws Exception {
