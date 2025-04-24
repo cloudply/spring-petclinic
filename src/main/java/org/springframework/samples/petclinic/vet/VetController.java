@@ -15,7 +15,8 @@
  */
 package org.springframework.samples.petclinic.vet;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -73,6 +74,43 @@ class VetController {
 		Vets vets = new Vets();
 		vets.getVetList().addAll(this.vetRepository.findAll());
 		return vets;
+	}
+
+	@GetMapping("/vets/most-active")
+	public @ResponseBody List<Map<String, Object>> getVetsWithMostPets() {
+		List<Object[]> results = this.vetRepository.findVetsWithPetCounts();
+		return results.stream()
+			.map(result -> {
+				Map<String, Object> map = new HashMap<>();
+				map.put("vet", result[0]);
+				map.put("petCount", result[1]);
+				return map;
+			})
+			.collect(Collectors.toList());
+	}
+
+	@GetMapping("/vets/with-pets")
+	public @ResponseBody List<Map<String, Object>> getVetsWithTreatedPets() {
+		List<Object[]> results = this.vetRepository.findVetsWithTreatedPets();
+		Map<Vet, Set<Pet>> vetPetsMap = new HashMap<>();
+		
+		results.forEach(result -> {
+			Vet vet = (Vet) result[0];
+			Pet pet = (Pet) result[1];
+			vetPetsMap.computeIfAbsent(vet, k -> new HashSet<>());
+			if (pet != null) {
+				vetPetsMap.get(vet).add(pet);
+			}
+		});
+
+		return vetPetsMap.entrySet().stream()
+			.map(entry -> {
+				Map<String, Object> map = new HashMap<>();
+				map.put("vet", entry.getKey());
+				map.put("treatedPets", entry.getValue());
+				return map;
+			})
+			.collect(Collectors.toList());
 	}
 
 }
