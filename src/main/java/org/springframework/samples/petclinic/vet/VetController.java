@@ -25,6 +25,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+import org.springframework.samples.petclinic.owner.Pet;
 
 /**
  * @author Juergen Hoeller
@@ -73,6 +79,37 @@ class VetController {
 		Vets vets = new Vets();
 		vets.getVetList().addAll(this.vetRepository.findAll());
 		return vets;
+	}
+
+	@GetMapping("/vets/most-active")
+	public @ResponseBody List<Map<String, Object>> getVetsWithMostPets() {
+		List<Object[]> results = this.vetRepository.findVetsWithMostPets();
+		return results.stream()
+			.map(result -> {
+				Map<String, Object> map = new HashMap<>();
+				Vet vet = (Vet) result[0];
+				Long petCount = (Long) result[1];
+				map.put("vet", vet);
+				map.put("petCount", petCount);
+				return map;
+			})
+			.collect(Collectors.toList());
+	}
+
+	@GetMapping("/vets/with-pets")
+	public @ResponseBody Map<Vet, List<Pet>> getVetsWithPets() {
+		List<Object[]> results = this.vetRepository.findVetsWithPets();
+		Map<Vet, List<Pet>> vetPetsMap = new HashMap<>();
+		
+		results.forEach(result -> {
+			Vet vet = (Vet) result[0];
+			Pet pet = (Pet) result[1];
+			vetPetsMap.computeIfAbsent(vet, k -> new ArrayList<>());
+			if (pet != null) {
+				vetPetsMap.get(vet).add(pet);
+			}
+		});
+		return vetPetsMap;
 	}
 
 }
