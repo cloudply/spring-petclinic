@@ -51,3 +51,12 @@ INSERT INTO visits VALUES (default, 7, '2013-01-01', 'rabies shot');
 INSERT INTO visits VALUES (default, 8, '2013-01-02', 'rabies shot');
 INSERT INTO visits VALUES (default, 8, '2013-01-03', 'neutered');
 INSERT INTO visits VALUES (default, 7, '2013-01-04', 'spayed');
+
+-- Insert default users (password is 'password' encoded with BCrypt)
+INSERT INTO users VALUES ('admin', '{bcrypt}$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmNSJZ.0FxO/BTk76klW', TRUE);
+INSERT INTO users VALUES ('user', '{bcrypt}$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmNSJZ.0FxO/BTk76klW', TRUE);
+
+-- Insert authorities
+INSERT INTO authorities VALUES ('admin', 'ROLE_ADMIN');
+INSERT INTO authorities VALUES ('admin', 'ROLE_USER');
+INSERT INTO authorities VALUES ('user', 'ROLE_USER');
