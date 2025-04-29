@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.validation.Valid;
@@ -160,6 +161,16 @@ class OwnerController {
 		Owner owner = this.owners.findById(ownerId);
 		mav.addObject(owner);
 		return mav;
+	}
+	
+	/**
+	 * Search owners by last name.
+	 * @param lastName the last name to search for
+	 * @return a list of owners matching the last name
+	 */
+	@GetMapping("/owners/search")
+	public @ResponseBody List<Owner> searchByLastName(@RequestParam String lastName) {
+		return owners.findByLastName(lastName, PageRequest.of(0, 100)).getContent();
 	}
 
 }
