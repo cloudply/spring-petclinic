@@ -20,11 +20,11 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/resources/**", "/webjars/**", "/login", "/").permitAll()
+                .requestMatchers("/resources/**", "/webjars/**", "/userLogin", "/").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
-                .loginPage("/login")
+                .loginPage("/userLogin")
                 .defaultSuccessUrl("/", true)
                 .permitAll()
             )
