@@ -1,5 +1,5 @@
 <!doctype html>
-<html th:fragment="layout (template, menu)">
+<html th:fragment="layout (template, menu)" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 
 <head>
 
@@ -48,6 +48,20 @@
           <li th:replace="~{::menuItem ('/','home','home page','home','Home')}">
             <span class="fa fa-home" aria-hidden="true"></span>
             <span>Home</span>
+          </li>
+          
+          <li sec:authorize="!isAuthenticated()">
+            <a class="nav-link" th:href="@{/login}">
+              <span class="fa fa-sign-in" aria-hidden="true"></span>
+              <span>Login</span>
+            </a>
+          </li>
+          
+          <li sec:authorize="isAuthenticated()">
+            <a class="nav-link" th:href="@{/logout}">
+              <span class="fa fa-sign-out" aria-hidden="true"></span>
+              <span>Logout (<span sec:authentication="name">Username</span>)</span>
+            </a>
           </li>
 
           <li th:replace="~{::menuItem ('/owners/find','owners','find owners','search','Find owners')}">

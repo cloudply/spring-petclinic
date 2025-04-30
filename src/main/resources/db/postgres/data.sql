@@ -1,13 +1,13 @@
-INSERT INTO vets (first_name, last_name) SELECT 'James', 'Carter' WHERE NOT EXISTS (SELECT * FROM vets WHERE id=1);
+INSERT INTO vets (first_name, last_name) SELECT 'James'::text, 'Carter'::text WHERE NOT EXISTS (SELECT * FROM vets WHERE id=1);
 INSERT INTO vets (first_name, last_name) SELECT 'Helen', 'Leary' WHERE NOT EXISTS (SELECT * FROM vets WHERE id=2);
 INSERT INTO vets (first_name, last_name) SELECT 'Linda', 'Douglas' WHERE NOT EXISTS (SELECT * FROM vets WHERE id=3);
 INSERT INTO vets (first_name, last_name) SELECT 'Rafael', 'Ortega' WHERE NOT EXISTS (SELECT * FROM vets WHERE id=4);
 INSERT INTO vets (first_name, last_name) SELECT 'Henry', 'Stevens' WHERE NOT EXISTS (SELECT * FROM vets WHERE id=5);
 INSERT INTO vets (first_name, last_name) SELECT 'Sharon', 'Jenkins' WHERE NOT EXISTS (SELECT * FROM vets WHERE id=6);
 
-INSERT INTO specialties (name) SELECT 'radiology' WHERE NOT EXISTS (SELECT * FROM specialties WHERE name='radiology');
-INSERT INTO specialties (name) SELECT 'surgery' WHERE NOT EXISTS (SELECT * FROM specialties WHERE name='surgery'); 
-INSERT INTO specialties (name) SELECT 'dentistry' WHERE NOT EXISTS (SELECT * FROM specialties WHERE name='dentistry');
+INSERT INTO specialties (name) SELECT 'radiology'::text WHERE NOT EXISTS (SELECT * FROM specialties WHERE name='radiology');
+INSERT INTO specialties (name) SELECT 'surgery'::text WHERE NOT EXISTS (SELECT * FROM specialties WHERE name='surgery'); 
+INSERT INTO specialties (name) SELECT 'dentistry'::text WHERE NOT EXISTS (SELECT * FROM specialties WHERE name='dentistry');
 
 INSERT INTO vet_specialties VALUES (2, 1) ON CONFLICT (vet_id, specialty_id) DO NOTHING;
 INSERT INTO vet_specialties VALUES (3, 2) ON CONFLICT (vet_id, specialty_id) DO NOTHING;
@@ -15,14 +15,16 @@ INSERT INTO vet_specialties VALUES (3, 3) ON CONFLICT (vet_id, specialty_id) DO 
 INSERT INTO vet_specialties VALUES (4, 2) ON CONFLICT (vet_id, specialty_id) DO NOTHING;
 INSERT INTO vet_specialties VALUES (5, 1) ON CONFLICT (vet_id, specialty_id) DO NOTHING;
 
-INSERT INTO types (name) SELECT 'cat' WHERE NOT EXISTS (SELECT * FROM types WHERE name='cat');
-INSERT INTO types (name) SELECT 'dog' WHERE NOT EXISTS (SELECT * FROM types WHERE name='dog');
-INSERT INTO types (name) SELECT 'lizard' WHERE NOT EXISTS (SELECT * FROM types WHERE name='lizard');
-INSERT INTO types (name) SELECT 'snake' WHERE NOT EXISTS (SELECT * FROM types WHERE name='snake');
-INSERT INTO types (name) SELECT 'bird' WHERE NOT EXISTS (SELECT * FROM types WHERE name='bird');
-INSERT INTO types (name) SELECT 'hamster' WHERE NOT EXISTS (SELECT * FROM types WHERE name='hamster');
+INSERT INTO types (name) SELECT 'cat'::text WHERE NOT EXISTS (SELECT * FROM types WHERE name='cat');
+INSERT INTO types (name) SELECT 'dog'::text WHERE NOT EXISTS (SELECT * FROM types WHERE name='dog');
+INSERT INTO types (name) SELECT 'lizard'::text WHERE NOT EXISTS (SELECT * FROM types WHERE name='lizard');
+INSERT INTO types (name) SELECT 'snake'::text WHERE NOT EXISTS (SELECT * FROM types WHERE name='snake');
+INSERT INTO types (name) SELECT 'bird'::text WHERE NOT EXISTS (SELECT * FROM types WHERE name='bird');
+INSERT INTO types (name) SELECT 'hamster'::text WHERE NOT EXISTS (SELECT * FROM types WHERE name='hamster');
 
-INSERT INTO owners (first_name, last_name, address, city, telephone) SELECT 'George', 'Franklin', '110 W. Liberty St.', 'Madison', '6085551023' WHERE NOT EXISTS (SELECT * FROM owners WHERE id=1);
+INSERT INTO owners (first_name, last_name, address, city, telephone) 
+  SELECT 'George'::text, 'Franklin'::text, '110 W. Liberty St.'::text, 'Madison'::text, '6085551023'::text 
+  WHERE NOT EXISTS (SELECT * FROM owners WHERE id=1);
 INSERT INTO owners (first_name, last_name, address, city, telephone) SELECT 'Betty', 'Davis', '638 Cardinal Ave.', 'Sun Prairie', '6085551749' WHERE NOT EXISTS (SELECT * FROM owners WHERE id=2);
 INSERT INTO owners (first_name, last_name, address, city, telephone) SELECT 'Eduardo', 'Rodriquez', '2693 Commerce St.', 'McFarland', '6085558763' WHERE NOT EXISTS (SELECT * FROM owners WHERE id=3);
 INSERT INTO owners (first_name, last_name, address, city, telephone) SELECT 'Harold', 'Davis', '563 Friendly St.', 'Windsor', '6085553198' WHERE NOT EXISTS (SELECT * FROM owners WHERE id=4);
@@ -33,7 +35,9 @@ INSERT INTO owners (first_name, last_name, address, city, telephone) SELECT 'Mar
 INSERT INTO owners (first_name, last_name, address, city, telephone) SELECT 'David', 'Schroeder', '2749 Blackhawk Trail', 'Madison', '6085559435' WHERE NOT EXISTS (SELECT * FROM owners WHERE id=9);
 INSERT INTO owners (first_name, last_name, address, city, telephone) SELECT 'Carlos', 'Estaban', '2335 Independence La.', 'Waunakee', '6085555487' WHERE NOT EXISTS (SELECT * FROM owners WHERE id=10);
 
-INSERT INTO pets (name, birth_date, type_id, owner_id) SELECT 'Leo', '2000-09-07', 1, 1 WHERE NOT EXISTS (SELECT * FROM pets WHERE id=1);
+INSERT INTO pets (name, birth_date, type_id, owner_id) 
+  SELECT 'Leo'::text, '2000-09-07'::date, 1, 1 
+  WHERE NOT EXISTS (SELECT * FROM pets WHERE id=1);
 INSERT INTO pets (name, birth_date, type_id, owner_id) SELECT 'Basil', '2002-08-06', 6, 2 WHERE NOT EXISTS (SELECT * FROM pets WHERE id=2);
 INSERT INTO pets (name, birth_date, type_id, owner_id) SELECT 'Rosy', '2001-04-17', 2, 3 WHERE NOT EXISTS (SELECT * FROM pets WHERE id=3);
 INSERT INTO pets (name, birth_date, type_id, owner_id) SELECT 'Jewel', '2000-03-07', 2, 3 WHERE NOT EXISTS (SELECT * FROM pets WHERE id=4);
@@ -47,7 +51,35 @@ INSERT INTO pets (name, birth_date, type_id, owner_id) SELECT 'Freddy', '2000-03
 INSERT INTO pets (name, birth_date, type_id, owner_id) SELECT 'Lucky', '2000-06-24', 2, 10 WHERE NOT EXISTS (SELECT * FROM pets WHERE id=12);
 INSERT INTO pets (name, birth_date, type_id, owner_id) SELECT 'Sly', '2002-06-08', 1, 10 WHERE NOT EXISTS (SELECT * FROM pets WHERE id=13);
 
-INSERT INTO visits (pet_id, visit_date, description) SELECT 7, '2010-03-04', 'rabies shot' WHERE NOT EXISTS (SELECT * FROM visits WHERE id=1);
+INSERT INTO visits (pet_id, visit_date, description) 
+  SELECT 7, '2010-03-04'::date, 'rabies shot'::text 
+  WHERE NOT EXISTS (SELECT * FROM visits WHERE id=1);
 INSERT INTO visits (pet_id, visit_date, description) SELECT 8, '2011-03-04', 'rabies shot' WHERE NOT EXISTS (SELECT * FROM visits WHERE id=2);
 INSERT INTO visits (pet_id, visit_date, description) SELECT 8, '2009-06-04', 'neutered' WHERE NOT EXISTS (SELECT * FROM visits WHERE id=3);
 INSERT INTO visits (pet_id, visit_date, description) SELECT 7, '2008-09-04', 'spayed' WHERE NOT EXISTS (SELECT * FROM visits WHERE id=4);
+
+-- Default users (password is 'password' encoded with BCrypt)
+INSERT INTO users (username, password, enabled) 
+  SELECT 'admin'::varchar, '{bcrypt}$2a$10$jK.FH1CwEyel3MBPpKvIxeG7KdU0Gt1O1JSZtNa.YmIgsdPnTKBdq'::varchar, TRUE 
+  WHERE NOT EXISTS (SELECT * FROM users WHERE username='admin');
+  
+INSERT INTO users (username, password, enabled) 
+  SELECT 'owner'::varchar, '{bcrypt}$2a$10$jK.FH1CwEyel3MBPpKvIxeG7KdU0Gt1O1JSZtNa.YmIgsdPnTKBdq'::varchar, TRUE 
+  WHERE NOT EXISTS (SELECT * FROM users WHERE username='owner');
+  
+INSERT INTO users (username, password, enabled) 
+  SELECT 'vet'::varchar, '{bcrypt}$2a$10$jK.FH1CwEyel3MBPpKvIxeG7KdU0Gt1O1JSZtNa.YmIgsdPnTKBdq'::varchar, TRUE 
+  WHERE NOT EXISTS (SELECT * FROM users WHERE username='vet');
+
+-- Roles
+INSERT INTO roles (id, username, role) 
+  SELECT 1, 'admin'::varchar, 'ROLE_ADMIN'::varchar 
+  WHERE NOT EXISTS (SELECT * FROM roles WHERE id=1);
+  
+INSERT INTO roles (id, username, role) 
+  SELECT 2, 'owner'::varchar, 'ROLE_OWNER'::varchar 
+  WHERE NOT EXISTS (SELECT * FROM roles WHERE id=2);
+  
+INSERT INTO roles (id, username, role) 
+  SELECT 3, 'vet'::varchar, 'ROLE_VET'::varchar 
+  WHERE NOT EXISTS (SELECT * FROM roles WHERE id=3);
