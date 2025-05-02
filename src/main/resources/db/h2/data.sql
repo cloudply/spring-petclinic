@@ -5,6 +5,16 @@ INSERT INTO vets VALUES (default, 'Rafael', 'Ortega');
 INSERT INTO vets VALUES (default, 'Henry', 'Stevens');
 INSERT INTO vets VALUES (default, 'Sharon', 'Jenkins');
 
+-- Default users (password is 'password' encoded with BCrypt)
+INSERT INTO users VALUES (default, 'admin', '{bcrypt}$2a$10$jK.Y0gQrEQNj8HyDnOJnKOQnOuZJPvT3q6XOEvfRJOhLqK2bK9sWu', true);
+INSERT INTO users VALUES (default, 'owner', '{bcrypt}$2a$10$jK.Y0gQrEQNj8HyDnOJnKOQnOuZJPvT3q6XOEvfRJOhLqK2bK9sWu', true);
+INSERT INTO users VALUES (default, 'vet', '{bcrypt}$2a$10$jK.Y0gQrEQNj8HyDnOJnKOQnOuZJPvT3q6XOEvfRJOhLqK2bK9sWu', true);
+
+-- Roles
+INSERT INTO authorities VALUES (default, 'admin', 'ROLE_ADMIN');
+INSERT INTO authorities VALUES (default, 'owner', 'ROLE_OWNER');
+INSERT INTO authorities VALUES (default, 'vet', 'ROLE_VET');
+
 INSERT INTO specialties VALUES (default, 'radiology');
 INSERT INTO specialties VALUES (default, 'surgery');
 INSERT INTO specialties VALUES (default, 'dentistry');

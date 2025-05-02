@@ -5,6 +5,16 @@ INSERT IGNORE INTO vets VALUES (4, 'Rafael', 'Ortega');
 INSERT IGNORE INTO vets VALUES (5, 'Henry', 'Stevens');
 INSERT IGNORE INTO vets VALUES (6, 'Sharon', 'Jenkins');
 
+-- Default users (password is 'password' encoded with BCrypt)
+INSERT IGNORE INTO users VALUES (1, 'admin', '{bcrypt}$2a$10$jK.Y0gQrEQNj8HyDnOJnKOQnOuZJPvT3q6XOEvfRJOhLqK2bK9sWu', true);
+INSERT IGNORE INTO users VALUES (2, 'owner', '{bcrypt}$2a$10$jK.Y0gQrEQNj8HyDnOJnKOQnOuZJPvT3q6XOEvfRJOhLqK2bK9sWu', true);
+INSERT IGNORE INTO users VALUES (3, 'vet', '{bcrypt}$2a$10$jK.Y0gQrEQNj8HyDnOJnKOQnOuZJPvT3q6XOEvfRJOhLqK2bK9sWu', true);
+
+-- Roles
+INSERT IGNORE INTO authorities VALUES (1, 'admin', 'ROLE_ADMIN');
+INSERT IGNORE INTO authorities VALUES (2, 'owner', 'ROLE_OWNER');
+INSERT IGNORE INTO authorities VALUES (3, 'vet', 'ROLE_VET');
+
 INSERT IGNORE INTO specialties VALUES (1, 'radiology');
 INSERT IGNORE INTO specialties VALUES (2, 'surgery');
 INSERT IGNORE INTO specialties VALUES (3, 'dentistry');

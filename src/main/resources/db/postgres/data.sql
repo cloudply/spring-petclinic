@@ -5,6 +5,28 @@ INSERT INTO vets (first_name, last_name) SELECT 'Rafael', 'Ortega' WHERE NOT EXI
 INSERT INTO vets (first_name, last_name) SELECT 'Henry', 'Stevens' WHERE NOT EXISTS (SELECT * FROM vets WHERE id=5);
 INSERT INTO vets (first_name, last_name) SELECT 'Sharon', 'Jenkins' WHERE NOT EXISTS (SELECT * FROM vets WHERE id=6);
 
+-- Default users (password is 'password' encoded with BCrypt)
+INSERT INTO users (username, password, enabled) 
+  SELECT 'admin', '{bcrypt}$2a$10$jK.Y0gQrEQNj8HyDnOJnKOQnOuZJPvT3q6XOEvfRJOhLqK2bK9sWu', true 
+  WHERE NOT EXISTS (SELECT * FROM users WHERE username='admin');
+INSERT INTO users (username, password, enabled) 
+  SELECT 'owner', '{bcrypt}$2a$10$jK.Y0gQrEQNj8HyDnOJnKOQnOuZJPvT3q6XOEvfRJOhLqK2bK9sWu', true 
+  WHERE NOT EXISTS (SELECT * FROM users WHERE username='owner');
+INSERT INTO users (username, password, enabled) 
+  SELECT 'vet', '{bcrypt}$2a$10$jK.Y0gQrEQNj8HyDnOJnKOQnOuZJPvT3q6XOEvfRJOhLqK2bK9sWu', true 
+  WHERE NOT EXISTS (SELECT * FROM users WHERE username='vet');
+
+-- Roles
+INSERT INTO authorities (username, authority) 
+  SELECT 'admin', 'ROLE_ADMIN' 
+  WHERE NOT EXISTS (SELECT * FROM authorities WHERE username='admin' AND authority='ROLE_ADMIN');
+INSERT INTO authorities (username, authority) 
+  SELECT 'owner', 'ROLE_OWNER' 
+  WHERE NOT EXISTS (SELECT * FROM authorities WHERE username='owner' AND authority='ROLE_OWNER');
+INSERT INTO authorities (username, authority) 
+  SELECT 'vet', 'ROLE_VET' 
+  WHERE NOT EXISTS (SELECT * FROM authorities WHERE username='vet' AND authority='ROLE_VET');
+
 INSERT INTO specialties (name) SELECT 'radiology' WHERE NOT EXISTS (SELECT * FROM specialties WHERE name='radiology');
 INSERT INTO specialties (name) SELECT 'surgery' WHERE NOT EXISTS (SELECT * FROM specialties WHERE name='surgery'); 
 INSERT INTO specialties (name) SELECT 'dentistry' WHERE NOT EXISTS (SELECT * FROM specialties WHERE name='dentistry');
