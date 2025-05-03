@@ -81,17 +81,15 @@ class PetTypeFormatterTests {
 	 */
 	private List<PetType> makePetTypes() {
 		List<PetType> petTypes = new ArrayList<>();
-		petTypes.add(new PetType() {
-			{
-				setName("Dog");
-			}
-		});
-		petTypes.add(new PetType() {
-			{
-				setName("Bird");
-			}
-		});
+		petTypes.add(createPetType("Dog"));
+		petTypes.add(createPetType("Bird"));
 		return petTypes;
+	}
+
+	private PetType createPetType(String name) {
+		PetType petType = new PetType();
+		petType.setName(name);
+		return petType;
 	}
 
 }
