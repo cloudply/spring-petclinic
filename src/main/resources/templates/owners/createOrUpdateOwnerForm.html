@@ -1,4 +1,5 @@
 <html xmlns:th="https://www.thymeleaf.org"
+  xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
   th:replace="~{fragments/layout :: layout (~{::body},'owners')}">
 
 <body>
@@ -16,6 +17,25 @@
         th:replace="~{fragments/inputField :: input ('City', 'city', 'text')}" />
       <input
         th:replace="~{fragments/inputField :: input ('Telephone', 'telephone', 'text')}" />
+      
+      <!-- User registration fields - only show when not authenticated -->
+      <div sec:authorize="!isAuthenticated()" class="form-group">
+        <h4>Create Account (Optional)</h4>
+        <div class="col-sm-10">
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Username</label>
+            <div class="col-sm-10">
+              <input class="form-control" type="text" name="username" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Password</label>
+            <div class="col-sm-10">
+              <input class="form-control" type="password" name="password" />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="form-group">
       <div class="col-sm-offset-2 col-sm-10">

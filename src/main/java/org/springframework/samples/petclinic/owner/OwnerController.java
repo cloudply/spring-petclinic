@@ -21,6 +21,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -34,6 +38,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.validation.Valid;
+import org.springframework.samples.petclinic.user.User;
+import org.springframework.samples.petclinic.user.UserRepository;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
@@ -48,9 +54,13 @@ class OwnerController {
 	private static final String VIEWS_OWNER_CREATE_OR_UPDATE_FORM = "owners/createOrUpdateOwnerForm";
 
 	private final OwnerRepository owners;
+	private final UserRepository userRepository;
+	private final PasswordEncoder passwordEncoder;
 
-	public OwnerController(OwnerRepository clinicService) {
+	public OwnerController(OwnerRepository clinicService, UserRepository userRepository, PasswordEncoder passwordEncoder) {
 		this.owners = clinicService;
+		this.userRepository = userRepository;
+		this.passwordEncoder = passwordEncoder;
 	}
 
 	@InitBinder
@@ -71,7 +81,8 @@ class OwnerController {
 	}
 
 	@PostMapping("/owners/new")
-	public String processCreationForm(@Valid Owner owner, BindingResult result, RedirectAttributes redirectAttributes) {
+	public String processCreationForm(@Valid Owner owner, BindingResult result, RedirectAttributes redirectAttributes,
+			@RequestParam(required = false) String username, @RequestParam(required = false) String password) {
 		if (result.hasErrors()) {
 			redirectAttributes.addFlashAttribute("error", "There was an error in creating the owner.");
 			return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
@@ -79,6 +90,25 @@ class OwnerController {
 
 		this.owners.save(owner);
 		redirectAttributes.addFlashAttribute("message", "New Owner Created");
+		
+		// If username and password are provided, create a user account
+		if (username != null && !username.isEmpty() && password != null && !password.isEmpty()) {
+			User user = new User();
+			user.setUsername(username);
+			user.setPassword(passwordEncoder.encode(password));
+			user.setEnabled(true);
+			userRepository.save(user);
+			
+			// After registration, redirect to login
+			return "redirect:/login";
+		}
+		
+		// Check if user is authenticated
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth == null || auth instanceof AnonymousAuthenticationToken) {
+			return "redirect:/login";
+		}
+		
 		return "redirect:/owners/" + owner.getId();
 	}
 
