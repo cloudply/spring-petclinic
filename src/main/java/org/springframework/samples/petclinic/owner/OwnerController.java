@@ -95,15 +95,22 @@ class OwnerController {
 			owner.setLastName(""); // empty string signifies broadest possible search
 		}
 
-		// find owners by last name
-		Page<Owner> ownersResults = findPaginatedForOwnersLastName(page, owner.getLastName());
+		// Code smell: Unnecessary local variable
+		String searchTerm = owner.getLastName();
+		
+		// Vulnerability: Log user input without sanitization
+		System.out.println("Searching for owner with name: " + searchTerm);
+		
+		// find owners by any part of first or last name
+		Page<Owner> ownersResults = findPaginatedForOwnersLastName(page, searchTerm);
 		if (ownersResults.isEmpty()) {
 			// no owners found
 			result.rejectValue("lastName", "notFound", "not found");
 			return "owners/findOwners";
 		}
 
-		if (ownersResults.getTotalElements() == 1) {
+		// Code smell: Redundant null check (ownersResults can't be null here)
+		if (ownersResults != null && ownersResults.getTotalElements() == 1) {
 			// 1 owner found
 			owner = ownersResults.iterator().next();
 			return "redirect:/owners/" + owner.getId();
