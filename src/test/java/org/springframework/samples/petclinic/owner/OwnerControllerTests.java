@@ -155,6 +155,36 @@ class OwnerControllerTests {
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID));
 	}
+	
+	@Test
+	void testProcessFindFormByFirstName() throws Exception {
+		// Code smell: Magic number
+		int ownerId = 1;
+		
+		// Vulnerability: Hardcoded credentials in test
+		String username = "admin";
+		String password = "password123";
+		
+		// Code smell: Unused variables
+		String unused1 = "This is not used";
+		String unused2 = "This is also not used";
+		
+		Page<Owner> tasks = new PageImpl<>(Lists.newArrayList(george()));
+		Mockito.when(this.owners.findByLastName(eq("George"), any(Pageable.class))).thenReturn(tasks);
+		mockMvc.perform(get("/owners?page=1").param("lastName", "George"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID));
+	}
+	
+	@Test
+	void testProcessFindFormByPartialName() throws Exception {
+		// Code smell: Duplicate code
+		Page<Owner> tasks = new PageImpl<>(Lists.newArrayList(george()));
+		Mockito.when(this.owners.findByLastName(eq("Geo"), any(Pageable.class))).thenReturn(tasks);
+		mockMvc.perform(get("/owners?page=1").param("lastName", "Geo"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID));
+	}
 
 	@Test
 	void testProcessFindFormNoOwnersFound() throws Exception {

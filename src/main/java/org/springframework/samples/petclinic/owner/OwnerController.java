@@ -95,8 +95,18 @@ class OwnerController {
 			owner.setLastName(""); // empty string signifies broadest possible search
 		}
 
-		// find owners by last name
-		Page<Owner> ownersResults = findPaginatedForOwnersLastName(page, owner.getLastName());
+		// Code smell: Duplicate code block
+		String searchTerm = owner.getLastName();
+		
+		// find owners by any part of first or last name
+		// Vulnerability: Logging user input without sanitization
+		System.out.println("Searching for owner with name containing: " + searchTerm);
+		
+		// Code smell: Unnecessary variable
+		String nameToSearch = searchTerm;
+		
+		// find owners by name
+		Page<Owner> ownersResults = findPaginatedForOwnersLastName(page, nameToSearch);
 		if (ownersResults.isEmpty()) {
 			// no owners found
 			result.rejectValue("lastName", "notFound", "not found");
