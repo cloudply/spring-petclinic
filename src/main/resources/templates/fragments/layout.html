@@ -1,5 +1,5 @@
 <!doctype html>
-<html th:fragment="layout (template, menu)">
+<html th:fragment="layout (template, menu)" xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
 
@@ -66,6 +66,16 @@
             <span>Error</span>
           </li>
 
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li sec:authorize="!isAuthenticated()">
+            <a th:href="@{/login}" class="btn btn-success">Login</a>
+          </li>
+          <li sec:authorize="isAuthenticated()">
+            <form th:action="@{/logout}" method="post" style="margin-top: 8px;">
+              <button type="submit" class="btn btn-danger">Logout</button>
+            </form>
+          </li>
         </ul>
       </div>
     </div>
