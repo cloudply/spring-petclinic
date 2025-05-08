@@ -5,6 +5,21 @@ CREATE TABLE IF NOT EXISTS vets (
   INDEX(last_name)
 ) engine=InnoDB;
 
+CREATE TABLE IF NOT EXISTS users (
+  id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(30) UNIQUE,
+  password VARCHAR(100),
+  enabled BOOLEAN NOT NULL
+) engine=InnoDB;
+
+CREATE TABLE IF NOT EXISTS authorities (
+  id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(30),
+  authority VARCHAR(30),
+  FOREIGN KEY (username) REFERENCES users(username),
+  UNIQUE (username, authority)
+) engine=InnoDB;
+
 CREATE TABLE IF NOT EXISTS specialties (
   id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(80),
