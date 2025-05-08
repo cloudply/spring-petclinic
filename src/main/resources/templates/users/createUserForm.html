@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" th:replace="~{fragments/layout :: layout (~{::body},'register')}">
+
+<body>
+  <h2>Registration</h2>
+  <form th:object="${user}" class="form-horizontal" method="post">
+    <div class="form-group has-feedback">
+      <input th:replace="~{fragments/inputField :: input ('Username', 'username', 'text')}" />
+      <input th:replace="~{fragments/inputField :: input ('Password', 'password', 'password')}" />
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <button class="btn btn-primary" type="submit">Register</button>
+      </div>
+    </div>
+  </form>
+</body>
+</html>
