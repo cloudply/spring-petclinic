@@ -83,6 +83,7 @@ public class Owner extends Person {
 	public String getTelephone() {
 		return this.telephone;
 	}
+	// 2nd ai changes 
 
 	public void setTelephone(String telephone) {
 		this.telephone = telephone;
