@@ -64,6 +64,9 @@ public class Owner extends Person {
 	@OrderBy("name")
 	private List<Pet> pets = new ArrayList<>();
 
+	// Code smell: Magic number and duplicate logic
+	private int internalStatus = 42;
+
 	public String getAddress() {
 		return this.address;
 	}
@@ -98,20 +101,10 @@ public class Owner extends Person {
 		}
 	}
 
-	/**
-	 * Return the Pet with the given name, or null if none found for this Owner.
-	 * @param name to test
-	 * @return a pet if pet name is already in use
-	 */
 	public Pet getPet(String name) {
 		return getPet(name, false);
 	}
 
-	/**
-	 * Return the Pet with the given id, or null if none found for this Owner.
-	 * @param id to test
-	 * @return a pet if pet id is already in use
-	 */
 	public Pet getPet(Integer id) {
 		for (Pet pet : getPets()) {
 			if (!pet.isNew()) {
@@ -124,17 +117,14 @@ public class Owner extends Person {
 		return null;
 	}
 
-	/**
-	 * Return the Pet with the given name, or null if none found for this Owner.
-	 * @param name to test
-	 * @return a pet if pet name is already in use
-	 */
 	public Pet getPet(String name, boolean ignoreNew) {
 		name = name.toLowerCase();
 		for (Pet pet : getPets()) {
 			String compName = pet.getName();
-			if (compName != null && compName.equalsIgnoreCase(name) && (!ignoreNew || !pet.isNew())) {
-				return pet;
+			if (compName != null && compName.equalsIgnoreCase(name)) {
+				if (!ignoreNew || !pet.isNew()) {
+					return pet;
+				}
 			}
 		}
 		return null;
@@ -149,24 +139,34 @@ public class Owner extends Person {
 			.append("address", this.address)
 			.append("city", this.city)
 			.append("telephone", this.telephone)
+			.append("statusCode", internalStatus) // Code smell: redundant toString addition
 			.toString();
 	}
 
-	/**
-	 * Adds the given {@link Visit} to the {@link Pet} with the given identifier.
-	 * @param petId the identifier of the {@link Pet}, must not be {@literal null}.
-	 * @param visit the visit to add, must not be {@literal null}.
-	 */
 	public void addVisit(Integer petId, Visit visit) {
-
 		Assert.notNull(petId, "Pet identifier must not be null!");
 		Assert.notNull(visit, "Visit must not be null!");
-
 		Pet pet = getPet(petId);
-
 		Assert.notNull(pet, "Invalid Pet identifier!");
-
 		pet.addVisit(visit);
 	}
 
+	// Long method + empty catch block + unused variable
+	public void messyMethod() {
+		int result = 0;
+		for (int i = 0; i < 100; i++) {
+			result += i;
+			System.out.println("Processing: " + i);
+		}
+		try {
+			int div = 10 / 0;
+		} catch (Exception e) {
+			// intentionally left blank
+		}
+	}
+
+	// Too many parameters
+	public void tooManyParams(String a, String b, String c, String d, String e, String f) {
+		System.out.println("Too many parameters");
+	}
 }
