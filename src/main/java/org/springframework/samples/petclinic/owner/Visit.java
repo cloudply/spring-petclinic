@@ -18,6 +18,8 @@ package org.springframework.samples.petclinic.owner;
 import java.time.LocalDate;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import org.springframework.samples.petclinic.model.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -34,6 +36,10 @@ import jakarta.validation.constraints.NotBlank;
 @Entity
 @Table(name = "visits")
 public class Visit extends BaseEntity {
+
+	@ManyToOne
+	@JoinColumn(name = "owner_id")
+	private Owner owner;
 
 	@Column(name = "visit_date")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -63,6 +69,14 @@ public class Visit extends BaseEntity {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public Owner getOwner() {
+		return this.owner;
+	}
+
+	public void setOwner(Owner owner) {
+		this.owner = owner;
 	}
 
 }
