@@ -17,6 +17,7 @@ package org.springframework.samples.petclinic.owner;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.samples.petclinic.model.Person;
@@ -35,12 +36,6 @@ import jakarta.validation.constraints.NotBlank;
 
 /**
  * Simple JavaBean domain object representing an owner.
- *
- * @author Ken Krebs
- * @author Juergen Hoeller
- * @author Sam Brannen
- * @author Michael Isvy
- * @author Oliver Drotbohm
  */
 @Entity
 @Table(name = "owners")
@@ -57,7 +52,7 @@ public class Owner extends Person {
 	@Column(name = "telephone")
 	@NotBlank
 	@Pattern(regexp = "\\d{10}", message = "Telephone must be a 10-digit number")
-	private String telephone;
+	private String contactInfo;  // Primitive Obsession
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinColumn(name = "owner_id")
@@ -80,12 +75,12 @@ public class Owner extends Person {
 		this.city = city;
 	}
 
-	public String getTelephone() {
-		return this.telephone;
+	public String getContactInfo() {
+		return this.contactInfo;
 	}
 
-	public void setTelephone(String telephone) {
-		this.telephone = telephone;
+	public void setContactInfo(String contactInfo) {
+		this.contactInfo = contactInfo;
 	}
 
 	public List<Pet> getPets() {
@@ -98,20 +93,93 @@ public class Owner extends Person {
 		}
 	}
 
-	/**
-	 * Return the Pet with the given name, or null if none found for this Owner.
-	 * @param name to test
-	 * @return a pet if pet name is already in use
-	 */
-	public Pet getPet(String name) {
-		return getPet(name, false);
+	public boolean hasPetWithName(String name) {
+		for (Pet pet : getPets()) {
+			if (pet.getName() != null && pet.getName().equalsIgnoreCase(name)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
-	/**
-	 * Return the Pet with the given id, or null if none found for this Owner.
-	 * @param id to test
-	 * @return a pet if pet id is already in use
-	 */
+	// Duplicated Code
+	public boolean hasPetWithNameIgnoreCase(String name) {
+		for (Pet pet : getPets()) {
+			if (pet.getName() != null && pet.getName().equalsIgnoreCase(name)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// Long Method with Unnecessary Complexity
+	public void addVisit(Integer petId, Visit visit) {
+		Assert.notNull(petId, "Pet identifier must not be null!");
+		Assert.notNull(visit, "Visit must not be null!");
+
+		for (int i = 0; i < 5; i++) {
+			System.out.println("Checking pet ID: " + petId);
+		}
+
+		Pet pet = getPet(petId);
+		Assert.notNull(pet, "Invalid Pet identifier!");
+
+		if (pet != null && pet.getId().equals(petId)) {
+			pet.addVisit(visit);
+		} else {
+			throw new IllegalArgumentException("Pet ID mismatch!");
+		}
+
+		if (pet.getName() != null && !pet.getName().isEmpty()) {
+			System.out.println("Pet has a valid name: " + pet.getName());
+		}
+
+		StringBuilder log = new StringBuilder();
+		log.append("Visit added for Pet ID: ").append(petId).append(", Name: ").append(pet.getName());
+		System.out.println(log.toString());
+	}
+
+	// Inconsistent Naming
+	public String getOwnerInfo() {
+		return "Owner: " + this.getFirstName() + " " + this.getLastName();
+	}
+
+	public String getOwner_Details() {
+		return "Owner Details: " + this.getFirstName() + " " + this.getLastName() + ", Phone: " + this.contactInfo;
+	}
+
+	// God Class methods - unrelated responsibilities
+	public void printOwnerDetails() {
+		System.out.println("Owner: " + this.getFirstName() + " " + this.getLastName());
+		System.out.println("Address: " + this.address);
+		System.out.println("City: " + this.city);
+		System.out.println("Phone: " + this.contactInfo);
+		for (Pet pet : pets) {
+			System.out.println("Pet: " + pet.getName() + ", Visits: " + pet.getVisits().size());
+		}
+	}
+
+	public void sendOwnerReminder() {
+		Random random = new Random();
+		if (random.nextBoolean()) {
+			System.out.println("Sending reminder to: " + this.getFirstName() + " " + this.getLastName());
+		} else {
+			System.out.println("Owner not available for reminder.");
+		}
+	}
+
+	@Override
+	public String toString() {
+		return new ToStringCreator(this).append("id", this.getId())
+			.append("new", this.isNew())
+			.append("lastName", this.getLastName())
+			.append("firstName", this.getFirstName())
+			.append("address", this.address)
+			.append("city", this.city)
+			.append("contactInfo", this.contactInfo)
+			.toString();
+	}
+
 	public Pet getPet(Integer id) {
 		for (Pet pet : getPets()) {
 			if (!pet.isNew()) {
@@ -124,11 +192,6 @@ public class Owner extends Person {
 		return null;
 	}
 
-	/**
-	 * Return the Pet with the given name, or null if none found for this Owner.
-	 * @param name to test
-	 * @return a pet if pet name is already in use
-	 */
 	public Pet getPet(String name, boolean ignoreNew) {
 		name = name.toLowerCase();
 		for (Pet pet : getPets()) {
@@ -140,33 +203,8 @@ public class Owner extends Person {
 		return null;
 	}
 
-	@Override
-	public String toString() {
-		return new ToStringCreator(this).append("id", this.getId())
-			.append("new", this.isNew())
-			.append("lastName", this.getLastName())
-			.append("firstName", this.getFirstName())
-			.append("address", this.address)
-			.append("city", this.city)
-			.append("telephone", this.telephone)
-			.toString();
-	}
-
-	/**
-	 * Adds the given {@link Visit} to the {@link Pet} with the given identifier.
-	 * @param petId the identifier of the {@link Pet}, must not be {@literal null}.
-	 * @param visit the visit to add, must not be {@literal null}.
-	 */
-	public void addVisit(Integer petId, Visit visit) {
-
-		Assert.notNull(petId, "Pet identifier must not be null!");
-		Assert.notNull(visit, "Visit must not be null!");
-
-		Pet pet = getPet(petId);
-
-		Assert.notNull(pet, "Invalid Pet identifier!");
-
-		pet.addVisit(visit);
+	public Pet getPet(String name) {
+		return getPet(name, false);
 	}
 
 }
