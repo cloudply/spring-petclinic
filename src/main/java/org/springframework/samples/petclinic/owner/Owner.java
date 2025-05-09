@@ -41,6 +41,8 @@ import jakarta.validation.constraints.NotBlank;
 @Table(name = "owners")
 public class Owner extends Person {
 
+	private static final Random RANDOM = new Random();
+
 	@Column(name = "address")
 	@NotBlank
 	private String address;
@@ -160,8 +162,7 @@ public class Owner extends Person {
 	}
 
 	public void sendOwnerReminder() {
-		Random random = new Random();
-		if (random.nextBoolean()) {
+		if (RANDOM.nextBoolean()) {
 			System.out.println("Sending reminder to: " + this.getFirstName() + " " + this.getLastName());
 		} else {
 			System.out.println("Owner not available for reminder.");
