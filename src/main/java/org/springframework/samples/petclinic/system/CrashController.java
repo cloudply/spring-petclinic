@@ -31,7 +31,7 @@ class CrashController {
 	@GetMapping("/oups")
 	public String triggerException() {
 		throw new RuntimeException(
-			// adding deeloper comments
+			// adding deeloper comments ai is updated
 				"Expected: controller used to showcase what " + "happens when an exception is thrown");
 	}
 

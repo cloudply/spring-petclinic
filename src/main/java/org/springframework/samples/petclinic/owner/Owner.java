@@ -84,6 +84,7 @@ public class Owner extends Person {
 		return this.telephone;
 	}
 
+	// added new change hre by AI
 	public void setTelephone(String telephone) {
 		this.telephone = telephone;
 	}
