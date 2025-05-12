@@ -18,6 +18,7 @@ package org.springframework.samples.petclinic.owner;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Logger;
 
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.samples.petclinic.model.Person;
@@ -42,6 +43,7 @@ import jakarta.validation.constraints.NotBlank;
 public class Owner extends Person {
 
 	private static final Random RANDOM = new Random();
+	private static final Logger logger = Logger.getLogger(Owner.class.getName());
 
 	@Column(name = "address")
 	@NotBlank
@@ -54,7 +56,7 @@ public class Owner extends Person {
 	@Column(name = "telephone")
 	@NotBlank
 	@Pattern(regexp = "\\d{10}", message = "Telephone must be a 10-digit number")
-	private String contactInfo;  // Primitive Obsession
+	private String contactInfo;
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinColumn(name = "owner_id")
@@ -120,7 +122,7 @@ public class Owner extends Person {
 		Assert.notNull(visit, "Visit must not be null!");
 
 		for (int i = 0; i < 5; i++) {
-			System.out.println("Checking pet ID: " + petId);
+			logger.info("Checking pet ID: " + petId);
 		}
 
 		Pet pet = getPet(petId);
@@ -133,12 +135,12 @@ public class Owner extends Person {
 		}
 
 		if (pet.getName() != null && !pet.getName().isEmpty()) {
-			System.out.println("Pet has a valid name: " + pet.getName());
+			logger.info("Pet has a valid name: " + pet.getName());
 		}
 
-		StringBuilder log = new StringBuilder();
-		log.append("Visit added for Pet ID: ").append(petId).append(", Name: ").append(pet.getName());
-		System.out.println(log.toString());
+		StringBuilder logMessage = new StringBuilder();
+		logMessage.append("Visit added for Pet ID: ").append(petId).append(", Name: ").append(pet.getName());
+		logger.info(logMessage.toString());
 	}
 
 	// Inconsistent Naming
@@ -152,33 +154,29 @@ public class Owner extends Person {
 
 	// God Class methods - unrelated responsibilities
 	public void printOwnerDetails() {
-		System.out.println("Owner: " + this.getFirstName() + " " + this.getLastName());
-		System.out.println("Address: " + this.address);
-		System.out.println("City: " + this.city);
-		System.out.println("Phone: " + this.contactInfo);
+		logger.info("Owner: " + this.getFirstName() + " " + this.getLastName());
+		logger.info("Address: " + this.address);
+		logger.info("City: " + this.city);
+		logger.info("Phone: " + this.contactInfo);
 		for (Pet pet : pets) {
-			System.out.println("Pet: " + pet.getName() + ", Visits: " + pet.getVisits().size());
+			logger.info("Pet: " + pet.getName() + ", Visits: " + pet.getVisits().size());
 		}
 	}
 
 	public void sendOwnerReminder() {
 		if (RANDOM.nextBoolean()) {
-			System.out.println("Sending reminder to: " + this.getFirstName() + " " + this.getLastName());
+			logger.info("Sending reminder to: " + this.getFirstName() + " " + this.getLastName());
 		} else {
-			System.out.println("Owner not available for reminder.");
+			logger.info("Owner not available for reminder.");
 		}
 	}
 
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("id", this.getId())
-			.append("new", this.isNew())
-			.append("lastName", this.getLastName())
-			.append("firstName", this.getFirstName())
-			.append("address", this.address)
-			.append("city", this.city)
-			.append("contactInfo", this.contactInfo)
-			.toString();
+		return new ToStringCreator(this).append("id", this.getId()).append("new", this.isNew())
+				.append("lastName", this.getLastName()).append("firstName", this.getFirstName())
+				.append("address", this.address).append("city", this.city).append("contactInfo", this.contactInfo)
+				.toString();
 	}
 
 	public Pet getPet(Integer id) {
