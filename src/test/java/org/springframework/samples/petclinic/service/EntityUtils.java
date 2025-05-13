@@ -33,6 +33,13 @@ import java.util.Collection;
 public abstract class EntityUtils {
 
 	/**
+	 * Private constructor to prevent instantiation of this utility class.
+	 */
+	private EntityUtils() {
+		// Utility class should not be instantiated
+	}
+
+	/**
 	 * Look up the entity of the given class with the given id in the given collection.
 	 * @param entities the collection to search
 	 * @param entityClass the entity class to look up
