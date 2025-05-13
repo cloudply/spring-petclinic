@@ -68,11 +68,9 @@ class PetTypeFormatterTests {
 	}
 
 	@Test
-	void shouldThrowParseException() throws ParseException {
+	void shouldThrowParseException() {
 		given(this.pets.findPetTypes()).willReturn(makePetTypes());
-		Assertions.assertThrows(ParseException.class, () -> {
-			petTypeFormatter.parse("Fish", Locale.ENGLISH);
-		});
+		Assertions.assertThrows(ParseException.class, () -> petTypeFormatter.parse("Fish", Locale.ENGLISH));
 	}
 
 	/**
@@ -81,16 +79,13 @@ class PetTypeFormatterTests {
 	 */
 	private List<PetType> makePetTypes() {
 		List<PetType> petTypes = new ArrayList<>();
-		petTypes.add(new PetType() {
-			{
-				setName("Dog");
-			}
-		});
-		petTypes.add(new PetType() {
-			{
-				setName("Bird");
-			}
-		});
+		PetType dog = new PetType();
+		dog.setName("Dog");
+		petTypes.add(dog);
+
+		PetType bird = new PetType();
+		bird.setName("Bird");
+		petTypes.add(bird);
 		return petTypes;
 	}
 
