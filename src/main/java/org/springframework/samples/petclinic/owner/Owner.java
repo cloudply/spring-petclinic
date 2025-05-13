@@ -17,6 +17,7 @@ package org.springframework.samples.petclinic.owner;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.samples.petclinic.model.Person;
@@ -45,6 +46,8 @@ import jakarta.validation.constraints.NotBlank;
 @Entity
 @Table(name = "owners")
 public class Owner extends Person {
+
+	private static final Logger logger = Logger.getLogger(Owner.class.getName());
 
 	@Column(name = "address")
 	@NotBlank
@@ -112,13 +115,10 @@ public class Owner extends Person {
 	 * @param id to test
 	 * @return a pet if pet id is already in use
 	 */
-	public Pet getPet(Integer id) {
+	public Pet getPetById(Integer id) {
 		for (Pet pet : getPets()) {
-			if (!pet.isNew()) {
-				Integer compId = pet.getId();
-				if (compId.equals(id)) {
-					return pet;
-				}
+			if (!pet.isNew() && pet.getId().equals(id)) {
+				return pet;
 			}
 		}
 		return null;
@@ -164,10 +164,11 @@ public class Owner extends Person {
 		Assert.notNull(petId, "Pet identifier must not be null!");
 		Assert.notNull(visit, "Visit must not be null!");
 
-		Pet pet = getPet(petId);
+		Pet pet = getPetById(petId);
 
 		Assert.notNull(pet, "Invalid Pet identifier!");
 
+		logger.info("Adding visit to pet: " + petId);
 		pet.addVisit(visit);
 	}
 
