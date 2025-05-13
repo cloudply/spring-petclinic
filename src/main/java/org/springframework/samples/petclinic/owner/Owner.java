@@ -115,7 +115,7 @@ public class Owner extends Person {
 	 * @param id to test
 	 * @return a pet if pet id is already in use
 	 */
-	public Pet getPet(Integer id) {
+	public Pet getPetById(Integer id) {
 		for (Pet pet : getPets()) {
 			if (!pet.isNew() && pet.getId().equals(id)) {
 				return pet;
@@ -164,7 +164,7 @@ public class Owner extends Person {
 		Assert.notNull(petId, "Pet identifier must not be null!");
 		Assert.notNull(visit, "Visit must not be null!");
 
-		Pet pet = getPet(petId);
+		Pet pet = getPetById(petId);
 
 		Assert.notNull(pet, "Invalid Pet identifier!");
 
