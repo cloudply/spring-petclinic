@@ -80,7 +80,7 @@ class PetTypeFormatterTests {
 	 * @return {@link Collection} of {@link PetType}
 	 */
 	private List<PetType> makePetTypes() {
-		List<PetType> petTypes = new ArrayList<>();
+		List<PetType> petTypes = new ArrayList<>(2);
 		PetType dog = new PetType();
 		dog.setName("Dog");
 		petTypes.add(dog);
