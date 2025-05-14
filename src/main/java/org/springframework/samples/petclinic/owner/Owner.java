@@ -116,12 +116,10 @@ public class Owner extends Person {
 	 * @return a pet if pet id is already in use
 	 */
 	public Pet getPet(Integer id) {
+		logger.fine("Looking for pet with id " + id);
 		for (Pet pet : getPets()) {
-			if (!pet.isNew()) {
-				Integer compId = pet.getId();
-				if (compId.equals(id)) {
-					return pet;
-				}
+			if (!pet.isNew() && pet.getId().equals(id)) {
+				return pet;
 			}
 		}
 		return null;
@@ -130,9 +128,11 @@ public class Owner extends Person {
 	/**
 	 * Return the Pet with the given name, or null if none found for this Owner.
 	 * @param name to test
+	 * @param ignoreNew whether to ignore new pets
 	 * @return a pet if pet name is already in use
 	 */
 	public Pet getPet(String name, boolean ignoreNew) {
+		logger.fine("Looking for pet named " + name);
 		name = name.toLowerCase();
 		for (Pet pet : getPets()) {
 			String compName = pet.getName();
