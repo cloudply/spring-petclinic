@@ -83,11 +83,11 @@ class ClinicServiceTests {
 
 	@Test
 	void shouldFindOwnersByLastName() {
-		Page<Owner> owners = this.owners.findByLastName("Davis", pageable);
-		assertThat(owners).hasSize(2);
+		Page<Owner> ownersResults = this.owners.findByLastName("Davis", pageable);
+		assertThat(ownersResults).hasSize(2);
 
-		owners = this.owners.findByLastName("Daviss", pageable);
-		assertThat(owners).isEmpty();
+		ownersResults = this.owners.findByLastName("Daviss", pageable);
+		assertThat(ownersResults).isEmpty();
 	}
 
 	@Test
@@ -170,7 +170,7 @@ class ClinicServiceTests {
 	@Transactional
 	void shouldUpdatePetName() {
 		Owner owner6 = this.owners.findById(6);
-		Pet pet7 = owner6.getPet(7);
+		Pet pet7 = owner6.findPetById(7);
 		String oldName = pet7.getName();
 
 		String newName = oldName + "X";
@@ -178,7 +178,7 @@ class ClinicServiceTests {
 		this.owners.save(owner6);
 
 		owner6 = this.owners.findById(6);
-		pet7 = owner6.getPet(7);
+		pet7 = owner6.findPetById(7);
 		assertThat(pet7.getName()).isEqualTo(newName);
 	}
 
@@ -197,7 +197,7 @@ class ClinicServiceTests {
 	@Transactional
 	void shouldAddNewVisitForPet() {
 		Owner owner6 = this.owners.findById(6);
-		Pet pet7 = owner6.getPet(7);
+		Pet pet7 = owner6.findPetById(7);
 		int found = pet7.getVisits().size();
 		Visit visit = new Visit();
 		visit.setDescription("test");
@@ -205,8 +205,7 @@ class ClinicServiceTests {
 		owner6.addVisit(pet7.getId(), visit);
 		this.owners.save(owner6);
 
-		owner6 = this.owners.findById(6);
-
+		// No need to reassign owner6 as we're asserting on pet7
 		assertThat(pet7.getVisits()) //
 			.hasSize(found + 1) //
 			.allMatch(value -> value.getId() != null);
@@ -215,7 +214,7 @@ class ClinicServiceTests {
 	@Test
 	void shouldFindVisitsByPetId() {
 		Owner owner6 = this.owners.findById(6);
-		Pet pet7 = owner6.getPet(7);
+		Pet pet7 = owner6.findPetById(7);
 		Collection<Visit> visits = pet7.getVisits();
 
 		assertThat(visits) //
