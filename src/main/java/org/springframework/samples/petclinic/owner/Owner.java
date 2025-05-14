@@ -54,7 +54,7 @@ public class Owner extends Person {
 	@Column(name = "telephone")
 	@NotBlank
 	@Pattern(regexp = "\\d{10}", message = "Telephone must be a 10-digit number")
-	private String contactInfo;  // Primitive Obsession
+	private String telephone;
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinColumn(name = "owner_id")
@@ -77,12 +77,12 @@ public class Owner extends Person {
 		this.city = city;
 	}
 
-	public String getContactInfo() {
-		return this.contactInfo;
+	public String getTelephone() {
+		return this.telephone;
 	}
 
-	public void setContactInfo(String contactInfo) {
-		this.contactInfo = contactInfo;
+	public void setTelephone(String telephone) {
+		this.telephone = telephone;
 	}
 
 	public List<Pet> getPets() {
@@ -146,8 +146,8 @@ public class Owner extends Person {
 		return "Owner: " + this.getFirstName() + " " + this.getLastName();
 	}
 
-	public String getOwner_Details() {
-		return "Owner Details: " + this.getFirstName() + " " + this.getLastName() + ", Phone: " + this.contactInfo;
+	public String getOwnerDetails() {
+		return "Owner Details: " + this.getFirstName() + " " + this.getLastName() + ", Phone: " + this.telephone;
 	}
 
 	// God Class methods - unrelated responsibilities
@@ -155,7 +155,7 @@ public class Owner extends Person {
 		System.out.println("Owner: " + this.getFirstName() + " " + this.getLastName());
 		System.out.println("Address: " + this.address);
 		System.out.println("City: " + this.city);
-		System.out.println("Phone: " + this.contactInfo);
+		System.out.println("Phone: " + this.telephone);
 		for (Pet pet : pets) {
 			System.out.println("Pet: " + pet.getName() + ", Visits: " + pet.getVisits().size());
 		}
@@ -171,13 +171,14 @@ public class Owner extends Person {
 
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("id", this.getId())
+		return new ToStringCreator(this)
+			.append("id", this.getId())
 			.append("new", this.isNew())
 			.append("lastName", this.getLastName())
 			.append("firstName", this.getFirstName())
 			.append("address", this.address)
 			.append("city", this.city)
-			.append("contactInfo", this.contactInfo)
+			.append("telephone", this.telephone)
 			.toString();
 	}
 
