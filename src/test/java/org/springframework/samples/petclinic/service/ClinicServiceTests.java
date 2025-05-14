@@ -205,8 +205,7 @@ class ClinicServiceTests {
 		owner6.addVisit(pet7.getId(), visit);
 		this.owners.save(owner6);
 
-		owner6 = this.owners.findById(6);
-
+		// No need to reassign owner6 as we're asserting on pet7
 		assertThat(pet7.getVisits()) //
 			.hasSize(found + 1) //
 			.allMatch(value -> value.getId() != null);
