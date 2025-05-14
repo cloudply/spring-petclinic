@@ -54,7 +54,7 @@ public class Owner extends Person {
 	@Column(name = "telephone")
 	@NotBlank
 	@Pattern(regexp = "\\d{10}", message = "Telephone must be a 10-digit number")
-	private String contactInfo;  // Primitive Obsession
+	private String contactInfo; // Primitive Obsession
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinColumn(name = "owner_id")
@@ -128,7 +128,8 @@ public class Owner extends Person {
 
 		if (pet != null && pet.getId().equals(petId)) {
 			pet.addVisit(visit);
-		} else {
+		}
+		else {
 			throw new IllegalArgumentException("Pet ID mismatch!");
 		}
 
@@ -138,7 +139,7 @@ public class Owner extends Person {
 
 		StringBuilder log = new StringBuilder();
 		log.append("Visit added for Pet ID: ").append(petId).append(", Name: ").append(pet.getName());
-		System.out.println(log.toString());
+		System.out.println(log);
 	}
 
 	// Inconsistent Naming
@@ -164,21 +165,18 @@ public class Owner extends Person {
 	public void sendOwnerReminder() {
 		if (RANDOM.nextBoolean()) {
 			System.out.println("Sending reminder to: " + this.getFirstName() + " " + this.getLastName());
-		} else {
+		}
+		else {
 			System.out.println("Owner not available for reminder.");
 		}
 	}
 
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("id", this.getId())
-			.append("new", this.isNew())
-			.append("lastName", this.getLastName())
-			.append("firstName", this.getFirstName())
-			.append("address", this.address)
-			.append("city", this.city)
-			.append("contactInfo", this.contactInfo)
-			.toString();
+		return new ToStringCreator(this).append("id", this.getId()).append("new", this.isNew())
+				.append("lastName", this.getLastName()).append("firstName", this.getFirstName())
+				.append("address", this.address).append("city", this.city).append("contactInfo", this.contactInfo)
+				.toString();
 	}
 
 	public Pet getPet(Integer id) {
