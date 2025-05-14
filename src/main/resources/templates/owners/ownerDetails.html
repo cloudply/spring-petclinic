@@ -51,7 +51,7 @@
     <table class="table table-striped">
   
       <tr th:each="pet : ${owner.pets}">
-        <td valign="top">
+        <td class="align-top">
           <dl class="dl-horizontal">
             <dt>Name</dt>
             <dd th:text="${pet.name}"></dd>
@@ -62,7 +62,7 @@
             <dd th:text="${pet.type}"></dd>
           </dl>
         </td>
-        <td valign="top">
+        <td class="align-top">
           <table class="table-condensed">
             <thead>
               <tr>
@@ -75,8 +75,8 @@
               <td th:text="${visit?.description}"></td>
             </tr>
             <tr>
-              <td><a th:href="@{__${owner.id}__/pets/__${pet.id}__/edit}">Edit Pet</a></td>
-              <td><a th:href="@{__${owner.id}__/pets/__${pet.id}__/visits/new}">Add Visit</a></td>
+              <th scope="col"><a th:href="@{__${owner.id}__/pets/__${pet.id}__/edit}">Edit Pet</a></th>
+              <th scope="col"><a th:href="@{__${owner.id}__/pets/__${pet.id}__/visits/new}">Add Visit</a></th>
             </tr>
           </table>
         </td>
