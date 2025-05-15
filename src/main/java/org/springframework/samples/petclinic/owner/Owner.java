@@ -54,7 +54,7 @@ public class Owner extends Person {
 	@Column(name = "telephone")
 	@NotBlank
 	@Pattern(regexp = "\\d{10}", message = "Telephone must be a 10-digit number")
-	private String contactInfo;  // Primitive Obsession
+	private String contactInfo; // Primitive Obsession
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinColumn(name = "owner_id")
@@ -83,6 +83,14 @@ public class Owner extends Person {
 
 	public void setContactInfo(String contactInfo) {
 		this.contactInfo = contactInfo;
+	}
+
+	/**
+	 * Compatibility method for backward compatibility with tests
+	 * @param telephone the telephone number
+	 */
+	public void setTelephone(String telephone) {
+		this.contactInfo = telephone;
 	}
 
 	public List<Pet> getPets() {
@@ -128,7 +136,8 @@ public class Owner extends Person {
 
 		if (pet != null && pet.getId().equals(petId)) {
 			pet.addVisit(visit);
-		} else {
+		}
+		else {
 			throw new IllegalArgumentException("Pet ID mismatch!");
 		}
 
@@ -164,7 +173,8 @@ public class Owner extends Person {
 	public void sendOwnerReminder() {
 		if (RANDOM.nextBoolean()) {
 			System.out.println("Sending reminder to: " + this.getFirstName() + " " + this.getLastName());
-		} else {
+		}
+		else {
 			System.out.println("Owner not available for reminder.");
 		}
 	}
