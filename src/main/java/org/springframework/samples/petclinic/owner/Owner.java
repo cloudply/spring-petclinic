@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.samples.petclinic.model.Person;
 import org.springframework.util.Assert;
@@ -41,6 +43,7 @@ import jakarta.validation.constraints.NotBlank;
 @Table(name = "owners")
 public class Owner extends Person {
 
+	private static final Logger log = LoggerFactory.getLogger(Owner.class);
 	private static final Random RANDOM = new Random();
 
 	@Column(name = "address")
@@ -120,7 +123,7 @@ public class Owner extends Person {
 		Assert.notNull(visit, "Visit must not be null!");
 
 		for (int i = 0; i < 5; i++) {
-			System.out.println("Checking pet ID: " + petId);
+			log.debug("Checking pet ID: {}", petId);
 		}
 
 		Pet pet = getPet(petId);
@@ -133,12 +136,10 @@ public class Owner extends Person {
 		}
 
 		if (pet.getName() != null && !pet.getName().isEmpty()) {
-			System.out.println("Pet has a valid name: " + pet.getName());
+			log.debug("Pet has a valid name: {}", pet.getName());
 		}
 
-		StringBuilder log = new StringBuilder();
-		log.append("Visit added for Pet ID: ").append(petId).append(", Name: ").append(pet.getName());
-		System.out.println(log.toString());
+		log.info("Visit added for Pet ID: {}, Name: {}", petId, pet.getName());
 	}
 
 	// Inconsistent Naming
@@ -152,20 +153,20 @@ public class Owner extends Person {
 
 	// God Class methods - unrelated responsibilities
 	public void printOwnerDetails() {
-		System.out.println("Owner: " + this.getFirstName() + " " + this.getLastName());
-		System.out.println("Address: " + this.address);
-		System.out.println("City: " + this.city);
-		System.out.println("Phone: " + this.contactInfo);
+		log.info("Owner: {} {}", this.getFirstName(), this.getLastName());
+		log.info("Address: {}", this.address);
+		log.info("City: {}", this.city);
+		log.info("Phone: {}", this.contactInfo);
 		for (Pet pet : pets) {
-			System.out.println("Pet: " + pet.getName() + ", Visits: " + pet.getVisits().size());
+			log.info("Pet: {}, Visits: {}", pet.getName(), pet.getVisits().size());
 		}
 	}
 
 	public void sendOwnerReminder() {
 		if (RANDOM.nextBoolean()) {
-			System.out.println("Sending reminder to: " + this.getFirstName() + " " + this.getLastName());
+			log.info("Sending reminder to: {} {}", this.getFirstName(), this.getLastName());
 		} else {
-			System.out.println("Owner not available for reminder.");
+			log.info("Owner not available for reminder.");
 		}
 	}
 
