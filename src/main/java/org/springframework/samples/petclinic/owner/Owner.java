@@ -54,7 +54,7 @@ public class Owner extends Person {
 	@Column(name = "telephone")
 	@NotBlank
 	@Pattern(regexp = "\\d{10}", message = "Telephone must be a 10-digit number")
-	private String contactInfo;  // Primitive Obsession
+	private String telephone;
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinColumn(name = "owner_id")
@@ -77,12 +77,12 @@ public class Owner extends Person {
 		this.city = city;
 	}
 
-	public String getContactInfo() {
-		return this.contactInfo;
+	public String getTelephone() {
+		return this.telephone;
 	}
 
-	public void setContactInfo(String contactInfo) {
-		this.contactInfo = contactInfo;
+	public void setTelephone(String telephone) {
+		this.telephone = telephone;
 	}
 
 	public List<Pet> getPets() {
@@ -95,6 +95,11 @@ public class Owner extends Person {
 		}
 	}
 
+	/**
+	 * Check if owner has a pet with the given name (case insensitive).
+	 * @param name the pet name to check
+	 * @return true if pet with name exists
+	 */
 	public boolean hasPetWithName(String name) {
 		for (Pet pet : getPets()) {
 			if (pet.getName() != null && pet.getName().equalsIgnoreCase(name)) {
@@ -104,67 +109,50 @@ public class Owner extends Person {
 		return false;
 	}
 
-	// Duplicated Code
-	public boolean hasPetWithNameIgnoreCase(String name) {
-		for (Pet pet : getPets()) {
-			if (pet.getName() != null && pet.getName().equalsIgnoreCase(name)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	// Long Method with Unnecessary Complexity
+	/**
+	 * Add visit to a pet with the specified ID.
+	 * @param petId the pet ID
+	 * @param visit the visit to add
+	 */
 	public void addVisit(Integer petId, Visit visit) {
 		Assert.notNull(petId, "Pet identifier must not be null!");
 		Assert.notNull(visit, "Visit must not be null!");
-
-		for (int i = 0; i < 5; i++) {
-			System.out.println("Checking pet ID: " + petId);
-		}
 
 		Pet pet = getPet(petId);
 		Assert.notNull(pet, "Invalid Pet identifier!");
 
 		if (pet != null && pet.getId().equals(petId)) {
 			pet.addVisit(visit);
-		} else {
+		}
+		else {
 			throw new IllegalArgumentException("Pet ID mismatch!");
 		}
-
-		if (pet.getName() != null && !pet.getName().isEmpty()) {
-			System.out.println("Pet has a valid name: " + pet.getName());
-		}
-
-		StringBuilder log = new StringBuilder();
-		log.append("Visit added for Pet ID: ").append(petId).append(", Name: ").append(pet.getName());
-		System.out.println(log.toString());
 	}
 
-	// Inconsistent Naming
+	/**
+	 * Get basic owner information.
+	 * @return owner information string
+	 */
 	public String getOwnerInfo() {
 		return "Owner: " + this.getFirstName() + " " + this.getLastName();
 	}
 
-	public String getOwner_Details() {
-		return "Owner Details: " + this.getFirstName() + " " + this.getLastName() + ", Phone: " + this.contactInfo;
+	/**
+	 * Get detailed owner information.
+	 * @return detailed owner information string
+	 */
+	public String getOwnerDetails() {
+		return "Owner Details: " + this.getFirstName() + " " + this.getLastName() + ", Phone: " + this.telephone;
 	}
 
-	// God Class methods - unrelated responsibilities
-	public void printOwnerDetails() {
-		System.out.println("Owner: " + this.getFirstName() + " " + this.getLastName());
-		System.out.println("Address: " + this.address);
-		System.out.println("City: " + this.city);
-		System.out.println("Phone: " + this.contactInfo);
-		for (Pet pet : pets) {
-			System.out.println("Pet: " + pet.getName() + ", Visits: " + pet.getVisits().size());
-		}
-	}
-
+	/**
+	 * Send a reminder to the owner.
+	 */
 	public void sendOwnerReminder() {
 		if (RANDOM.nextBoolean()) {
 			System.out.println("Sending reminder to: " + this.getFirstName() + " " + this.getLastName());
-		} else {
+		}
+		else {
 			System.out.println("Owner not available for reminder.");
 		}
 	}
@@ -177,7 +165,7 @@ public class Owner extends Person {
 			.append("firstName", this.getFirstName())
 			.append("address", this.address)
 			.append("city", this.city)
-			.append("contactInfo", this.contactInfo)
+			.append("telephone", this.telephone)
 			.toString();
 	}
 
