@@ -61,6 +61,8 @@ class OwnerControllerTests {
 
 	private static final int TEST_OWNER_ID = 1;
 
+	private static final String TELEPHONE_FIELD = "telephone";
+
 	@Autowired
 	private MockMvc mockMvc;
 
@@ -117,7 +119,7 @@ class OwnerControllerTests {
 				.param("lastName", "Bloggs")
 				.param("address", "123 Caramel Street")
 				.param("city", "London")
-				.param("telephone", "1316761638"))
+				.param(TELEPHONE_FIELD, "1316761638"))
 			.andExpect(status().is3xxRedirection());
 	}
 
@@ -128,7 +130,7 @@ class OwnerControllerTests {
 			.andExpect(status().isOk())
 			.andExpect(model().attributeHasErrors("owner"))
 			.andExpect(model().attributeHasFieldErrors("owner", "address"))
-			.andExpect(model().attributeHasFieldErrors("owner", "telephone"))
+			.andExpect(model().attributeHasFieldErrors("owner", TELEPHONE_FIELD))
 			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
 	}
 
@@ -177,7 +179,7 @@ class OwnerControllerTests {
 			.andExpect(model().attribute("owner", hasProperty("firstName", is("George"))))
 			.andExpect(model().attribute("owner", hasProperty("address", is("110 W. Liberty St."))))
 			.andExpect(model().attribute("owner", hasProperty("city", is("Madison"))))
-			.andExpect(model().attribute("owner", hasProperty("telephone", is("6085551023"))))
+			.andExpect(model().attribute("owner", hasProperty(TELEPHONE_FIELD, is("6085551023"))))
 			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
 	}
 
@@ -188,7 +190,7 @@ class OwnerControllerTests {
 				.param("lastName", "Bloggs")
 				.param("address", "123 Caramel Street")
 				.param("city", "London")
-				.param("telephone", "1616291589"))
+				.param(TELEPHONE_FIELD, "1616291589"))
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/owners/{ownerId}"));
 	}
@@ -206,11 +208,11 @@ class OwnerControllerTests {
 			.perform(post("/owners/{ownerId}/edit", TEST_OWNER_ID).param("firstName", "Joe")
 				.param("lastName", "Bloggs")
 				.param("address", "")
-				.param("telephone", ""))
+				.param(TELEPHONE_FIELD, ""))
 			.andExpect(status().isOk())
 			.andExpect(model().attributeHasErrors("owner"))
 			.andExpect(model().attributeHasFieldErrors("owner", "address"))
-			.andExpect(model().attributeHasFieldErrors("owner", "telephone"))
+			.andExpect(model().attributeHasFieldErrors("owner", TELEPHONE_FIELD))
 			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
 	}
 
