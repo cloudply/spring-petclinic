@@ -71,7 +71,7 @@ public class FileServer {
   @Value("${server.port}")
   private int port;
 
-  @RequestMapping(
+  @GetMapping(
       path = "/file-server-location",
       consumes = ALL_VALUE,
       produces = MediaType.TEXT_PLAIN_VALUE)
