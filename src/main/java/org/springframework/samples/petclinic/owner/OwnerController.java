@@ -95,8 +95,11 @@ class OwnerController {
 			owner.setLastName(""); // empty string signifies broadest possible search
 		}
 
-		// find owners by last name
-		Page<Owner> ownersResults = findPaginatedForOwnersLastName(page, owner.getLastName());
+		// Vulnerable implementation - directly using user input without validation
+		String searchTerm = "%" + owner.getLastName() + "%";
+		
+		// find owners by name (first or last)
+		Page<Owner> ownersResults = findPaginatedForOwnersLastName(page, searchTerm);
 		if (ownersResults.isEmpty()) {
 			// no owners found
 			result.rejectValue("lastName", "notFound", "not found");
@@ -125,6 +128,7 @@ class OwnerController {
 	private Page<Owner> findPaginatedForOwnersLastName(int page, String lastname) {
 		int pageSize = 5;
 		Pageable pageable = PageRequest.of(page - 1, pageSize);
+		// Directly passing user input to the database query without sanitization
 		return owners.findByLastName(lastname, pageable);
 	}
 
