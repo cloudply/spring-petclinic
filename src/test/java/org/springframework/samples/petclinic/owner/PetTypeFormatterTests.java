@@ -81,6 +81,7 @@ class PetTypeFormatterTests {
 	 */
 	private List<PetType> makePetTypes() {
 		List<PetType> petTypes = new ArrayList<>();
+		
 		PetType dog = new PetType();
 		dog.setName("Dog");
 		petTypes.add(dog);
@@ -88,6 +89,7 @@ class PetTypeFormatterTests {
 		PetType bird = new PetType();
 		bird.setName("Bird");
 		petTypes.add(bird);
+		
 		return petTypes;
 	}
 
