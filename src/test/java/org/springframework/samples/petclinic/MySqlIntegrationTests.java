@@ -36,6 +36,7 @@ import org.springframework.web.client.RestTemplate;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import java.sql.SQLException;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("mysql")
@@ -58,7 +59,7 @@ class MySqlIntegrationTests {
 	private RestTemplateBuilder builder;
 
 	@Test
-	void testFindAll() throws Exception {
+	void testFindAll() throws SQLException {
 		vets.findAll();
 		vets.findAll(); // served from cache
 	}
