@@ -15,7 +15,7 @@ pipeline {
         stage('Build') {
             steps {
                 // sh 'mvn spotless:apply install -Dspotless.check.skip=true'
-                sh 'mvn install -DskipITs -DskipTests=true'
+                sh 'mvn install'
             }
         }
     }
