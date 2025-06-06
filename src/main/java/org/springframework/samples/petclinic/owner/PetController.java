@@ -70,7 +70,7 @@ class PetController {
 			@PathVariable(name = "petId", required = false) Integer petId) {
 
 		if (petId == null) {
-			return new PetType();
+			return new Pet();
 		}
 
 		Owner owner = this.owners.findById(ownerId);
