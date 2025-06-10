@@ -83,11 +83,11 @@ class ClinicServiceTests {
 
 	@Test
 	void shouldFindOwnersByLastName() {
-		Page<Owner> owners = this.owners.findByLastName("Davis", pageable);
-		assertThat(owners).hasSize(2);
+		Page<Owner> ownersResults = this.owners.findByLastName("Davis", pageable);
+		assertThat(ownersResults).hasSize(2);
 
-		owners = this.owners.findByLastName("Daviss", pageable);
-		assertThat(owners).isEmpty();
+		ownersResults = this.owners.findByLastName("Daviss", pageable);
+		assertThat(ownersResults).isEmpty();
 	}
 
 	@Test
@@ -214,8 +214,7 @@ class ClinicServiceTests {
 
 	@Test
 	void shouldFindVisitsByPetId() {
-		Owner owner6 = this.owners.findById(6);
-		Pet pet7 = owner6.getPet(7);
+		Pet pet7 = this.owners.findById(6).getPet(7);
 		Collection<Visit> visits = pet7.getVisits();
 
 		assertThat(visits) //
