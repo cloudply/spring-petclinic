@@ -51,7 +51,7 @@
     <table class="table table-striped">
   
       <tr th:each="pet : ${owner.pets}">
-        <td valign="top">
+        <td style="vertical-align: top;">
           <dl class="dl-horizontal">
             <dt>Name</dt>
             <dd th:text="${pet.name}"></dd>
@@ -62,7 +62,7 @@
             <dd th:text="${pet.type}"></dd>
           </dl>
         </td>
-        <td valign="top">
+        <td style="vertical-align: top;">
           <table class="table-condensed">
             <thead>
               <tr>
@@ -73,6 +73,10 @@
             <tr th:each="visit : ${pet.visits}">
               <td th:text="${#temporals.format(visit.date, 'yyyy-MM-dd')}"></td>
               <td th:text="${visit?.description}"></td>
+            </tr>
+            <tr>
+              <th>Pet Actions</th>
+              <th>Visit Actions</th>
             </tr>
             <tr>
               <td><a th:href="@{__${owner.id}__/pets/__${pet.id}__/edit}">Edit Pet</a></td>
