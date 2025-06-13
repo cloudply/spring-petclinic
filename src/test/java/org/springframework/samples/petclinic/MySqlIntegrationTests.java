@@ -18,6 +18,7 @@ package org.springframework.samples.petclinic;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.sql.SQLException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledInNativeImage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +59,7 @@ class MySqlIntegrationTests {
 	private RestTemplateBuilder builder;
 
 	@Test
-	void testFindAll() throws Exception {
+	void testFindAll() throws SQLException {
 		vets.findAll();
 		vets.findAll(); // served from cache
 	}
