@@ -75,8 +75,8 @@
               <td th:text="${visit?.description}"></td>
             </tr>
             <tr>
-              <td><a th:href="@{__${owner.id}__/pets/__${pet.id}__/edit}">Edit Pet</a></td>
-              <td><a th:href="@{__${owner.id}__/pets/__${pet.id}__/visits/new}">Add Visit</a></td>
+              <th scope="row"><a th:href="@{__${owner.id}__/pets/__${pet.id}__/edit}">Edit Pet</a></th>
+              <th scope="row"><a th:href="@{__${owner.id}__/pets/__${pet.id}__/visits/new}">Add Visit</a></th>
             </tr>
           </table>
         </td>
