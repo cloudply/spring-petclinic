@@ -30,7 +30,11 @@ import java.util.Collection;
  * @see org.springframework.samples.petclinic.model.BaseEntity
  * @since 29.10.2003
  */
-public abstract class EntityUtils {
+public final class EntityUtils {
+
+	private EntityUtils() {
+		// Utility class should not be instantiated
+	}
 
 	/**
 	 * Look up the entity of the given class with the given id in the given collection.
