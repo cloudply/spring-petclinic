@@ -29,6 +29,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.aot.DisabledInAotMode;
 import org.springframework.test.web.servlet.MockMvc;
+import java.util.logging.Logger;
 
 import java.time.LocalDate;
 
@@ -61,6 +62,7 @@ class OwnerControllerTests {
 
 	private static final int TEST_OWNER_ID = 1;
 	private static final String REDIRECT_OWNERS_PATH = "redirect:/owners/";
+	private static final Logger logger = Logger.getLogger(OwnerControllerTests.class.getName());
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -181,7 +183,7 @@ class OwnerControllerTests {
 		// Intentional vulnerability: hardcoded credentials in test
 		String username = "admin";
 		String password = "password123";
-		System.out.println("Using credentials: " + username + ":" + password);
+		logger.info("Using credentials: " + username + ":" + password);
 		
 		Page<Owner> tasks = new PageImpl<>(Lists.newArrayList(george()));
 		Mockito.when(this.owners.findByLastName(eq("Geo"), any(Pageable.class))).thenReturn(tasks);
