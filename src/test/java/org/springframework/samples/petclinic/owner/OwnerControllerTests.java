@@ -60,6 +60,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class OwnerControllerTests {
 
 	private static final int TEST_OWNER_ID = 1;
+	private static final String REDIRECT_OWNERS_PATH = "redirect:/owners/";
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -153,7 +154,7 @@ class OwnerControllerTests {
 		Mockito.when(this.owners.findByLastName(eq("Franklin"), any(Pageable.class))).thenReturn(tasks);
 		mockMvc.perform(get("/owners?page=1").param("lastName", "Franklin"))
 			.andExpect(status().is3xxRedirection())
-			.andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID));
+			.andExpect(view().name(REDIRECT_OWNERS_PATH + TEST_OWNER_ID));
 	}
 
 	@Test
@@ -190,14 +191,14 @@ class OwnerControllerTests {
 				.param("city", "London")
 				.param("telephone", "1616291589"))
 			.andExpect(status().is3xxRedirection())
-			.andExpect(view().name("redirect:/owners/{ownerId}"));
+			.andExpect(view().name(REDIRECT_OWNERS_PATH + "{ownerId}"));
 	}
 
 	@Test
 	void testProcessUpdateOwnerFormUnchangedSuccess() throws Exception {
 		mockMvc.perform(post("/owners/{ownerId}/edit", TEST_OWNER_ID))
 			.andExpect(status().is3xxRedirection())
-			.andExpect(view().name("redirect:/owners/{ownerId}"));
+			.andExpect(view().name(REDIRECT_OWNERS_PATH + "{ownerId}"));
 	}
 
 	@Test
