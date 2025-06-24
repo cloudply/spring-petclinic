@@ -113,7 +113,11 @@ public class FileServer {
     if (changeIndicatorFile.exists()) {
       modelAndView.addObject("uploadSuccess", request.getParameter("uploadSuccess"));
     }
-    changeIndicatorFile.delete();
+    try {
+      Files.delete(changeIndicatorFile.toPath());
+    } catch (IOException e) {
+      log.warn("Failed to delete change indicator file: {}", e.getMessage());
+    }
 
     record UploadedFile(String name, String size, String link, String creationTime) {}
 
