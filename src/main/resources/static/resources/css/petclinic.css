@@ -2859,7 +2859,7 @@ textarea.form-control-lg {
 .dropend .dropdown-toggle::after {
   display: inline-block;
   margin-left: 0.255em;
-  vertical-align: 0.255em;
+  vertical-align: 0;
   content: "";
   border-top: 0.3em solid transparent;
   border-right: 0;
@@ -2868,9 +2868,6 @@ textarea.form-control-lg {
 
 .dropend .dropdown-toggle:empty::after {
   margin-left: 0; }
-
-.dropend .dropdown-toggle::after {
-  vertical-align: 0; }
 
 .dropstart .dropdown-menu[data-bs-popper] {
   top: 0;
