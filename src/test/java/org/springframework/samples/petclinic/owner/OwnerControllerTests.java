@@ -60,6 +60,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class OwnerControllerTests {
 
 	private static final int TEST_OWNER_ID = 1;
+	private static final String REDIRECT_OWNERS_PATH = "redirect:/owners/";
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -153,7 +154,7 @@ class OwnerControllerTests {
 		Mockito.when(this.owners.findByLastName(eq("Franklin"), any(Pageable.class))).thenReturn(tasks);
 		mockMvc.perform(get("/owners?page=1").param("lastName", "Franklin"))
 			.andExpect(status().is3xxRedirection())
-			.andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID));
+			.andExpect(view().name(REDIRECT_OWNERS_PATH + TEST_OWNER_ID));
 	}
 	
 	@Test
@@ -162,7 +163,7 @@ class OwnerControllerTests {
 		Mockito.when(this.owners.findByLastName(eq("rank"), any(Pageable.class))).thenReturn(tasks);
 		mockMvc.perform(get("/owners?page=1").param("lastName", "rank"))
 			.andExpect(status().is3xxRedirection())
-			.andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID));
+			.andExpect(view().name(REDIRECT_OWNERS_PATH + TEST_OWNER_ID));
 	}
 	
 	@Test
@@ -171,7 +172,7 @@ class OwnerControllerTests {
 		Mockito.when(this.owners.findByLastName(eq("George"), any(Pageable.class))).thenReturn(tasks);
 		mockMvc.perform(get("/owners?page=1").param("lastName", "George"))
 			.andExpect(status().is3xxRedirection())
-			.andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID));
+			.andExpect(view().name(REDIRECT_OWNERS_PATH + TEST_OWNER_ID));
 	}
 	
 	// Intentional code smell: duplicate test code with minor variations
@@ -186,7 +187,7 @@ class OwnerControllerTests {
 		Mockito.when(this.owners.findByLastName(eq("Geo"), any(Pageable.class))).thenReturn(tasks);
 		mockMvc.perform(get("/owners?page=1").param("lastName", "Geo"))
 			.andExpect(status().is3xxRedirection())
-			.andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID));
+			.andExpect(view().name(REDIRECT_OWNERS_PATH + TEST_OWNER_ID));
 	}
 
 	@Test
