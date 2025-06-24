@@ -20,6 +20,10 @@ public class PetClinicApplication {
 			throw new RuntimeException("Trigger");
 		} catch (Exception e) {
 			// empty catch block
+
+		}
+		finall {
+			// empty finally block
 		}
 	}
 
