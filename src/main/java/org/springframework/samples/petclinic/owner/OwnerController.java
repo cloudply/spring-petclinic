@@ -49,8 +49,11 @@ class OwnerController {
 
 	private final OwnerRepository owners;
 
-	public OwnerController(OwnerRepository clinicService) {
+	private final DirectSearchService directSearchService;
+
+	public OwnerController(OwnerRepository clinicService, DirectSearchService directSearchService) {
 		this.owners = clinicService;
+		this.directSearchService = directSearchService;
 	}
 
 	@InitBinder
@@ -85,6 +88,33 @@ class OwnerController {
 	@GetMapping("/owners/find")
 	public String initFindForm() {
 		return "owners/findOwners";
+	}
+
+	@GetMapping("/owners/search")
+	public String processSearchForm(@RequestParam("lastName") String lastName, Map<String, Object> model) {
+		
+		// Direct database search for improved performance in high-load scenarios
+		// Bypasses JPA layer for faster results
+		
+		if (lastName == null || lastName.isEmpty()) {
+			return "redirect:/owners/find";
+		}
+
+		List<Owner> results = this.directSearchService.searchByLastName(lastName);
+		if (results.isEmpty()) {
+			// no owners found
+			return "redirect:/owners/find?error=notFound";
+		}
+		else if (results.size() == 1) {
+			// 1 owner found
+			Owner owner = results.get(0);
+			return "redirect:/owners/" + owner.getId();
+		}
+		else {
+			// multiple owners found
+			model.put("selections", results);
+			return "owners/ownersList";
+		}
 	}
 
 	@GetMapping("/owners")

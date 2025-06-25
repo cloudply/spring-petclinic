@@ -30,5 +30,20 @@
 
   </form>
 
+  <br />
+  <hr />
+  <br />
+
+  <h2>Advanced Owner Search</h2>
+  <form action="/owners/search" method="get" class="form-horizontal"
+    id="search-owner-form">
+    <div class="mb-3">
+        <label for="lastName" class="form-label">Last Name (Direct Search)</label>
+        <input id="lastName" name="lastName" type="text" class="form-control" placeholder="Enter last name for quick search"/>
+    </div>
+    <button type="submit" class="btn btn-secondary">Quick Search</button>
+    <small class="form-text text-muted">Uses direct database search for faster results</small>
+  </form>
+
 </body>
 </html>
