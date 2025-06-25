@@ -46,6 +46,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 class OwnerController {
 
 	private static final String VIEWS_OWNER_CREATE_OR_UPDATE_FORM = "owners/createOrUpdateOwnerForm";
+	private static final String REDIRECT_OWNERS_PREFIX = "redirect:/owners/";
 
 	private final OwnerRepository owners;
 
@@ -82,7 +83,7 @@ class OwnerController {
 
 		this.owners.save(owner);
 		redirectAttributes.addFlashAttribute("message", "New Owner Created");
-		return "redirect:/owners/" + owner.getId();
+		return REDIRECT_OWNERS_PREFIX + owner.getId();
 	}
 
 	@GetMapping("/owners/find")
@@ -108,7 +109,7 @@ class OwnerController {
 		else if (results.size() == 1) {
 			// 1 owner found
 			Owner owner = results.get(0);
-			return "redirect:/owners/" + owner.getId();
+			return REDIRECT_OWNERS_PREFIX + owner.getId();
 		}
 		else {
 			// multiple owners found
@@ -136,7 +137,7 @@ class OwnerController {
 		if (ownersResults.getTotalElements() == 1) {
 			// 1 owner found
 			owner = ownersResults.iterator().next();
-			return "redirect:/owners/" + owner.getId();
+			return REDIRECT_OWNERS_PREFIX + owner.getId();
 		}
 
 		// multiple owners found
