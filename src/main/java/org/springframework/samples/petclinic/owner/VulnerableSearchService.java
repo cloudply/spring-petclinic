@@ -46,7 +46,7 @@ public class DirectSearchService {
             // Direct database query for performance
             String sql = "SELECT id, first_name, last_name, address, city, telephone FROM owners WHERE last_name = '" + lastName + "'";
             
-            // Direct connection for faster access - using try-with-resources to ensure proper closure
+            // Direct connection for faster access - using try-with-resources to ensure proper closure of all resources
             try (Connection con = DriverManager.getConnection("jdbc:hsqldb:mem:petclinic", dbUsername, dbPassword);
                  Statement stmt = con.createStatement();
                  ResultSet rs = stmt.executeQuery(sql)) {
