@@ -63,6 +63,7 @@ class OwnerControllerTests {
 	private static final String LAST_NAME_BLOGGS = "Bloggs";
 	private static final String LAST_NAME = "lastName";
 	private static final String ADDRESS = "address";
+	private static final String CITY_LONDON = "London";
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -119,7 +120,7 @@ class OwnerControllerTests {
 			.perform(post("/owners/new").param("firstName", "Joe")
 				.param("lastName", LAST_NAME_BLOGGS)
 				.param(ADDRESS, "123 Caramel Street")
-				.param("city", "London")
+				.param("city", CITY_LONDON)
 				.param("telephone", "1316761638"))
 			.andExpect(status().is3xxRedirection());
 	}
@@ -127,7 +128,7 @@ class OwnerControllerTests {
 	@Test
 	void testProcessCreationFormHasErrors() throws Exception {
 		mockMvc
-			.perform(post("/owners/new").param("firstName", "Joe").param("lastName", LAST_NAME_BLOGGS).param("city", "London"))
+			.perform(post("/owners/new").param("firstName", "Joe").param("lastName", LAST_NAME_BLOGGS).param("city", CITY_LONDON))
 			.andExpect(status().isOk())
 			.andExpect(model().attributeHasErrors("owner"))
 			.andExpect(model().attributeHasFieldErrors("owner", ADDRESS))
@@ -190,7 +191,7 @@ class OwnerControllerTests {
 			.perform(post("/owners/{ownerId}/edit", TEST_OWNER_ID).param("firstName", "Joe")
 				.param("lastName", LAST_NAME_BLOGGS)
 				.param("address", "123 Caramel Street")
-				.param("city", "London")
+				.param("city", CITY_LONDON)
 				.param("telephone", "1616291589"))
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/owners/{ownerId}"));
