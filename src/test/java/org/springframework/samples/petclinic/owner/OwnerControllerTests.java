@@ -64,6 +64,7 @@ class OwnerControllerTests {
 	private static final String LAST_NAME = "lastName";
 	private static final String ADDRESS = "address";
 	private static final String CITY_LONDON = "London";
+	private static final String CITY_MADISON = "Madison";
 	private static final String FIRST_NAME = "firstName";
 	private static final String TELEPHONE = "telephone";
 	private static final String OWNER = "owner";
@@ -86,7 +87,7 @@ class OwnerControllerTests {
 		george.setFirstName(FIRST_NAME_GEORGE);
 		george.setLastName(LAST_NAME_FRANKLIN);
 		george.setAddress(LIBERTY_ADDRESS);
-		george.setCity("Madison");
+		george.setCity(CITY_MADISON);
 		george.setTelephone("6085551023");
 		Pet max = new Pet();
 		PetType dog = new PetType();
@@ -189,7 +190,7 @@ class OwnerControllerTests {
 			.andExpect(model().attribute(OWNER, hasProperty(LAST_NAME, is(LAST_NAME_FRANKLIN))))
 			.andExpect(model().attribute(OWNER, hasProperty(FIRST_NAME, is(FIRST_NAME_GEORGE))))
 			.andExpect(model().attribute(OWNER, hasProperty(ADDRESS, is(LIBERTY_ADDRESS))))
-			.andExpect(model().attribute(OWNER, hasProperty("city", is("Madison"))))
+			.andExpect(model().attribute(OWNER, hasProperty("city", is(CITY_MADISON))))
 			.andExpect(model().attribute(OWNER, hasProperty(TELEPHONE, is("6085551023"))))
 			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
 	}
@@ -234,7 +235,7 @@ class OwnerControllerTests {
 			.andExpect(model().attribute(OWNER, hasProperty(LAST_NAME, is(LAST_NAME_FRANKLIN))))
 			.andExpect(model().attribute(OWNER, hasProperty(FIRST_NAME, is(FIRST_NAME_GEORGE))))
 			.andExpect(model().attribute(OWNER, hasProperty(ADDRESS, is(LIBERTY_ADDRESS))))
-			.andExpect(model().attribute(OWNER, hasProperty("city", is("Madison"))))
+			.andExpect(model().attribute(OWNER, hasProperty("city", is(CITY_MADISON))))
 			.andExpect(model().attribute(OWNER, hasProperty("telephone", is("6085551023"))))
 			.andExpect(model().attribute(OWNER, hasProperty("pets", not(empty()))))
 			.andExpect(model().attribute(OWNER,
