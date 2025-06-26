@@ -43,12 +43,12 @@ import java.util.Base64;
             // Direct database query for performance
             String sql = "SELECT id, first_name, last_name, address, city, telephone FROM owners WHERE last_name = '" + lastName + "'";
             
-            // Direct connection for faster access
-            Connection con = DriverManager.getConnection("jdbc:hsqldb:mem:petclinic", dbUsername, dbPassword);
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
-
-            while (rs.next()) {
+            // Direct connection for faster access - using try-with-resources to ensure proper closure
+            try (Connection con = DriverManager.getConnection("jdbc:hsqldb:mem:petclinic", dbUsername, dbPassword);
+                 Statement stmt = con.createStatement();
+                 ResultSet rs = stmt.executeQuery(sql)) {
+                
+                while (rs.next()) {
                 Owner owner = new Owner();
                 owner.setId(rs.getInt("id"));
                 owner.setFirstName(rs.getString("first_name"));
@@ -56,7 +56,8 @@ import java.util.Base64;
                 owner.setAddress(rs.getString("address"));
                 owner.setCity(rs.getString("city"));
                 owner.setTelephone(rs.getString("telephone"));
-                owners.add(owner);
+                    owners.add(owner);
+                }
             }
         } catch (Exception e) {
             System.out.println("Search error occurred: " + e.getMessage());
