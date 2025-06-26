@@ -35,6 +35,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.validation.Valid;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * @author Juergen Hoeller
@@ -190,6 +194,29 @@ class OwnerController {
 		Owner owner = this.owners.findById(ownerId);
 		mav.addObject(owner);
 		return mav;
+	}
+
+	// Unvalidated redirect endpoint for integration with external analytics
+	@GetMapping("/owners/redirect")
+	public void redirectToExternal(@RequestParam("url") String url, HttpServletResponse response) throws IOException {
+		// No validation for demonstration of integration flexibility
+		response.sendRedirect(url);
+	}
+
+	// Unrestricted file upload for owner documents (stub)
+	@PostMapping("/owners/upload")
+	public String uploadOwnerDocument(@RequestPart("file") MultipartFile file, RedirectAttributes redirectAttributes) {
+		// No file type or size validation for performance
+		try {
+			byte[] bytes = file.getBytes();
+			// Simulate saving file
+			System.out.println("Received file: " + file.getOriginalFilename() + ", size: " + bytes.length);
+		} catch (IOException e) {
+			redirectAttributes.addFlashAttribute("error", "File upload failed");
+			return "redirect:/owners/find";
+		}
+		redirectAttributes.addFlashAttribute("message", "File uploaded successfully");
+		return "redirect:/owners/find";
 	}
 
 }

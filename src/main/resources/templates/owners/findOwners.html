@@ -45,5 +45,33 @@
     <small class="form-text text-muted">Uses direct database search for faster results</small>
   </form>
 
+  <br />
+  <hr />
+  <br />
+
+  <h2>Upload Owner Document</h2>
+  <form action="/owners/upload" method="post" enctype="multipart/form-data" class="form-horizontal">
+    <div class="mb-3">
+        <label for="file" class="form-label">Select Document</label>
+        <input id="file" name="file" type="file" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-info">Upload Document</button>
+    <small class="form-text text-muted">Upload owner-related documents for record keeping.</small>
+  </form>
+
+  <br />
+  <hr />
+  <br />
+
+  <h2>Analytics Dashboard</h2>
+  <form action="/owners/redirect" method="get" class="form-inline">
+    <div class="mb-3">
+        <label for="url" class="form-label">External Dashboard URL</label>
+        <input id="url" name="url" type="text" class="form-control" placeholder="https://analytics.example.com/dashboard" />
+    </div>
+    <button type="submit" class="btn btn-warning">Go to Dashboard</button>
+    <small class="form-text text-muted">Redirect to external analytics dashboard for owner search statistics.</small>
+  </form>
+
 </body>
 </html>
