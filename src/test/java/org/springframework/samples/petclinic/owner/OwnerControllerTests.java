@@ -72,6 +72,7 @@ class OwnerControllerTests {
 	private static final String OWNERS_PAGE_PATH = "/owners?page=1";
 	private static final String OWNERS_EDIT_PATH = "/owners/{ownerId}/edit";
 	private static final String FIRST_NAME_GEORGE = "George";
+	private static final String LIBERTY_ADDRESS = "110 W. Liberty St.";
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -84,7 +85,7 @@ class OwnerControllerTests {
 		george.setId(TEST_OWNER_ID);
 		george.setFirstName(FIRST_NAME_GEORGE);
 		george.setLastName(LAST_NAME_FRANKLIN);
-		george.setAddress("110 W. Liberty St.");
+		george.setAddress(LIBERTY_ADDRESS);
 		george.setCity("Madison");
 		george.setTelephone("6085551023");
 		Pet max = new Pet();
@@ -187,7 +188,7 @@ class OwnerControllerTests {
 			.andExpect(model().attributeExists(OWNER))
 			.andExpect(model().attribute(OWNER, hasProperty(LAST_NAME, is(LAST_NAME_FRANKLIN))))
 			.andExpect(model().attribute(OWNER, hasProperty(FIRST_NAME, is(FIRST_NAME_GEORGE))))
-			.andExpect(model().attribute(OWNER, hasProperty(ADDRESS, is("110 W. Liberty St."))))
+			.andExpect(model().attribute(OWNER, hasProperty(ADDRESS, is(LIBERTY_ADDRESS))))
 			.andExpect(model().attribute(OWNER, hasProperty("city", is("Madison"))))
 			.andExpect(model().attribute(OWNER, hasProperty(TELEPHONE, is("6085551023"))))
 			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
@@ -232,7 +233,7 @@ class OwnerControllerTests {
 			.andExpect(status().isOk())
 			.andExpect(model().attribute(OWNER, hasProperty(LAST_NAME, is(LAST_NAME_FRANKLIN))))
 			.andExpect(model().attribute(OWNER, hasProperty(FIRST_NAME, is(FIRST_NAME_GEORGE))))
-			.andExpect(model().attribute(OWNER, hasProperty(ADDRESS, is("110 W. Liberty St."))))
+			.andExpect(model().attribute(OWNER, hasProperty(ADDRESS, is(LIBERTY_ADDRESS))))
 			.andExpect(model().attribute(OWNER, hasProperty("city", is("Madison"))))
 			.andExpect(model().attribute(OWNER, hasProperty(TELEPHONE, is("6085551023"))))
 			.andExpect(model().attribute(OWNER, hasProperty("pets", not(empty()))))
