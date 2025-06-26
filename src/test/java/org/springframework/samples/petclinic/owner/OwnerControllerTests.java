@@ -74,6 +74,7 @@ class OwnerControllerTests {
 	private static final String OWNERS_PAGE_PATH = "/owners?page=1";
 	private static final String OWNERS_EDIT_PATH = "/owners/{ownerId}/edit";
 	private static final String LIBERTY_ADDRESS = "110 W. Liberty St.";
+	private static final String TELEPHONE_NUMBER = "6085551023";
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -88,7 +89,7 @@ class OwnerControllerTests {
 		george.setLastName(LAST_NAME_FRANKLIN);
 		george.setAddress(LIBERTY_ADDRESS);
 		george.setCity(CITY_MADISON);
-		george.setTelephone("6085551023");
+		george.setTelephone(TELEPHONE_NUMBER);
 		Pet max = new Pet();
 		PetType dog = new PetType();
 		dog.setName("dog");
@@ -191,7 +192,7 @@ class OwnerControllerTests {
 			.andExpect(model().attribute(OWNER, hasProperty(FIRST_NAME, is(FIRST_NAME_GEORGE))))
 			.andExpect(model().attribute(OWNER, hasProperty(ADDRESS, is(LIBERTY_ADDRESS))))
 			.andExpect(model().attribute(OWNER, hasProperty("city", is(CITY_MADISON))))
-			.andExpect(model().attribute(OWNER, hasProperty(TELEPHONE, is("6085551023"))))
+			.andExpect(model().attribute(OWNER, hasProperty(TELEPHONE, is(TELEPHONE_NUMBER))))
 			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
 	}
 
@@ -236,7 +237,7 @@ class OwnerControllerTests {
 			.andExpect(model().attribute(OWNER, hasProperty(FIRST_NAME, is(FIRST_NAME_GEORGE))))
 			.andExpect(model().attribute(OWNER, hasProperty(ADDRESS, is(LIBERTY_ADDRESS))))
 			.andExpect(model().attribute(OWNER, hasProperty("city", is(CITY_MADISON))))
-			.andExpect(model().attribute(OWNER, hasProperty("telephone", is("6085551023"))))
+			.andExpect(model().attribute(OWNER, hasProperty("telephone", is(TELEPHONE_NUMBER))))
 			.andExpect(model().attribute(OWNER, hasProperty("pets", not(empty()))))
 			.andExpect(model().attribute(OWNER,
 					hasProperty("pets", hasItem(hasProperty("visits", hasSize(greaterThan(0)))))))
