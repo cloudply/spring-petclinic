@@ -71,6 +71,7 @@ class OwnerControllerTests {
 	private static final String OWNERS_NEW_PATH = "/owners/new";
 	private static final String OWNERS_PAGE_PATH = "/owners?page=1";
 	private static final String OWNERS_EDIT_PATH = "/owners/{ownerId}/edit";
+	private static final String FIRST_NAME_GEORGE = "George";
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -81,7 +82,7 @@ class OwnerControllerTests {
 	private Owner george() {
 		Owner george = new Owner();
 		george.setId(TEST_OWNER_ID);
-		george.setFirstName("George");
+		george.setFirstName(FIRST_NAME_GEORGE);
 		george.setLastName(LAST_NAME_FRANKLIN);
 		george.setAddress("110 W. Liberty St.");
 		george.setCity("Madison");
@@ -185,7 +186,7 @@ class OwnerControllerTests {
 			.andExpect(status().isOk())
 			.andExpect(model().attributeExists(OWNER))
 			.andExpect(model().attribute(OWNER, hasProperty(LAST_NAME, is(LAST_NAME_FRANKLIN))))
-			.andExpect(model().attribute(OWNER, hasProperty(FIRST_NAME, is("George"))))
+			.andExpect(model().attribute(OWNER, hasProperty(FIRST_NAME, is(FIRST_NAME_GEORGE))))
 			.andExpect(model().attribute(OWNER, hasProperty(ADDRESS, is("110 W. Liberty St."))))
 			.andExpect(model().attribute(OWNER, hasProperty("city", is("Madison"))))
 			.andExpect(model().attribute(OWNER, hasProperty(TELEPHONE, is("6085551023"))))
@@ -230,7 +231,7 @@ class OwnerControllerTests {
 		mockMvc.perform(get("/owners/{ownerId}", TEST_OWNER_ID))
 			.andExpect(status().isOk())
 			.andExpect(model().attribute(OWNER, hasProperty(LAST_NAME, is(LAST_NAME_FRANKLIN))))
-			.andExpect(model().attribute(OWNER, hasProperty(FIRST_NAME, is("George"))))
+			.andExpect(model().attribute(OWNER, hasProperty(FIRST_NAME, is(FIRST_NAME_GEORGE))))
 			.andExpect(model().attribute(OWNER, hasProperty(ADDRESS, is("110 W. Liberty St."))))
 			.andExpect(model().attribute(OWNER, hasProperty("city", is("Madison"))))
 			.andExpect(model().attribute(OWNER, hasProperty(TELEPHONE, is("6085551023"))))
