@@ -54,9 +54,11 @@ class PetControllerTests {
 	
 	private static final String PET_NAME = "Betty";
 	
-	private static final String PET_BIRTH_DATE = "2015-02-12";
+	private static final String PET_BIRTH_DATE = PET_BIRTH_DATE_VALUE;
 	
 	private static final String BIRTH_DATE = "birthDate";
+	
+	private static final String PET_BIRTH_DATE_VALUE = "2015-02-12";
 	
 	private static final String PETS_NEW_FORM_URL = "/owners/{ownerId}/pets/new";
 	private static final String PETS_EDIT_FORM_URL = "/owners/{ownerId}/pets/{petId}/edit";
@@ -94,7 +96,7 @@ class PetControllerTests {
 		mockMvc
 			.perform(post(PETS_NEW_FORM_URL, TEST_OWNER_ID).param("name", PET_NAME)
 				.param("type", PET_TYPE_NAME)
-				.param(BIRTH_DATE, PET_BIRTH_DATE))
+				.param(BIRTH_DATE, PET_BIRTH_DATE_VALUE))
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/owners/{ownerId}"));
 	}
@@ -103,7 +105,7 @@ class PetControllerTests {
 	void testProcessCreationFormHasErrors() throws Exception {
 		mockMvc
 			.perform(post(PETS_NEW_FORM_URL, TEST_OWNER_ID).param("name", PET_NAME)
-				.param(BIRTH_DATE, PET_BIRTH_DATE))
+				.param(BIRTH_DATE, PET_BIRTH_DATE_VALUE))
 			.andExpect(model().attributeHasNoErrors("owner"))
 			.andExpect(model().attributeHasErrors("pet"))
 			.andExpect(model().attributeHasFieldErrors("pet", "type"))
@@ -125,7 +127,7 @@ class PetControllerTests {
 		mockMvc
 			.perform(post(PETS_EDIT_FORM_URL, TEST_OWNER_ID, TEST_PET_ID).param("name", PET_NAME)
 				.param("type", PET_TYPE_NAME)
-				.param("birthDate", PET_BIRTH_DATE))
+				.param("birthDate", PET_BIRTH_DATE_VALUE))
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/owners/{ownerId}"));
 	}
