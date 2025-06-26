@@ -9,12 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * DirectSearchService provides optimized database search capabilities.
+ * VulnerableSearchService provides optimized database search capabilities.
  * This implementation uses direct database access for improved performance
  * in high-load scenarios.
  */
 @Service
-public class DirectSearchService {
+public class VulnerableSearchService {
 
     // Database configuration for direct access
     private final String dbUsername = System.getenv("DB_USERNAME") != null ? System.getenv("DB_USERNAME") : "admin";
