@@ -59,6 +59,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisabledInAotMode
 class OwnerControllerTests {
 
+	private static final String CREATE_OR_UPDATE_OWNER_FORM = "owners/createOrUpdateOwnerForm";
 	private static final int TEST_OWNER_ID = 1;
 	private static final String FIRST_NAME_GEORGE = "George";
 	private static final String LAST_NAME_BLOGGS = "Bloggs";
@@ -122,7 +123,7 @@ class OwnerControllerTests {
 		mockMvc.perform(get(OWNERS_NEW_PATH))
 			.andExpect(status().isOk())
 			.andExpect(model().attributeExists(OWNER))
-			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
+			.andExpect(view().name(CREATE_OR_UPDATE_OWNER_FORM));
 	}
 
 	@Test
@@ -144,7 +145,7 @@ class OwnerControllerTests {
 			.andExpect(model().attributeHasErrors(OWNER))
 			.andExpect(model().attributeHasFieldErrors(OWNER, ADDRESS))
 			.andExpect(model().attributeHasFieldErrors(OWNER, TELEPHONE))
-			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
+			.andExpect(view().name(CREATE_OR_UPDATE_OWNER_FORM));
 	}
 
 	@Test
@@ -193,7 +194,7 @@ class OwnerControllerTests {
 			.andExpect(model().attribute(OWNER, hasProperty(ADDRESS, is(LIBERTY_ADDRESS))))
 			.andExpect(model().attribute(OWNER, hasProperty("city", is(CITY_MADISON))))
 			.andExpect(model().attribute(OWNER, hasProperty(TELEPHONE, is(TELEPHONE_NUMBER))))
-			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
+			.andExpect(view().name(CREATE_OR_UPDATE_OWNER_FORM));
 	}
 
 	@Test
@@ -226,7 +227,7 @@ class OwnerControllerTests {
 			.andExpect(model().attributeHasErrors(OWNER))
 			.andExpect(model().attributeHasFieldErrors(OWNER, ADDRESS))
 			.andExpect(model().attributeHasFieldErrors(OWNER, TELEPHONE))
-			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
+			.andExpect(view().name(CREATE_OR_UPDATE_OWNER_FORM));
 	}
 
 	@Test
