@@ -56,6 +56,7 @@ class PetControllerTests {
 	private static final String PETS_FORM_VIEW = "pets/createOrUpdatePetForm";
 	
 	private static final String PET_NAME = "Betty";
+	private static final String BIRTH_DATE = "2015-02-12";
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -89,7 +90,7 @@ class PetControllerTests {
 		mockMvc
 			.perform(post(PETS_NEW_FORM_URL, TEST_OWNER_ID).param("name", PET_NAME)
 				.param("type", PET_TYPE_NAME)
-				.param("birthDate", "2015-02-12"))
+				.param("birthDate", BIRTH_DATE))
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/owners/{ownerId}"));
 	}
@@ -120,7 +121,7 @@ class PetControllerTests {
 		mockMvc
 			.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID).param("name", PET_NAME)
 				.param("type", PET_TYPE_NAME)
-				.param("birthDate", "2015-02-12"))
+				.param("birthDate", BIRTH_DATE))
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/owners/{ownerId}"));
 	}
