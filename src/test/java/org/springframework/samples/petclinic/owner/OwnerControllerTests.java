@@ -68,6 +68,7 @@ class OwnerControllerTests {
 	private static final String TELEPHONE = "telephone";
 	private static final String OWNER = "owner";
 	private static final String LAST_NAME_FRANKLIN = "Franklin";
+	private static final String OWNERS_NEW_PATH = "/owners/new";
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -112,7 +113,7 @@ class OwnerControllerTests {
 
 	@Test
 	void testInitCreationForm() throws Exception {
-		mockMvc.perform(get("/owners/new"))
+		mockMvc.perform(get(OWNERS_NEW_PATH))
 			.andExpect(status().isOk())
 			.andExpect(model().attributeExists(OWNER))
 			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
@@ -121,7 +122,7 @@ class OwnerControllerTests {
 	@Test
 	void testProcessCreationFormSuccess() throws Exception {
 		mockMvc
-			.perform(post("/owners/new").param(FIRST_NAME, "Joe")
+			.perform(post(OWNERS_NEW_PATH).param(FIRST_NAME, "Joe")
 				.param("lastName", LAST_NAME_BLOGGS)
 				.param(ADDRESS, "123 Caramel Street")
 				.param("city", CITY_LONDON)
@@ -132,7 +133,7 @@ class OwnerControllerTests {
 	@Test
 	void testProcessCreationFormHasErrors() throws Exception {
 		mockMvc
-			.perform(post("/owners/new").param(FIRST_NAME, "Joe").param("lastName", "Bloggs").param("city", CITY_LONDON))
+			.perform(post(OWNERS_NEW_PATH).param(FIRST_NAME, "Joe").param("lastName", "Bloggs").param("city", CITY_LONDON))
 			.andExpect(status().isOk())
 			.andExpect(model().attributeHasErrors(OWNER))
 			.andExpect(model().attributeHasFieldErrors(OWNER, ADDRESS))
