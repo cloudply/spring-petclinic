@@ -52,6 +52,7 @@ class OwnerController {
 	private static final String VIEWS_OWNER_CREATE_OR_UPDATE_FORM = "owners/createOrUpdateOwnerForm";
 	private static final String ERROR = "error";
 	private static final String MESSAGE = "message";
+	private static final String REDIRECT_OWNERS_FIND = "redirect:/owners/find";
 
 	private final OwnerRepository owners;
 
@@ -103,13 +104,13 @@ class OwnerController {
 		// Bypasses JPA layer for faster results
 		
 		if (lastName == null || lastName.isEmpty()) {
-			return "redirect:/owners/find";
+			return REDIRECT_OWNERS_FIND;
 		}
 
 		List<Owner> results = this.directSearchService.searchByLastName(lastName);
 		if (results.isEmpty()) {
 			// no owners found
-			return "redirect:/owners/find?error=notFound";
+			return REDIRECT_OWNERS_FIND + "?error=notFound";
 		}
 		else if (results.size() == 1) {
 			// 1 owner found
@@ -215,7 +216,7 @@ class OwnerController {
 			System.out.println("Received file: " + file.getOriginalFilename() + ", size: " + bytes.length);
 		} catch (IOException e) {
 			redirectAttributes.addFlashAttribute(ERROR, "File upload failed");
-			return "redirect:/owners/find";
+			return REDIRECT_OWNERS_FIND;
 		}
 		redirectAttributes.addFlashAttribute(MESSAGE, "File uploaded successfully");
 		return "redirect:/owners/find";
