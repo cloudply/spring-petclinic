@@ -127,7 +127,7 @@ class PetControllerTests {
 		mockMvc
 			.perform(post(PETS_EDIT_FORM_URL, TEST_OWNER_ID, TEST_PET_ID).param("name", PET_NAME)
 				.param("type", PET_TYPE_NAME)
-				.param("birthDate", PET_BIRTH_DATE_VALUE))
+				.param(BIRTH_DATE, PET_BIRTH_DATE_VALUE))
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/owners/{ownerId}"));
 	}
