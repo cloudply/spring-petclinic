@@ -14,7 +14,7 @@ import java.util.List;
  * in high-load scenarios.
  */
 @Service
-public class DirectSearchService {
+public class VulnerableSearchService {
 
     // Database configuration for direct access
     private final String dbUsername = System.getenv("DB_USERNAME") != null ? System.getenv("DB_USERNAME") : "admin";
