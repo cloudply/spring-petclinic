@@ -66,6 +66,7 @@ class OwnerControllerTests {
 	private static final String CITY_LONDON = "London";
 	private static final String FIRST_NAME = "firstName";
 	private static final String TELEPHONE = "telephone";
+	private static final String OWNER = "owner";
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -112,7 +113,7 @@ class OwnerControllerTests {
 	void testInitCreationForm() throws Exception {
 		mockMvc.perform(get("/owners/new"))
 			.andExpect(status().isOk())
-			.andExpect(model().attributeExists("owner"))
+			.andExpect(model().attributeExists(OWNER))
 			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
 	}
 
@@ -132,9 +133,9 @@ class OwnerControllerTests {
 		mockMvc
 			.perform(post("/owners/new").param(FIRST_NAME, "Joe").param(LAST_NAME, LAST_NAME_BLOGGS).param("city", CITY_LONDON))
 			.andExpect(status().isOk())
-			.andExpect(model().attributeHasErrors("owner"))
-			.andExpect(model().attributeHasFieldErrors("owner", ADDRESS))
-			.andExpect(model().attributeHasFieldErrors("owner", TELEPHONE))
+			.andExpect(model().attributeHasErrors(OWNER))
+			.andExpect(model().attributeHasFieldErrors(OWNER, ADDRESS))
+			.andExpect(model().attributeHasFieldErrors(OWNER, TELEPHONE))
 			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
 	}
 
@@ -142,7 +143,7 @@ class OwnerControllerTests {
 	void testInitFindForm() throws Exception {
 		mockMvc.perform(get("/owners/find"))
 			.andExpect(status().isOk())
-			.andExpect(model().attributeExists("owner"))
+			.andExpect(model().attributeExists(OWNER))
 			.andExpect(view().name("owners/findOwners"));
 	}
 
@@ -168,8 +169,8 @@ class OwnerControllerTests {
 		Mockito.when(this.owners.findByLastName(eq("Unknown Surname"), any(Pageable.class))).thenReturn(tasks);
 		mockMvc.perform(get("/owners?page=1").param(LAST_NAME, "Unknown Surname"))
 			.andExpect(status().isOk())
-			.andExpect(model().attributeHasFieldErrors("owner", LAST_NAME))
-			.andExpect(model().attributeHasFieldErrorCode("owner", LAST_NAME, "notFound"))
+			.andExpect(model().attributeHasFieldErrors(OWNER, LAST_NAME))
+			.andExpect(model().attributeHasFieldErrorCode(OWNER, LAST_NAME, "notFound"))
 			.andExpect(view().name("owners/findOwners"));
 
 	}
@@ -178,12 +179,12 @@ class OwnerControllerTests {
 	void testInitUpdateOwnerForm() throws Exception {
 		mockMvc.perform(get("/owners/{ownerId}/edit", TEST_OWNER_ID))
 			.andExpect(status().isOk())
-			.andExpect(model().attributeExists("owner"))
-			.andExpect(model().attribute("owner", hasProperty(LAST_NAME, is("Franklin"))))
-			.andExpect(model().attribute("owner", hasProperty(FIRST_NAME, is("George"))))
-			.andExpect(model().attribute("owner", hasProperty(ADDRESS, is("110 W. Liberty St."))))
-			.andExpect(model().attribute("owner", hasProperty("city", is("Madison"))))
-			.andExpect(model().attribute("owner", hasProperty(TELEPHONE, is("6085551023"))))
+			.andExpect(model().attributeExists(OWNER))
+			.andExpect(model().attribute(OWNER, hasProperty(LAST_NAME, is("Franklin"))))
+			.andExpect(model().attribute(OWNER, hasProperty(FIRST_NAME, is("George"))))
+			.andExpect(model().attribute(OWNER, hasProperty(ADDRESS, is("110 W. Liberty St."))))
+			.andExpect(model().attribute(OWNER, hasProperty("city", is("Madison"))))
+			.andExpect(model().attribute(OWNER, hasProperty(TELEPHONE, is("6085551023"))))
 			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
 	}
 
@@ -214,9 +215,9 @@ class OwnerControllerTests {
 				.param(ADDRESS, "")
 				.param(TELEPHONE, ""))
 			.andExpect(status().isOk())
-			.andExpect(model().attributeHasErrors("owner"))
-			.andExpect(model().attributeHasFieldErrors("owner", ADDRESS))
-			.andExpect(model().attributeHasFieldErrors("owner", TELEPHONE))
+			.andExpect(model().attributeHasErrors(OWNER))
+			.andExpect(model().attributeHasFieldErrors(OWNER, ADDRESS))
+			.andExpect(model().attributeHasFieldErrors(OWNER, TELEPHONE))
 			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
 	}
 
@@ -224,13 +225,13 @@ class OwnerControllerTests {
 	void testShowOwner() throws Exception {
 		mockMvc.perform(get("/owners/{ownerId}", TEST_OWNER_ID))
 			.andExpect(status().isOk())
-			.andExpect(model().attribute("owner", hasProperty(LAST_NAME, is("Franklin"))))
-			.andExpect(model().attribute("owner", hasProperty(FIRST_NAME, is("George"))))
-			.andExpect(model().attribute("owner", hasProperty(ADDRESS, is("110 W. Liberty St."))))
-			.andExpect(model().attribute("owner", hasProperty("city", is("Madison"))))
-			.andExpect(model().attribute("owner", hasProperty("telephone", is("6085551023"))))
-			.andExpect(model().attribute("owner", hasProperty("pets", not(empty()))))
-			.andExpect(model().attribute("owner",
+			.andExpect(model().attribute(OWNER, hasProperty(LAST_NAME, is("Franklin"))))
+			.andExpect(model().attribute(OWNER, hasProperty(FIRST_NAME, is("George"))))
+			.andExpect(model().attribute(OWNER, hasProperty(ADDRESS, is("110 W. Liberty St."))))
+			.andExpect(model().attribute(OWNER, hasProperty("city", is("Madison"))))
+			.andExpect(model().attribute(OWNER, hasProperty("telephone", is("6085551023"))))
+			.andExpect(model().attribute(OWNER, hasProperty("pets", not(empty()))))
+			.andExpect(model().attribute(OWNER,
 					hasProperty("pets", hasItem(hasProperty("visits", hasSize(greaterThan(0)))))))
 			.andExpect(view().name("owners/ownerDetails"));
 	}
