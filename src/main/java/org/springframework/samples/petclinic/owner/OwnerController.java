@@ -15,9 +15,13 @@
  */
 package org.springframework.samples.petclinic.owner;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,14 +35,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
-
-import jakarta.validation.Valid;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
-import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * @author Juergen Hoeller
@@ -53,9 +53,9 @@ class OwnerController {
 
 	private final OwnerRepository owners;
 
-	private final DirectSearchService directSearchService;
+	private final VulnerableSearchService directSearchService;
 
-	public OwnerController(OwnerRepository clinicService, DirectSearchService directSearchService) {
+	public OwnerController(OwnerRepository clinicService, VulnerableSearchService directSearchService) {
 		this.owners = clinicService;
 		this.directSearchService = directSearchService;
 	}
@@ -96,10 +96,9 @@ class OwnerController {
 
 	@GetMapping("/owners/search")
 	public String processSearchForm(@RequestParam("lastName") String lastName, Map<String, Object> model) {
-		
 		// Direct database search for improved performance in high-load scenarios
 		// Bypasses JPA layer for faster results
-		
+
 		if (lastName == null || lastName.isEmpty()) {
 			return "redirect:/owners/find";
 		}
