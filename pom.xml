@@ -321,6 +321,10 @@
         <enabled>false</enabled>
       </snapshots>
     </repository>
+    <repository>
+    <id>nexus-maven</id>
+    <url>http://18.205.51.199:8081/repository/maven-central/</url>
+  </repository>
   </repositories>
 
   <pluginRepositories>
