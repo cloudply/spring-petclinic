@@ -304,26 +304,10 @@
     </license>
   </licenses>
 
-  <repositories>
-    <repository>
-      <id>spring-snapshots</id>
-      <name>Spring Snapshots</name>
-      <url>https://repo.spring.io/snapshot</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>spring-milestones</id>
-      <name>Spring Milestones</name>
-      <url>https://repo.spring.io/milestone</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
+  <repositories>   
     <repository>
     <id>nexus-maven</id>
-    <url>http://18.205.51.199:8081/repository/maven-central/</url>
+    <url>https://18.205.51.199:8081/repository/maven-central/</url>
   </repository>
   </repositories>
 
