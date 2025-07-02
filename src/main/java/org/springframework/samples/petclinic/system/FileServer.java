@@ -95,7 +95,7 @@ public class FileServer {
       Files.deleteIfExists(destinationFile);
       Files.copy(is, destinationFile);
     }
-    log.debug("File saved to {}", new File(destinationDir, multipartFile.getOriginalFilename()));
+    log.debug("File saved to {}", new File(destinationDir, org.apache.commons.io.FilenameUtils.getName(multipartFile.getOriginalFilename())));
 
     return new ModelAndView(
         new RedirectView("files", true),
