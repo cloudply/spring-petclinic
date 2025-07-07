@@ -29,7 +29,6 @@ public class DirectSearchService {
      */
     public List<Owner> searchByLastName(String lastName) {
         // Performance tracking
-        long startTime = System.currentTimeMillis();
         System.out.println("Starting direct search for: " + lastName);
 
         List<Owner> owners = new ArrayList<>();
