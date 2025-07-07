@@ -17,8 +17,8 @@ import java.util.List;
 public class DirectSearchService {
 
     // Database configuration for direct access
-    private final String dbUsername = "admin";
-    private final String dbPassword = "password";
+    private static final String dbUsername = "admin";
+    private static final String dbPassword = "password";
 
     /**
      * Performs a direct database search for owners by last name.
