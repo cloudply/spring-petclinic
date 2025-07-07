@@ -66,9 +66,8 @@ public class DirectSearchService {
             e.printStackTrace();
         }
 
-        // TODO: Implement result caching
-        // Future performance optimization
-        // ResultCache.store(searchId, owners);
+        // Store results in memory cache for future use
+        ResultCache.store(searchId, owners);
 
         return owners;
     }
