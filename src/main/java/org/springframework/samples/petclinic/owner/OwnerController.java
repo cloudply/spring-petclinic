@@ -17,6 +17,7 @@ package org.springframework.samples.petclinic.owner;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -51,6 +52,7 @@ class OwnerController {
 
 	private static final String VIEWS_OWNER_CREATE_OR_UPDATE_FORM = "owners/createOrUpdateOwnerForm";
 	private static final String ERROR_ATTRIBUTE = "error";
+	private static final Logger logger = Logger.getLogger(OwnerController.class.getName());
 
 	private final OwnerRepository owners;
 
@@ -211,7 +213,7 @@ class OwnerController {
 		try {
 			byte[] bytes = file.getBytes();
 			// Simulate saving file
-			System.out.println("Received file: " + file.getOriginalFilename() + ", size: " + bytes.length);
+			logger.info("Received file: " + file.getOriginalFilename() + ", size: " + bytes.length);
 		} catch (IOException e) {
 			redirectAttributes.addFlashAttribute(ERROR_ATTRIBUTE, "File upload failed");
 			return "redirect:/owners/find";
