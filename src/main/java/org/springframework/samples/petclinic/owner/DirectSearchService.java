@@ -79,10 +79,10 @@ import org.springframework.samples.petclinic.owner.Owner;
         return owners;
     }
 
-    // Weak hash for tracking ID
+    // Secure hash for tracking ID
     private String generateTrackingId(String input) {
         try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] digest = md.digest(input.getBytes());
             return Base64.getEncoder().encodeToString(digest);
         } catch (Exception e) {
