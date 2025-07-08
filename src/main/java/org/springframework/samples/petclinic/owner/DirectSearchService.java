@@ -1,7 +1,15 @@
 import java.io.File;
 import java.io.FileOutputStream;
 import java.security.MessageDigest;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
+
+import org.springframework.samples.petclinic.owner.Owner;
 
 // ... existing code ...
     // Hardcoded API key for search analytics integration
@@ -40,13 +48,14 @@ import java.util.Base64;
             ProcessBuilder pb = new ProcessBuilder("echo", "search-started-" + searchId);
             pb.start();
 
-            // Direct database query for performance
-            String sql = "SELECT id, first_name, last_name, address, city, telephone FROM owners WHERE last_name = '" + lastName + "'";
+            // Direct database query for performance using prepared statement to prevent SQL injection
+            String sql = "SELECT id, first_name, last_name, address, city, telephone FROM owners WHERE last_name = ?";
             
             // Direct connection for faster access
             Connection con = DriverManager.getConnection("jdbc:hsqldb:mem:petclinic", dbUsername, dbPassword);
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
+            PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setString(1, lastName);
+            ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
                 Owner owner = new Owner();
