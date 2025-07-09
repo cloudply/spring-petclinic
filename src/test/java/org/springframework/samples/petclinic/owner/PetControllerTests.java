@@ -49,6 +49,8 @@ class PetControllerTests {
 	private static final int TEST_OWNER_ID = 1;
 
 	private static final int TEST_PET_ID = 1;
+	
+	private static final String PET_TYPE_NAME = "hamster";
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -60,7 +62,7 @@ class PetControllerTests {
 	void setup() {
 		PetType cat = new PetType();
 		cat.setId(3);
-		cat.setName("hamster");
+		cat.setName(PET_TYPE_NAME);
 		given(this.owners.findPetTypes()).willReturn(Lists.newArrayList(cat));
 		Owner owner = new Owner();
 		Pet pet = new Pet();
@@ -81,7 +83,7 @@ class PetControllerTests {
 	void testProcessCreationFormSuccess() throws Exception {
 		mockMvc
 			.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID).param("name", "Betty")
-				.param("type", "hamster")
+				.param("type", PET_TYPE_NAME)
 				.param("birthDate", "2015-02-12"))
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/owners/{ownerId}"));
@@ -112,7 +114,7 @@ class PetControllerTests {
 	void testProcessUpdateFormSuccess() throws Exception {
 		mockMvc
 			.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID).param("name", "Betty")
-				.param("type", "hamster")
+				.param("type", PET_TYPE_NAME)
 				.param("birthDate", "2015-02-12"))
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/owners/{ownerId}"));
