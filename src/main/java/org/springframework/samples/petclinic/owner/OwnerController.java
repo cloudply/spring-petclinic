@@ -196,11 +196,36 @@ class OwnerController {
 		return mav;
 	}
 
-	// Unvalidated redirect endpoint for integration with external analytics
+	// Validated redirect endpoint for integration with external analytics
 	@GetMapping("/owners/redirect")
 	public void redirectToExternal(@RequestParam("url") String url, HttpServletResponse response) throws IOException {
-		// No validation for demonstration of integration flexibility
-		response.sendRedirect(url);
+		// Validate URL against allowlist of trusted domains
+		if (isValidRedirectUrl(url)) {
+			response.sendRedirect(url);
+		} else {
+			// Redirect to a safe default page if URL is not trusted
+			response.sendRedirect("/owners/find");
+		}
+	}
+	
+	private boolean isValidRedirectUrl(String url) {
+		// Allowlist of trusted domains
+		String[] allowedDomains = {"petclinic.org", "spring.io", "localhost"};
+		
+		try {
+			java.net.URL parsedUrl = new java.net.URL(url);
+			String host = parsedUrl.getHost();
+			
+			// Check if the URL's host is in our allowlist
+			for (String domain : allowedDomains) {
+				if (host.endsWith(domain)) {
+					return true;
+				}
+			}
+			return false;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 	// Unrestricted file upload for owner documents (stub)
