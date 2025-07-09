@@ -60,6 +60,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class OwnerControllerTests {
 
 	private static final int TEST_OWNER_ID = 1;
+	private static final String LONDON = "London";
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -116,7 +117,7 @@ class OwnerControllerTests {
 			.perform(post("/owners/new").param("firstName", "Joe")
 				.param("lastName", "Bloggs")
 				.param("address", "123 Caramel Street")
-				.param("city", "London")
+				.param("city", LONDON)
 				.param("telephone", "1316761638"))
 			.andExpect(status().is3xxRedirection());
 	}
@@ -124,7 +125,7 @@ class OwnerControllerTests {
 	@Test
 	void testProcessCreationFormHasErrors() throws Exception {
 		mockMvc
-			.perform(post("/owners/new").param("firstName", "Joe").param("lastName", "Bloggs").param("city", "London"))
+			.perform(post("/owners/new").param("firstName", "Joe").param("lastName", "Bloggs").param("city", LONDON))
 			.andExpect(status().isOk())
 			.andExpect(model().attributeHasErrors("owner"))
 			.andExpect(model().attributeHasFieldErrors("owner", "address"))
@@ -187,7 +188,7 @@ class OwnerControllerTests {
 			.perform(post("/owners/{ownerId}/edit", TEST_OWNER_ID).param("firstName", "Joe")
 				.param("lastName", "Bloggs")
 				.param("address", "123 Caramel Street")
-				.param("city", "London")
+				.param("city", LONDON)
 				.param("telephone", "1616291589"))
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/owners/{ownerId}"));
