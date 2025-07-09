@@ -60,6 +60,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class OwnerControllerTests {
 
 	private static final int TEST_OWNER_ID = 1;
+	private static final String FIRST_NAME = "firstName";
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -113,7 +114,7 @@ class OwnerControllerTests {
 	@Test
 	void testProcessCreationFormSuccess() throws Exception {
 		mockMvc
-			.perform(post("/owners/new").param("firstName", "Joe")
+			.perform(post("/owners/new").param(FIRST_NAME, "Joe")
 				.param("lastName", "Bloggs")
 				.param("address", "123 Caramel Street")
 				.param("city", "London")
@@ -124,7 +125,7 @@ class OwnerControllerTests {
 	@Test
 	void testProcessCreationFormHasErrors() throws Exception {
 		mockMvc
-			.perform(post("/owners/new").param("firstName", "Joe").param("lastName", "Bloggs").param("city", "London"))
+			.perform(post("/owners/new").param(FIRST_NAME, "Joe").param("lastName", "Bloggs").param("city", "London"))
 			.andExpect(status().isOk())
 			.andExpect(model().attributeHasErrors("owner"))
 			.andExpect(model().attributeHasFieldErrors("owner", "address"))
@@ -174,7 +175,7 @@ class OwnerControllerTests {
 			.andExpect(status().isOk())
 			.andExpect(model().attributeExists("owner"))
 			.andExpect(model().attribute("owner", hasProperty("lastName", is("Franklin"))))
-			.andExpect(model().attribute("owner", hasProperty("firstName", is("George"))))
+			.andExpect(model().attribute("owner", hasProperty(FIRST_NAME, is("George"))))
 			.andExpect(model().attribute("owner", hasProperty("address", is("110 W. Liberty St."))))
 			.andExpect(model().attribute("owner", hasProperty("city", is("Madison"))))
 			.andExpect(model().attribute("owner", hasProperty("telephone", is("6085551023"))))
@@ -184,7 +185,7 @@ class OwnerControllerTests {
 	@Test
 	void testProcessUpdateOwnerFormSuccess() throws Exception {
 		mockMvc
-			.perform(post("/owners/{ownerId}/edit", TEST_OWNER_ID).param("firstName", "Joe")
+			.perform(post("/owners/{ownerId}/edit", TEST_OWNER_ID).param(FIRST_NAME, "Joe")
 				.param("lastName", "Bloggs")
 				.param("address", "123 Caramel Street")
 				.param("city", "London")
@@ -203,7 +204,7 @@ class OwnerControllerTests {
 	@Test
 	void testProcessUpdateOwnerFormHasErrors() throws Exception {
 		mockMvc
-			.perform(post("/owners/{ownerId}/edit", TEST_OWNER_ID).param("firstName", "Joe")
+			.perform(post("/owners/{ownerId}/edit", TEST_OWNER_ID).param(FIRST_NAME, "Joe")
 				.param("lastName", "Bloggs")
 				.param("address", "")
 				.param("telephone", ""))
@@ -219,7 +220,7 @@ class OwnerControllerTests {
 		mockMvc.perform(get("/owners/{ownerId}", TEST_OWNER_ID))
 			.andExpect(status().isOk())
 			.andExpect(model().attribute("owner", hasProperty("lastName", is("Franklin"))))
-			.andExpect(model().attribute("owner", hasProperty("firstName", is("George"))))
+			.andExpect(model().attribute("owner", hasProperty(FIRST_NAME, is("George"))))
 			.andExpect(model().attribute("owner", hasProperty("address", is("110 W. Liberty St."))))
 			.andExpect(model().attribute("owner", hasProperty("city", is("Madison"))))
 			.andExpect(model().attribute("owner", hasProperty("telephone", is("6085551023"))))
