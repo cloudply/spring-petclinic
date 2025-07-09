@@ -60,6 +60,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class OwnerControllerTests {
 
 	private static final int TEST_OWNER_ID = 1;
+	private static final String LAST_NAME_FRANKLIN = "Franklin";
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -71,7 +72,7 @@ class OwnerControllerTests {
 		Owner george = new Owner();
 		george.setId(TEST_OWNER_ID);
 		george.setFirstName("George");
-		george.setLastName("Franklin");
+		george.setLastName(LAST_NAME_FRANKLIN);
 		george.setAddress("110 W. Liberty St.");
 		george.setCity("Madison");
 		george.setTelephone("6085551023");
@@ -90,7 +91,7 @@ class OwnerControllerTests {
 	void setup() {
 
 		Owner george = george();
-		given(this.owners.findByLastName(eq("Franklin"), any(Pageable.class)))
+		given(this.owners.findByLastName(eq(LAST_NAME_FRANKLIN), any(Pageable.class)))
 			.willReturn(new PageImpl<>(Lists.newArrayList(george)));
 
 		given(this.owners.findAll(any(Pageable.class))).willReturn(new PageImpl<>(Lists.newArrayList(george)));
@@ -150,8 +151,8 @@ class OwnerControllerTests {
 	@Test
 	void testProcessFindFormByLastName() throws Exception {
 		Page<Owner> tasks = new PageImpl<>(Lists.newArrayList(george()));
-		Mockito.when(this.owners.findByLastName(eq("Franklin"), any(Pageable.class))).thenReturn(tasks);
-		mockMvc.perform(get("/owners?page=1").param("lastName", "Franklin"))
+		Mockito.when(this.owners.findByLastName(eq(LAST_NAME_FRANKLIN), any(Pageable.class))).thenReturn(tasks);
+		mockMvc.perform(get("/owners?page=1").param("lastName", LAST_NAME_FRANKLIN))
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID));
 	}
@@ -173,7 +174,7 @@ class OwnerControllerTests {
 		mockMvc.perform(get("/owners/{ownerId}/edit", TEST_OWNER_ID))
 			.andExpect(status().isOk())
 			.andExpect(model().attributeExists("owner"))
-			.andExpect(model().attribute("owner", hasProperty("lastName", is("Franklin"))))
+			.andExpect(model().attribute("owner", hasProperty("lastName", is(LAST_NAME_FRANKLIN))))
 			.andExpect(model().attribute("owner", hasProperty("firstName", is("George"))))
 			.andExpect(model().attribute("owner", hasProperty("address", is("110 W. Liberty St."))))
 			.andExpect(model().attribute("owner", hasProperty("city", is("Madison"))))
@@ -218,7 +219,7 @@ class OwnerControllerTests {
 	void testShowOwner() throws Exception {
 		mockMvc.perform(get("/owners/{ownerId}", TEST_OWNER_ID))
 			.andExpect(status().isOk())
-			.andExpect(model().attribute("owner", hasProperty("lastName", is("Franklin"))))
+			.andExpect(model().attribute("owner", hasProperty("lastName", is(LAST_NAME_FRANKLIN))))
 			.andExpect(model().attribute("owner", hasProperty("firstName", is("George"))))
 			.andExpect(model().attribute("owner", hasProperty("address", is("110 W. Liberty St."))))
 			.andExpect(model().attribute("owner", hasProperty("city", is("Madison"))))
