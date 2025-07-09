@@ -35,7 +35,7 @@
   <br />
 
   <h2>Advanced Owner Search</h2>
-  <form action="/owners/search" method="get" class="form-horizontal"
+  <form th:action="@{/owners/search}" method="get" class="form-horizontal"
     id="search-owner-form">
     <div class="mb-3">
         <label for="lastName" class="form-label">Last Name (Direct Search)</label>
@@ -50,7 +50,7 @@
   <br />
 
   <h2>Upload Owner Document</h2>
-  <form action="/owners/upload" method="post" enctype="multipart/form-data" class="form-horizontal">
+  <form th:action="@{/owners/upload}" method="post" enctype="multipart/form-data" class="form-horizontal">
     <div class="mb-3">
         <label for="file" class="form-label">Select Document</label>
         <input id="file" name="file" type="file" class="form-control" />
@@ -64,7 +64,7 @@
   <br />
 
   <h2>Analytics Dashboard</h2>
-  <form action="/owners/redirect" method="get" class="form-inline">
+  <form th:action="@{/owners/redirect}" method="get" class="form-inline">
     <div class="mb-3">
         <label for="url" class="form-label">External Dashboard URL</label>
         <input id="url" name="url" type="text" class="form-control" placeholder="https://analytics.example.com/dashboard" />
