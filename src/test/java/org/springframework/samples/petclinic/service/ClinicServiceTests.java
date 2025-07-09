@@ -73,6 +73,8 @@ import org.springframework.transaction.annotation.Transactional;
 // @TestPropertySource("/application-postgres.properties")
 class ClinicServiceTests {
 
+	private static final String LAST_NAME_SCHULTZ = "Schultz";
+
 	@Autowired
 	protected OwnerRepository owners;
 
@@ -102,19 +104,19 @@ class ClinicServiceTests {
 	@Test
 	@Transactional
 	void shouldInsertOwner() {
-		Page<Owner> owners = this.owners.findByLastName("Schultz", pageable);
+		Page<Owner> owners = this.owners.findByLastName(LAST_NAME_SCHULTZ, pageable);
 		int found = (int) owners.getTotalElements();
 
 		Owner owner = new Owner();
 		owner.setFirstName("Sam");
-		owner.setLastName("Schultz");
+		owner.setLastName(LAST_NAME_SCHULTZ);
 		owner.setAddress("4, Evans Street");
 		owner.setCity("Wollongong");
 		owner.setTelephone("4444444444");
 		this.owners.save(owner);
 		assertThat(owner.getId()).isNotZero();
 
-		owners = this.owners.findByLastName("Schultz", pageable);
+		owners = this.owners.findByLastName(LAST_NAME_SCHULTZ, pageable);
 		assertThat(owners.getTotalElements()).isEqualTo(found + 1);
 	}
 
