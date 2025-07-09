@@ -45,6 +45,8 @@ class VisitControllerTests {
 	private static final int TEST_OWNER_ID = 1;
 
 	private static final int TEST_PET_ID = 1;
+	
+	private static final String VISIT_FORM_URL = "/owners/{ownerId}/pets/{petId}/visits/new";
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -63,7 +65,7 @@ class VisitControllerTests {
 
 	@Test
 	void testInitNewVisitForm() throws Exception {
-		mockMvc.perform(get("/owners/{ownerId}/pets/{petId}/visits/new", TEST_OWNER_ID, TEST_PET_ID))
+		mockMvc.perform(get(VISIT_FORM_URL, TEST_OWNER_ID, TEST_PET_ID))
 			.andExpect(status().isOk())
 			.andExpect(view().name("pets/createOrUpdateVisitForm"));
 	}
@@ -71,7 +73,7 @@ class VisitControllerTests {
 	@Test
 	void testProcessNewVisitFormSuccess() throws Exception {
 		mockMvc
-			.perform(post("/owners/{ownerId}/pets/{petId}/visits/new", TEST_OWNER_ID, TEST_PET_ID)
+			.perform(post(VISIT_FORM_URL, TEST_OWNER_ID, TEST_PET_ID)
 				.param("name", "George")
 				.param("description", "Visit Description"))
 			.andExpect(status().is3xxRedirection())
@@ -81,7 +83,7 @@ class VisitControllerTests {
 	@Test
 	void testProcessNewVisitFormHasErrors() throws Exception {
 		mockMvc
-			.perform(post("/owners/{ownerId}/pets/{petId}/visits/new", TEST_OWNER_ID, TEST_PET_ID).param("name",
+			.perform(post(VISIT_FORM_URL, TEST_OWNER_ID, TEST_PET_ID).param("name",
 					"George"))
 			.andExpect(model().attributeHasErrors("visit"))
 			.andExpect(status().isOk())
