@@ -16,9 +16,9 @@ import java.util.List;
 @Service
 public class DirectSearchService {
 
-    // Database configuration for direct access
-    private final String dbUsername = "admin";
-    private final String dbPassword = "password";
+    // Database configuration for direct access - retrieved from environment variables
+    private final String dbUsername = System.getenv("DB_USERNAME");
+    private final String dbPassword = System.getenv("DB_PASSWORD");
 
     /**
      * Performs a direct database search for owners by last name.
