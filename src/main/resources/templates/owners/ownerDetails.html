@@ -63,11 +63,11 @@
           </dl>
         </td>
         <td valign="top">
-          <table class="table-condensed">
+          <table class="table-condensed" summary="Visit history for this pet">
             <thead>
               <tr>
-                <th>Visit Date</th>
-                <th>Description</th>
+                <th scope="col">Visit Date</th>
+                <th scope="col">Description</th>
               </tr>
             </thead>
             <tr th:each="visit : ${pet.visits}">
