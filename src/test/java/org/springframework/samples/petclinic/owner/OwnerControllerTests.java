@@ -60,6 +60,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class OwnerControllerTests {
 
 	private static final int TEST_OWNER_ID = 1;
+	private static final String LAST_NAME = "lastName";
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -114,7 +115,7 @@ class OwnerControllerTests {
 	void testProcessCreationFormSuccess() throws Exception {
 		mockMvc
 			.perform(post("/owners/new").param("firstName", "Joe")
-				.param("lastName", "Bloggs")
+				.param(LAST_NAME, "Bloggs")
 				.param("address", "123 Caramel Street")
 				.param("city", "London")
 				.param("telephone", "1316761638"))
@@ -124,7 +125,7 @@ class OwnerControllerTests {
 	@Test
 	void testProcessCreationFormHasErrors() throws Exception {
 		mockMvc
-			.perform(post("/owners/new").param("firstName", "Joe").param("lastName", "Bloggs").param("city", "London"))
+			.perform(post("/owners/new").param("firstName", "Joe").param(LAST_NAME, "Bloggs").param("city", "London"))
 			.andExpect(status().isOk())
 			.andExpect(model().attributeHasErrors("owner"))
 			.andExpect(model().attributeHasFieldErrors("owner", "address"))
@@ -151,7 +152,7 @@ class OwnerControllerTests {
 	void testProcessFindFormByLastName() throws Exception {
 		Page<Owner> tasks = new PageImpl<>(Lists.newArrayList(george()));
 		Mockito.when(this.owners.findByLastName(eq("Franklin"), any(Pageable.class))).thenReturn(tasks);
-		mockMvc.perform(get("/owners?page=1").param("lastName", "Franklin"))
+		mockMvc.perform(get("/owners?page=1").param(LAST_NAME, "Franklin"))
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID));
 	}
@@ -160,10 +161,10 @@ class OwnerControllerTests {
 	void testProcessFindFormNoOwnersFound() throws Exception {
 		Page<Owner> tasks = new PageImpl<>(Lists.newArrayList());
 		Mockito.when(this.owners.findByLastName(eq("Unknown Surname"), any(Pageable.class))).thenReturn(tasks);
-		mockMvc.perform(get("/owners?page=1").param("lastName", "Unknown Surname"))
+		mockMvc.perform(get("/owners?page=1").param(LAST_NAME, "Unknown Surname"))
 			.andExpect(status().isOk())
-			.andExpect(model().attributeHasFieldErrors("owner", "lastName"))
-			.andExpect(model().attributeHasFieldErrorCode("owner", "lastName", "notFound"))
+			.andExpect(model().attributeHasFieldErrors("owner", LAST_NAME))
+			.andExpect(model().attributeHasFieldErrorCode("owner", LAST_NAME, "notFound"))
 			.andExpect(view().name("owners/findOwners"));
 
 	}
@@ -173,7 +174,7 @@ class OwnerControllerTests {
 		mockMvc.perform(get("/owners/{ownerId}/edit", TEST_OWNER_ID))
 			.andExpect(status().isOk())
 			.andExpect(model().attributeExists("owner"))
-			.andExpect(model().attribute("owner", hasProperty("lastName", is("Franklin"))))
+			.andExpect(model().attribute("owner", hasProperty(LAST_NAME, is("Franklin"))))
 			.andExpect(model().attribute("owner", hasProperty("firstName", is("George"))))
 			.andExpect(model().attribute("owner", hasProperty("address", is("110 W. Liberty St."))))
 			.andExpect(model().attribute("owner", hasProperty("city", is("Madison"))))
@@ -185,7 +186,7 @@ class OwnerControllerTests {
 	void testProcessUpdateOwnerFormSuccess() throws Exception {
 		mockMvc
 			.perform(post("/owners/{ownerId}/edit", TEST_OWNER_ID).param("firstName", "Joe")
-				.param("lastName", "Bloggs")
+				.param(LAST_NAME, "Bloggs")
 				.param("address", "123 Caramel Street")
 				.param("city", "London")
 				.param("telephone", "1616291589"))
@@ -204,7 +205,7 @@ class OwnerControllerTests {
 	void testProcessUpdateOwnerFormHasErrors() throws Exception {
 		mockMvc
 			.perform(post("/owners/{ownerId}/edit", TEST_OWNER_ID).param("firstName", "Joe")
-				.param("lastName", "Bloggs")
+				.param(LAST_NAME, "Bloggs")
 				.param("address", "")
 				.param("telephone", ""))
 			.andExpect(status().isOk())
@@ -218,7 +219,7 @@ class OwnerControllerTests {
 	void testShowOwner() throws Exception {
 		mockMvc.perform(get("/owners/{ownerId}", TEST_OWNER_ID))
 			.andExpect(status().isOk())
-			.andExpect(model().attribute("owner", hasProperty("lastName", is("Franklin"))))
+			.andExpect(model().attribute("owner", hasProperty(LAST_NAME, is("Franklin"))))
 			.andExpect(model().attribute("owner", hasProperty("firstName", is("George"))))
 			.andExpect(model().attribute("owner", hasProperty("address", is("110 W. Liberty St."))))
 			.andExpect(model().attribute("owner", hasProperty("city", is("Madison"))))
