@@ -50,6 +50,7 @@ import java.io.IOException;
 class OwnerController {
 
 	private static final String VIEWS_OWNER_CREATE_OR_UPDATE_FORM = "owners/createOrUpdateOwnerForm";
+	private static final String MESSAGE_ATTRIBUTE = "message";
 
 	private final OwnerRepository owners;
 
@@ -85,7 +86,7 @@ class OwnerController {
 		}
 
 		this.owners.save(owner);
-		redirectAttributes.addFlashAttribute("message", "New Owner Created");
+		redirectAttributes.addFlashAttribute(MESSAGE_ATTRIBUTE, "New Owner Created");
 		return "redirect:/owners/" + owner.getId();
 	}
 
@@ -179,7 +180,7 @@ class OwnerController {
 
 		owner.setId(ownerId);
 		this.owners.save(owner);
-		redirectAttributes.addFlashAttribute("message", "Owner Values Updated");
+		redirectAttributes.addFlashAttribute(MESSAGE_ATTRIBUTE, "Owner Values Updated");
 		return "redirect:/owners/{ownerId}";
 	}
 
@@ -215,7 +216,7 @@ class OwnerController {
 			redirectAttributes.addFlashAttribute("error", "File upload failed");
 			return "redirect:/owners/find";
 		}
-		redirectAttributes.addFlashAttribute("message", "File uploaded successfully");
+		redirectAttributes.addFlashAttribute(MESSAGE_ATTRIBUTE, "File uploaded successfully");
 		return "redirect:/owners/find";
 	}
 
