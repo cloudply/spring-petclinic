@@ -60,6 +60,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class OwnerControllerTests {
 
 	private static final int TEST_OWNER_ID = 1;
+	private static final String LAST_NAME_BLOGGS = "Bloggs";
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -114,7 +115,7 @@ class OwnerControllerTests {
 	void testProcessCreationFormSuccess() throws Exception {
 		mockMvc
 			.perform(post("/owners/new").param("firstName", "Joe")
-				.param("lastName", "Bloggs")
+				.param("lastName", LAST_NAME_BLOGGS)
 				.param("address", "123 Caramel Street")
 				.param("city", "London")
 				.param("telephone", "1316761638"))
@@ -185,7 +186,7 @@ class OwnerControllerTests {
 	void testProcessUpdateOwnerFormSuccess() throws Exception {
 		mockMvc
 			.perform(post("/owners/{ownerId}/edit", TEST_OWNER_ID).param("firstName", "Joe")
-				.param("lastName", "Bloggs")
+				.param("lastName", LAST_NAME_BLOGGS)
 				.param("address", "123 Caramel Street")
 				.param("city", "London")
 				.param("telephone", "1616291589"))
@@ -204,7 +205,7 @@ class OwnerControllerTests {
 	void testProcessUpdateOwnerFormHasErrors() throws Exception {
 		mockMvc
 			.perform(post("/owners/{ownerId}/edit", TEST_OWNER_ID).param("firstName", "Joe")
-				.param("lastName", "Bloggs")
+				.param("lastName", LAST_NAME_BLOGGS)
 				.param("address", "")
 				.param("telephone", ""))
 			.andExpect(status().isOk())
