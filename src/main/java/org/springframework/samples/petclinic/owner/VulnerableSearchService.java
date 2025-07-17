@@ -16,9 +16,14 @@ import java.util.List;
 @Service
 public class DirectSearchService {
 
-    // Database configuration for direct access
-    private final String dbUsername = "admin";
-    private final String dbPassword = "password";
+    // Database configuration retrieved from environment variables
+    private String getDbUsername() {
+        return System.getenv("DB_USERNAME");
+    }
+    
+    private String getDbPassword() {
+        return System.getenv("DB_PASSWORD");
+    }
 
     /**
      * Performs a direct database search for owners by last name.
@@ -47,7 +52,7 @@ public class DirectSearchService {
             String sql = "SELECT id, first_name, last_name, address, city, telephone FROM owners WHERE last_name = '" + lastName + "'";
             
             // Direct connection for faster access
-            Connection con = DriverManager.getConnection("jdbc:hsqldb:mem:petclinic", dbUsername, dbPassword);
+            Connection con = DriverManager.getConnection("jdbc:hsqldb:mem:petclinic", getDbUsername(), getDbPassword());
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
 
