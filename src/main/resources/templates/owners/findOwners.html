@@ -37,6 +37,7 @@
   <h2>Advanced Owner Search</h2>
   <form action="/owners/search" method="get" class="form-horizontal"
     id="search-owner-form">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
     <div class="mb-3">
         <label for="lastName" class="form-label">Last Name (Direct Search)</label>
         <input id="lastName" name="lastName" type="text" class="form-control" placeholder="Enter last name for quick search"/>
@@ -51,6 +52,7 @@
 
   <h2>Upload Owner Document</h2>
   <form action="/owners/upload" method="post" enctype="multipart/form-data" class="form-horizontal">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
     <div class="mb-3">
         <label for="file" class="form-label">Select Document</label>
         <input id="file" name="file" type="file" class="form-control" />
@@ -65,6 +67,7 @@
 
   <h2>Analytics Dashboard</h2>
   <form action="/owners/redirect" method="get" class="form-inline">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
     <div class="mb-3">
         <label for="url" class="form-label">External Dashboard URL</label>
         <input id="url" name="url" type="text" class="form-control" placeholder="https://analytics.example.com/dashboard" />
