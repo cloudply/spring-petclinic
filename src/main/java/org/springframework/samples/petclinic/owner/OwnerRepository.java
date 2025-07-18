@@ -35,11 +35,15 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Sam Brannen
  * @author Michael Isvy
  */
+/**
+ * Repository interface for <code>Owner</code> domain objects.
+ * Provides data access methods with automatic implementation by Spring Data JPA.
+ */
 public interface OwnerRepository extends Repository<Owner, Integer> {
 
 	/**
 	 * Retrieve all {@link PetType}s from the data store.
-	 * @return a Collection of {@link PetType}s.
+	 * @return a Collection of {@link PetType}s ordered by name.
 	 */
 	@Query("SELECT ptype FROM PetType ptype ORDER BY ptype.name")
 	@Transactional(readOnly = true)
@@ -53,7 +57,15 @@ public interface OwnerRepository extends Repository<Owner, Integer> {
 	 * found)
 	 */
 
-	@Query("SELECT DISTINCT owner FROM Owner owner left join  owner.pets WHERE owner.lastName LIKE :lastName% ")
+	/**
+	 * Find owners by last name with pagination support.
+	 * Returns owners whose last name starts with the given value.
+	 * 
+	 * @param lastName Value to search for
+	 * @param pageable Pagination information
+	 * @return a Page of matching {@link Owner}s
+	 */
+	@Query("SELECT DISTINCT owner FROM Owner owner left join owner.pets WHERE owner.lastName LIKE :lastName% ")
 	@Transactional(readOnly = true)
 	Page<Owner> findByLastName(@Param("lastName") String lastName, Pageable pageable);
 
@@ -70,11 +82,18 @@ public interface OwnerRepository extends Repository<Owner, Integer> {
 	 * Save an {@link Owner} to the data store, either inserting or updating it.
 	 * @param owner the {@link Owner} to save
 	 */
+	/**
+	 * Save an {@link Owner} to the data store, either inserting or updating it.
+	 * @param owner the {@link Owner} to save
+	 */
+	@Transactional
 	void save(Owner owner);
 
 	/**
-	 * Returns all the owners from data store
-	 **/
+	 * Returns all the owners from data store with pagination support.
+	 * @param pageable Pagination information
+	 * @return a Page of all {@link Owner}s
+	 */
 	@Query("SELECT owner FROM Owner owner")
 	@Transactional(readOnly = true)
 	Page<Owner> findAll(Pageable pageable);
