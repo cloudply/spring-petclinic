@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 
-<html xmlns:th="https://www.thymeleaf.org" th:replace="~{fragments/layout :: layout (~{::body},'error')}">
+<html xmlns:th="https://www.thymeleaf.org" th:replace="~{fragments/layout :: layout (~{::body},'error',~{::title})}">
 
+  <title>Error - Spring PetClinic</title>
   <body>
     <img src="../static/resources/images/pets.png" th:src="@{/resources/images/pets.png}"/>
     <h2>Something happened...</h2>
