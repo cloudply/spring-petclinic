@@ -89,6 +89,21 @@ class ClinicServiceTests {
 		owners = this.owners.findByLastName("Daviss", pageable);
 		assertThat(owners).isEmpty();
 	}
+	
+	@Test
+	void shouldFindOwnersByPartialName() {
+		// Test partial last name match
+		Page<Owner> owners = this.owners.findByLastName("Dav", pageable);
+		assertThat(owners).hasSize(2);
+		
+		// Test partial first name match
+		owners = this.owners.findByLastName("Bet", pageable);
+		assertThat(owners).hasSize(1);
+		
+		// Test case insensitivity (should work by default with LIKE operator)
+		owners = this.owners.findByLastName("dav", pageable);
+		assertThat(owners).hasSize(2);
+	}
 
 	@Test
 	void shouldFindSingleOwnerWithPet() {

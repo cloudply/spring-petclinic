@@ -104,6 +104,7 @@ class OwnerController {
 			return "redirect:/owners/find";
 		}
 
+		// Search by any part of first or last name
 		List<Owner> results = this.directSearchService.searchByLastName(lastName);
 		if (results.isEmpty()) {
 			// no owners found
@@ -129,7 +130,7 @@ class OwnerController {
 			owner.setLastName(""); // empty string signifies broadest possible search
 		}
 
-		// find owners by last name
+		// find owners by any part of first or last name
 		Page<Owner> ownersResults = findPaginatedForOwnersLastName(page, owner.getLastName());
 		if (ownersResults.isEmpty()) {
 			// no owners found
