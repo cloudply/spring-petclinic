@@ -129,7 +129,7 @@ class OwnerControllerTests {
 			.andExpect(model().attributeHasErrors("owner"))
 			.andExpect(model().attributeHasFieldErrors("owner", "address"))
 			.andExpect(model().attributeHasFieldErrors("owner", "telephone"))
-			.andExpect(view().name("owners/createOrUpdateOwnerFo"));
+			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
 	}
 
 	@Test
