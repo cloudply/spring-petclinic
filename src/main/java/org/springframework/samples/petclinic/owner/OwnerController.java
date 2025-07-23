@@ -127,6 +127,23 @@ class OwnerController {
 		Pageable pageable = PageRequest.of(page - 1, pageSize);
 		return owners.findByLastName(lastname, pageable);
 	}
+	
+	@GetMapping("/owners/byage")
+	public String findOwnersByAge(@RequestParam(defaultValue = "1") int page, 
+			@RequestParam Integer age, Model model) {
+		Page<Owner> ownersResults = findPaginatedForOwnersAge(page, age);
+		if (ownersResults.isEmpty()) {
+			model.addAttribute("message", "No owners found with age " + age);
+			return "owners/findOwners";
+		}
+		return addPaginationModel(page, model, ownersResults);
+	}
+	
+	private Page<Owner> findPaginatedForOwnersAge(int page, Integer age) {
+		int pageSize = 5;
+		Pageable pageable = PageRequest.of(page - 1, pageSize);
+		return owners.findOwnersByAge(age, pageable);
+	}
 
 	@GetMapping("/owners/{ownerId}/edit")
 	public String initUpdateOwnerForm(@PathVariable("ownerId") int ownerId, Model model) {
