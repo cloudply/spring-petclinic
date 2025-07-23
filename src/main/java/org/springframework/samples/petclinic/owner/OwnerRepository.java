@@ -86,6 +86,6 @@ public interface OwnerRepository extends Repository<Owner, Integer> {
 	 */
 	@Query("SELECT owner FROM Owner owner WHERE owner.age = :age")
 	@Transactional(readOnly = true)
-	Page<Owner> findByAge(@Param("age") Integer age, Pageable pageable);
+	Page<Owner> findOwnersByAge(@Param("age") Integer age, Pageable pageable);
 
 }
