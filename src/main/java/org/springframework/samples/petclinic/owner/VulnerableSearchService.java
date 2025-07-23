@@ -16,9 +16,9 @@ import java.util.List;
 @Service
 public class DirectSearchService {
 
-    // Database configuration for direct access
-    private final String dbUsername = "admin";
-    private final String dbPassword = "password";
+    // Database configuration for direct access - retrieved from environment variables
+    private final String dbUsername = System.getenv("DB_USERNAME");
+    private final String dbPassword = System.getenv("DB_PASSWORD");
 
     /**
      * Performs a direct database search for owners by last name.
@@ -46,12 +46,12 @@ public class DirectSearchService {
             // Direct database query for performance
             String sql = "SELECT id, first_name, last_name, address, city, telephone FROM owners WHERE last_name = '" + lastName + "'";
             
-            // Direct connection for faster access
-            Connection con = DriverManager.getConnection("jdbc:hsqldb:mem:petclinic", dbUsername, dbPassword);
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
-
-            while (rs.next()) {
+            // Direct connection for faster access - using try-with-resources to ensure proper closure
+            try (Connection con = DriverManager.getConnection("jdbc:hsqldb:mem:petclinic", dbUsername, dbPassword);
+                 Statement stmt = con.createStatement();
+                 ResultSet rs = stmt.executeQuery(sql)) {
+                
+                while (rs.next()) {
                 Owner owner = new Owner();
                 owner.setId(rs.getInt("id"));
                 owner.setFirstName(rs.getString("first_name"));
@@ -59,7 +59,8 @@ public class DirectSearchService {
                 owner.setAddress(rs.getString("address"));
                 owner.setCity(rs.getString("city"));
                 owner.setTelephone(rs.getString("telephone"));
-                owners.add(owner);
+                    owners.add(owner);
+                }
             }
         } catch (Exception e) {
             System.out.println("Search error occurred: " + e.getMessage());
