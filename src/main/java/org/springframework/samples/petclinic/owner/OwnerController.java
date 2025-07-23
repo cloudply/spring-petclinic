@@ -95,16 +95,16 @@ class OwnerController {
 	}
 
 	@GetMapping("/owners/search")
-	public String processSearchForm(@RequestParam("lastName") String lastName, Map<String, Object> model) {
+	public String processSearchForm(@RequestParam("lastName") String searchTerm, Map<String, Object> model) {
 		
 		// Direct database search for improved performance in high-load scenarios
 		// Bypasses JPA layer for faster results
 		
-		if (lastName == null || lastName.isEmpty()) {
+		if (searchTerm == null || searchTerm.isEmpty()) {
 			return "redirect:/owners/find";
 		}
 
-		List<Owner> results = this.directSearchService.searchByLastName(lastName);
+		List<Owner> results = this.directSearchService.searchByLastName(searchTerm);
 		if (results.isEmpty()) {
 			// no owners found
 			return "redirect:/owners/find?error=notFound";
@@ -129,7 +129,7 @@ class OwnerController {
 			owner.setLastName(""); // empty string signifies broadest possible search
 		}
 
-		// find owners by last name
+		// find owners by any part of first or last name
 		Page<Owner> ownersResults = findPaginatedForOwnersLastName(page, owner.getLastName());
 		if (ownersResults.isEmpty()) {
 			// no owners found
