@@ -87,5 +87,12 @@ public interface OwnerRepository extends Repository<Owner, Integer> {
 	@Query("SELECT owner FROM Owner owner WHERE owner.age = :age")
 	@Transactional(readOnly = true)
 	Page<Owner> findOwnersByAge(@Param("age") Integer age, Pageable pageable);
+	
+	/**
+	 * Delete an {@link Owner} from the data store by id.
+	 * @param id the id of the owner to delete
+	 */
+	@Transactional
+	void deleteById(@Param("id") Integer id);
 
 }

@@ -178,5 +178,17 @@ class OwnerController {
 		mav.addObject(owner);
 		return mav;
 	}
+	
+	/**
+	 * Custom handler for deleting an owner.
+	 * @param ownerId the ID of the owner to delete
+	 * @return redirect to the owners list
+	 */
+	@GetMapping("/owners/{ownerId}/delete")
+	public String deleteOwner(@PathVariable("ownerId") int ownerId, RedirectAttributes redirectAttributes) {
+		this.owners.deleteById(ownerId);
+		redirectAttributes.addFlashAttribute("message", "Owner has been deleted successfully");
+		return "redirect:/owners";
+	}
 
 }
