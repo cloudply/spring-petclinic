@@ -160,9 +160,18 @@ class OwnerController {
 			return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
 		}
 
+		// Preserve existing pets when updating owner
+		Owner existingOwner = this.owners.findById(ownerId);
 		owner.setId(ownerId);
+		
+		// Transfer pets from existing owner to updated owner to prevent losing them
+		if (existingOwner != null && existingOwner.getPets() != null) {
+			owner.getPets().clear();
+			existingOwner.getPets().forEach(pet -> owner.addPet(pet));
+		}
+		
 		this.owners.save(owner);
-		redirectAttributes.addFlashAttribute("message", "Owner Values Updated");
+		redirectAttributes.addFlashAttribute("message", "Owner details successfully updated");
 		return "redirect:/owners/{ownerId}";
 	}
 
