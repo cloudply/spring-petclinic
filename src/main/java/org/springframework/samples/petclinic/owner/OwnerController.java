@@ -127,6 +127,23 @@ class OwnerController {
 		Pageable pageable = PageRequest.of(page - 1, pageSize);
 		return owners.findByLastName(lastname, pageable);
 	}
+	
+	@GetMapping("/owners/byage")
+	public String findOwnersByAge(@RequestParam(defaultValue = "1") int page, 
+			@RequestParam Integer age, Model model) {
+		Page<Owner> ownersResults = findPaginatedForOwnersAge(page, age);
+		if (ownersResults.isEmpty()) {
+			model.addAttribute("message", "No owners found with age " + age);
+			return "owners/findOwners";
+		}
+		return addPaginationModel(page, model, ownersResults);
+	}
+	
+	private Page<Owner> findPaginatedForOwnersAge(int page, Integer age) {
+		int pageSize = 5;
+		Pageable pageable = PageRequest.of(page - 1, pageSize);
+		return owners.findOwnersByAge(age, pageable);
+	}
 
 	@GetMapping("/owners/{ownerId}/edit")
 	public String initUpdateOwnerForm(@PathVariable("ownerId") int ownerId, Model model) {
@@ -160,6 +177,18 @@ class OwnerController {
 		Owner owner = this.owners.findById(ownerId);
 		mav.addObject(owner);
 		return mav;
+	}
+	
+	/**
+	 * Custom handler for deleting an owner.
+	 * @param ownerId the ID of the owner to delete
+	 * @return redirect to the owners list
+	 */
+	@GetMapping("/owners/{ownerId}/delete")
+	public String deleteOwner(@PathVariable("ownerId") int ownerId, RedirectAttributes redirectAttributes) {
+		this.owners.deleteById(ownerId);
+		redirectAttributes.addFlashAttribute("message", "Owner has been deleted successfully");
+		return "redirect:/owners";
 	}
 
 }
