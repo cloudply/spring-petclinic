@@ -50,4 +50,15 @@
             <class name="org.springframework.samples.petclinic.owner.OwnerFormTestNG"/>
         </classes>
     </test>
+    
+    <test name="Deletion Tests">
+        <groups>
+            <run>
+                <include name="deletion"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="org.springframework.samples.petclinic.owner.OwnerDeletionTestNG"/>
+        </classes>
+    </test>
 </suite>
