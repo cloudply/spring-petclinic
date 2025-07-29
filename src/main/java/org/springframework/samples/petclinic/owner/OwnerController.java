@@ -145,35 +145,6 @@ class OwnerController {
 		return owners.findOwnersByAge(age, pageable);
 	}
 
-	@GetMapping("/owners/{ownerId}/edit")
-	public String initUpdateOwnerForm(@PathVariable("ownerId") int ownerId, Model model) {
-		Owner owner = this.owners.findById(ownerId);
-		model.addAttribute(owner);
-		return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
-	}
-
-	@PostMapping("/owners/{ownerId}/edit")
-	public String processUpdateOwnerForm(@Valid Owner owner, BindingResult result, @PathVariable("ownerId") int ownerId,
-			RedirectAttributes redirectAttributes) {
-		if (result.hasErrors()) {
-			redirectAttributes.addFlashAttribute("error", "There was an error in updating the owner.");
-			return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
-		}
-
-		// Preserve existing pets when updating owner
-		Owner existingOwner = this.owners.findById(ownerId);
-		owner.setId(ownerId);
-		
-		// Transfer pets from existing owner to updated owner to prevent losing them
-		if (existingOwner != null && existingOwner.getPets() != null) {
-			owner.getPets().clear();
-			existingOwner.getPets().forEach(pet -> owner.addPet(pet));
-		}
-		
-		this.owners.save(owner);
-		redirectAttributes.addFlashAttribute("message", "Owner details successfully updated");
-		return "redirect:/owners/{ownerId}";
-	}
 
 	/**
 	 * Custom handler for displaying an owner.

@@ -130,32 +130,6 @@ public class OwnerFormTestNG {
         assertThat(content).contains("is required");
     }
 
-    @Test(groups = "update", description = "Test owner update form submission")
-    public void testOwnerUpdateFormSubmission() throws Exception {
-        // Setup existing owner
-        Owner existingOwner = new Owner();
-        existingOwner.setId(1);
-        existingOwner.setFirstName("Original");
-        existingOwner.setLastName("Owner");
-        existingOwner.setAddress("Original Address");
-        existingOwner.setCity("Original City");
-        existingOwner.setTelephone("1234567890");
-        existingOwner.setAge(30);
-        
-        when(owners.findById(1)).thenReturn(existingOwner);
-        
-        mockMvc.perform(post("/owners/1/edit")
-            .param("firstName", "Updated")
-            .param("lastName", "Owner")
-            .param("address", "Updated Address")
-            .param("city", "Updated City")
-            .param("telephone", "0987654321")
-            .param("age", "35"))
-            .andExpect(status().is3xxRedirection())
-            .andExpect(flash().attributeExists("message"));
-        
-        verify(owners).save(any(Owner.class));
-    }
 
     @AfterMethod(groups = "forms")
     public void tearDown() {

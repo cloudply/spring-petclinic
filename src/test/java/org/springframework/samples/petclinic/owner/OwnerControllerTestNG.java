@@ -131,28 +131,6 @@ public class OwnerControllerTestNG {
         verify(owners).deleteById(TEST_OWNER_ID);
     }
     
-    @Test(groups = "controller")
-    public void testInitUpdateOwnerForm() throws Exception {
-        mockMvc.perform(get("/owners/{ownerId}/edit", TEST_OWNER_ID))
-            .andExpect(status().isOk())
-            .andExpect(model().attributeExists("owner"))
-            .andExpect(model().attribute("owner", george))
-            .andExpect(view().name("owners/createOrUpdateOwnerForm"));
-    }
-    
-    @Test(groups = "controller", dependsOnMethods = "testInitUpdateOwnerForm")
-    public void testProcessUpdateOwnerFormSuccess() throws Exception {
-        mockMvc.perform(post("/owners/{ownerId}/edit", TEST_OWNER_ID)
-            .param("firstName", "George Updated")
-            .param("lastName", "Franklin")
-            .param("address", "110 W. Liberty St.")
-            .param("city", "Madison")
-            .param("telephone", "6085551023")
-            .param("age", "42"))
-            .andExpect(status().is3xxRedirection())
-            .andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID))
-            .andExpect(flash().attributeExists("message"));
-    }
 
     @DataProvider(name = "ownerData")
     public Object[][] ownerData() {

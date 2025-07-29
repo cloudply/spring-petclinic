@@ -44,7 +44,6 @@
                 <include name="validation"/>
                 <include name="messages"/>
                 <include name="errors"/>
-                <include name="update"/>
             </run>
         </groups>
         <classes>

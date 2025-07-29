@@ -95,24 +95,6 @@ public class OwnerUITestNG {
         assertThat(content).contains("Add Owner");
     }
 
-    @Test(groups = "forms", dependsOnMethods = "testCreateOwnerFormDisplay",
-          description = "Test the edit owner form is displayed correctly")
-    public void testEditOwnerFormDisplay() throws Exception {
-        MvcResult result = mockMvc.perform(get("/owners/{ownerId}/edit", TEST_OWNER_ID))
-            .andExpect(status().isOk())
-            .andExpect(view().name("owners/createOrUpdateOwnerForm"))
-            .andExpect(model().attributeExists("owner"))
-            .andReturn();
-        
-        String content = result.getResponse().getContentAsString();
-        assertThat(content).contains("First Name");
-        assertThat(content).contains("Last Name");
-        assertThat(content).contains("Address");
-        assertThat(content).contains("City");
-        assertThat(content).contains("Telephone");
-        assertThat(content).contains("Age");
-        assertThat(content).contains("Update Owner");
-    }
 
     @Test(groups = "details", description = "Test the owner details page is displayed correctly")
     public void testOwnerDetailsDisplay() throws Exception {
