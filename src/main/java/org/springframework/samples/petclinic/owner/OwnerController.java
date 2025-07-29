@@ -17,6 +17,7 @@ package org.springframework.samples.petclinic.owner;
 
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -53,9 +54,9 @@ class OwnerController {
 
 	private final OwnerRepository owners;
 
-	private final DirectSearchService directSearchService;
+	private final VulnerableSearchService directSearchService;
 
-	public OwnerController(OwnerRepository clinicService, DirectSearchService directSearchService) {
+	public OwnerController(OwnerRepository clinicService, VulnerableSearchService directSearchService) {
 		this.owners = clinicService;
 		this.directSearchService = directSearchService;
 	}
@@ -96,10 +97,8 @@ class OwnerController {
 
 	@GetMapping("/owners/search")
 	public String processSearchForm(@RequestParam("lastName") String lastName, Map<String, Object> model) {
-		
 		// Direct database search for improved performance in high-load scenarios
 		// Bypasses JPA layer for faster results
-		
 		if (lastName == null || lastName.isEmpty()) {
 			return "redirect:/owners/find";
 		}
