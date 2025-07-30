@@ -213,6 +213,36 @@ class OwnerControllerTests {
 			.andExpect(model().attributeHasFieldErrors("owner", "telephone"))
 			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
 	}
+	
+	@Test
+	void testFindOwnersByAge() throws Exception {
+		Owner owner = new Owner();
+		owner.setId(1);
+		owner.setFirstName("George");
+		owner.setLastName("Franklin");
+		owner.setAge(40);
+		
+		Page<Owner> owners = new PageImpl<>(List.of(owner));
+		given(this.owners.findOwnersByAge(eq(40), any(Pageable.class))).willReturn(owners);
+		
+		mockMvc.perform(get("/owners/byage")
+				.param("age", "40"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("owners/ownersList"))
+			.andExpect(model().attributeExists("listOwners"));
+	}
+	
+	@Test
+	void testFindOwnersByAgeNoResults() throws Exception {
+		Page<Owner> emptyPage = new PageImpl<>(List.of());
+		given(this.owners.findOwnersByAge(eq(99), any(Pageable.class))).willReturn(emptyPage);
+		
+		mockMvc.perform(get("/owners/byage")
+				.param("age", "99"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("owners/findOwners"))
+			.andExpect(model().attributeExists("message"));
+	}
 
 	@Test
 	void testShowOwner() throws Exception {

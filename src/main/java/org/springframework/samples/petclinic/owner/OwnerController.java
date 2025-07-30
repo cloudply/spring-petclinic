@@ -130,7 +130,12 @@ class OwnerController {
 	
 	@GetMapping("/owners/byage")
 	public String findOwnersByAge(@RequestParam(defaultValue = "1") int page, 
-			@RequestParam Integer age, Model model) {
+			@RequestParam(required = false) Integer age, Model model) {
+		if (age == null) {
+			model.addAttribute("message", "Please provide an age to search");
+			return "owners/findOwners";
+		}
+		
 		Page<Owner> ownersResults = findPaginatedForOwnersAge(page, age);
 		if (ownersResults.isEmpty()) {
 			model.addAttribute("message", "No owners found with age " + age);
