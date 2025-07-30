@@ -1,5 +1,9 @@
 <html xmlns:th="https://www.thymeleaf.org"
-  th:replace="~{fragments/layout :: layout (~{::body},'owners')}">
+  th:replace="~{fragments/layout :: layout (~{::body},'owners')}" th:with="title=#{pet}">
+
+<head>
+  <title>Pet Form</title>
+</head>
 
 <body>
 
