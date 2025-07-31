@@ -25,8 +25,29 @@
           Owner</button>
       </div>
     </div>
+  </form>
 
-    <a class="btn btn-primary" th:href="@{/owners/new}">Add Owner</a>
+  <h2>Find Owners by Age</h2>
+  <form th:action="@{/owners/byage}" method="get" class="form-horizontal" id="search-owner-by-age-form">
+    <div class="form-group">
+      <div class="control-group">
+        <label class="col-sm-2 control-label">Age </label>
+        <div class="col-sm-10">
+          <input class="form-control" name="age" type="number" min="0" /> 
+          <span class="help-inline" th:if="${message != null}">
+            <p th:text="${message}">Error</p>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <button type="submit" class="btn btn-primary">Find Owners by Age</button>
+      </div>
+    </div>
+  </form>
+
+  <a class="btn btn-primary" th:href="@{/owners/new}">Add Owner</a>
 
   </form>
 

@@ -1,0 +1,75 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="PetClinic TestNG Suite">
+    <test name="Repository Tests">
+        <groups>
+            <run>
+                <include name="repository"/>
+                <include name="data"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="org.springframework.samples.petclinic.owner.OwnerRepositoryTestNG"/>
+        </classes>
+    </test>
+    
+    <test name="Controller Tests">
+        <groups>
+            <run>
+                <include name="controller"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="org.springframework.samples.petclinic.owner.OwnerControllerTestNG"/>
+        </classes>
+    </test>
+    
+    <test name="UI Tests">
+        <groups>
+            <run>
+                <include name="ui"/>
+                <include name="forms"/>
+                <include name="details"/>
+                <include name="responsive"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="org.springframework.samples.petclinic.owner.OwnerUITestNG"/>
+        </classes>
+    </test>
+    
+    <test name="Form Submission Tests">
+        <groups>
+            <run>
+                <include name="submission"/>
+                <include name="validation"/>
+                <include name="messages"/>
+                <include name="errors"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="org.springframework.samples.petclinic.owner.OwnerFormTestNG"/>
+        </classes>
+    </test>
+    
+    <test name="Deletion Tests">
+        <groups>
+            <run>
+                <include name="deletion"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="org.springframework.samples.petclinic.owner.OwnerDeletionTestNG"/>
+        </classes>
+    </test>
+    
+    <test name="Age Filter Tests">
+        <groups>
+            <run>
+                <include name="ageFilter"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="org.springframework.samples.petclinic.owner.OwnerAgeFilterTestNG"/>
+        </classes>
+    </test>
+</suite>

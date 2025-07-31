@@ -127,27 +127,29 @@ class OwnerController {
 		Pageable pageable = PageRequest.of(page - 1, pageSize);
 		return owners.findByLastName(lastname, pageable);
 	}
-
-	@GetMapping("/owners/{ownerId}/edit")
-	public String initUpdateOwnerForm(@PathVariable("ownerId") int ownerId, Model model) {
-		Owner owner = this.owners.findById(ownerId);
-		model.addAttribute(owner);
-		return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
-	}
-
-	@PostMapping("/owners/{ownerId}/edit")
-	public String processUpdateOwnerForm(@Valid Owner owner, BindingResult result, @PathVariable("ownerId") int ownerId,
-			RedirectAttributes redirectAttributes) {
-		if (result.hasErrors()) {
-			redirectAttributes.addFlashAttribute("error", "There was an error in updating the owner.");
-			return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
+	
+	@GetMapping("/owners/byage")
+	public String findOwnersByAge(@RequestParam(defaultValue = "1") int page, 
+			@RequestParam(required = false) Integer age, Model model) {
+		if (age == null) {
+			model.addAttribute("message", "Please provide an age to search");
+			return "owners/findOwners";
 		}
-
-		owner.setId(ownerId);
-		this.owners.save(owner);
-		redirectAttributes.addFlashAttribute("message", "Owner Values Updated");
-		return "redirect:/owners/{ownerId}";
+		
+		Page<Owner> ownersResults = findPaginatedForOwnersAge(page, age);
+		if (ownersResults.isEmpty()) {
+			model.addAttribute("message", "No owners found with age " + age);
+			return "owners/findOwners";
+		}
+		return addPaginationModel(page, model, ownersResults);
 	}
+	
+	private Page<Owner> findPaginatedForOwnersAge(int page, Integer age) {
+		int pageSize = 5;
+		Pageable pageable = PageRequest.of(page - 1, pageSize);
+		return owners.findOwnersByAge(age, pageable);
+	}
+
 
 	/**
 	 * Custom handler for displaying an owner.
@@ -160,6 +162,18 @@ class OwnerController {
 		Owner owner = this.owners.findById(ownerId);
 		mav.addObject(owner);
 		return mav;
+	}
+	
+	/**
+	 * Custom handler for deleting an owner.
+	 * @param ownerId the ID of the owner to delete
+	 * @return redirect to the owners list
+	 */
+	@GetMapping("/owners/{ownerId}/delete")
+	public String deleteOwner(@PathVariable("ownerId") int ownerId, RedirectAttributes redirectAttributes) {
+		this.owners.deleteById(ownerId);
+		redirectAttributes.addFlashAttribute("message", "Owner has been deleted successfully");
+		return "redirect:/owners";
 	}
 
 }

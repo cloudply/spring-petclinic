@@ -134,6 +134,14 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- TestNG Dependencies -->
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>7.8.0</version>
+      <scope>test</scope>
+    </dependency>
+
     <dependency>
       <groupId>jakarta.xml.bind</groupId>
       <artifactId>jakarta.xml.bind-api</artifactId>
@@ -272,6 +280,17 @@
       <plugin>
         <groupId>org.cyclonedx</groupId>
         <artifactId>cyclonedx-maven-plugin</artifactId>
+      </plugin>
+
+      <!-- TestNG Maven Plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <suiteXmlFiles>
+            <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
+          </suiteXmlFiles>
+        </configuration>
       </plugin>
 
     </plugins>
