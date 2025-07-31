@@ -15,10 +15,12 @@
  */
 package org.springframework.samples.petclinic.owner;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.core.style.ToStringCreator;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.samples.petclinic.model.Person;
 import org.springframework.util.Assert;
 
@@ -46,6 +48,10 @@ import jakarta.validation.constraints.NotBlank;
 @Table(name = "owners")
 public class Owner extends Person {
 
+	@Column(name = "birth_date")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private LocalDate birthDate;
+	
 	@Column(name = "address")
 	@NotBlank
 	private String address;
@@ -86,6 +92,14 @@ public class Owner extends Person {
 
 	public void setTelephone(String telephone) {
 		this.telephone = telephone;
+	}
+	
+	public LocalDate getBirthDate() {
+		return this.birthDate;
+	}
+
+	public void setBirthDate(LocalDate birthDate) {
+		this.birthDate = birthDate;
 	}
 
 	public List<Pet> getPets() {
