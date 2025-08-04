@@ -15,6 +15,9 @@
  */
 package org.springframework.samples.petclinic.owner;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +34,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.validation.Valid;
@@ -161,5 +165,45 @@ class OwnerController {
 		mav.addObject(owner);
 		return mav;
 	}
-
+	
+	/**
+	 * Find pets with the most visits in a given month
+	 * @param month the month (1-12)
+	 * @param year the year
+	 * @return a list of pets with their visit counts
+	 */
+	@GetMapping("/pets/most-visits")
+	@ResponseBody
+	public List<Map<String, Object>> findPetsWithMostVisitsInMonth(
+			@RequestParam(defaultValue = "0") int month,
+			@RequestParam(defaultValue = "0") int year) {
+		
+		// If month or year not provided, use current month and year
+		if (month == 0 || year == 0) {
+			LocalDate now = LocalDate.now();
+			month = now.getMonthValue();
+			year = now.getYear();
+		}
+		
+		List<Object[]> results = this.owners.findPetsWithMostVisitsInMonth(month, year);
+		List<Map<String, Object>> response = new ArrayList<>();
+		
+		for (Object[] result : results) {
+			Pet pet = (Pet) result[0];
+			Long visitCount = (Long) result[1];
+			
+			Map<String, Object> petData = new HashMap<>();
+			petData.put("id", pet.getId());
+			petData.put("name", pet.getName());
+			petData.put("birthDate", pet.getBirthDate());
+			petData.put("type", pet.getType().getName());
+			petData.put("ownerId", pet.getOwner().getId());
+			petData.put("ownerName", pet.getOwner().getFirstName() + " " + pet.getOwner().getLastName());
+			petData.put("visitCount", visitCount);
+			
+			response.add(petData);
+		}
+		
+		return response;
+	}
 }
