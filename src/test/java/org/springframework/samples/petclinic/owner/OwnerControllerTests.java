@@ -229,4 +229,33 @@ class OwnerControllerTests {
 			.andExpect(view().name("owners/ownerDetails"));
 	}
 
+	@Test
+	void testShowNonExistentOwner() throws Exception {
+		given(this.owners.findById(99)).willReturn(null);
+		mockMvc.perform(get("/owners/99"))
+			.andExpect(status().isNotFound());
+	}
+
+	@Test
+	void testProcessFindFormWildcard() throws Exception {
+		Page<Owner> tasks = new PageImpl<>(Lists.newArrayList(george()));
+		given(this.owners.findByLastName(eq("%"), any(Pageable.class))).willReturn(tasks);
+		mockMvc.perform(get("/owners?page=1").param("lastName", "%"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("owners/ownersList"));
+	}
+
+	@Test
+	void testProcessUpdateOwnerFormWithInvalidPhone() throws Exception {
+		mockMvc.perform(post("/owners/{ownerId}/edit", TEST_OWNER_ID)
+				.param("firstName", "Joe")
+				.param("lastName", "Bloggs")
+				.param("address", "123 Caramel Street")
+				.param("city", "London")
+				.param("telephone", "invalid"))
+			.andExpect(status().isOk())
+			.andExpect(model().attributeHasFieldErrors("owner", "telephone"))
+			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
+	}
+
 }
