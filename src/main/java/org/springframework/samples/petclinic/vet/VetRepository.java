@@ -15,14 +15,16 @@
  */
 package org.springframework.samples.petclinic.vet;
 
+import java.util.Collection;
+
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Collection;
 
 /**
  * Repository class for <code>Vet</code> domain objects All method names are compliant
@@ -54,5 +56,15 @@ public interface VetRepository extends Repository<Vet, Integer> {
 	@Transactional(readOnly = true)
 	@Cacheable("vets")
 	Page<Vet> findAll(Pageable pageable) throws DataAccessException;
+
+	/**
+	 * Find {@link Vet}s by last name.
+	 * @param lastName the last name to search for
+	 * @param pageable pagination information
+	 * @return a Page of matching Vets
+	 */
+	@Query("SELECT vet FROM Vet vet WHERE vet.lastName LIKE :lastName%")
+	@Transactional(readOnly = true)
+	Page<Vet> findByLastName(@Param("lastName") String lastName, Pageable pageable);
 
 }
