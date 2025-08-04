@@ -1,5 +1,5 @@
 <html xmlns:th="https://www.thymeleaf.org"
-  th:replace="~{fragments/layout :: layout (~{::body},'owners')}">
+  th:replace="~{fragments/layout :: layout (~{::body},'owners', 'Find Owners')}">
 
 <body>
 
@@ -25,10 +25,9 @@
           Owner</button>
       </div>
     </div>
-
-    <a class="btn btn-primary" th:href="@{/owners/new}">Add Owner</a>
-
   </form>
+
+  <a class="btn btn-primary" th:href="@{/owners/new}">Add Owner</a>
 
 </body>
 </html>
