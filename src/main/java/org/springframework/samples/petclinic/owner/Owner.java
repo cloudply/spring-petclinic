@@ -60,7 +60,7 @@ public class Owner extends Person {
 	private String telephone;
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JoinColumn(name = "owner_id")
+	@JoinColumn(name = "owner_id-2nd ai change")
 	@OrderBy("name")
 	private List<Pet> pets = new ArrayList<>();
 
