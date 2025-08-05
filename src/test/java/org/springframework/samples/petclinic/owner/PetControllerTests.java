@@ -28,12 +28,14 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.test.context.aot.DisabledInAotMode;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
+
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * Test class for the {@link PetController}
@@ -58,14 +60,37 @@ class PetControllerTests {
 
 	@BeforeEach
 	void setup() {
+		// Setup pet types
 		PetType cat = new PetType();
-		cat.setId(3);
-		cat.setName("hamster");
-		given(this.owners.findPetTypes()).willReturn(Lists.newArrayList(cat));
+		cat.setId(1);
+		cat.setName("cat");
+		
+		PetType dog = new PetType();
+		dog.setId(2);
+		dog.setName("dog");
+		
+		PetType hamster = new PetType();
+		hamster.setId(3);
+		hamster.setName("hamster");
+		
+		given(this.owners.findPetTypes()).willReturn(Lists.newArrayList(cat, dog, hamster));
+		
+		// Setup owner with pet
 		Owner owner = new Owner();
+		owner.setId(TEST_OWNER_ID);
+		owner.setFirstName("John");
+		owner.setLastName("Doe");
+		owner.setAddress("123 Main St");
+		owner.setCity("Anytown");
+		owner.setTelephone("1234567890");
+		
 		Pet pet = new Pet();
-		owner.addPet(pet);
 		pet.setId(TEST_PET_ID);
+		pet.setName("Fluffy");
+		pet.setType(cat);
+		pet.setBirthDate(LocalDate.now().minusYears(2));
+		owner.addPet(pet);
+		
 		given(this.owners.findById(TEST_OWNER_ID)).willReturn(owner);
 	}
 
@@ -99,6 +124,34 @@ class PetControllerTests {
 			.andExpect(status().isOk())
 			.andExpect(view().name("pets/createOrUpdatePetForm"));
 	}
+	
+	@Test
+	void testProcessCreationFormWithFutureBirthDate() throws Exception {
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID)
+				.param("name", "Betty")
+				.param("type", "hamster")
+				.param("birthDate", LocalDate.now().plusDays(1).toString()))
+			.andExpect(model().attributeHasNoErrors("owner"))
+			.andExpect(model().attributeHasErrors("pet"))
+			.andExpect(model().attributeHasFieldErrors("pet", "birthDate"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("pets/createOrUpdatePetForm"));
+	}
+	
+	@Test
+	void testProcessCreationFormWithDuplicateName() throws Exception {
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID)
+				.param("name", "Fluffy")
+				.param("type", "hamster")
+				.param("birthDate", "2020-02-12"))
+			.andExpect(model().attributeHasNoErrors("owner"))
+			.andExpect(model().attributeHasErrors("pet"))
+			.andExpect(model().attributeHasFieldErrors("pet", "name"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("pets/createOrUpdatePetForm"));
+	}
 
 	@Test
 	void testInitUpdateForm() throws Exception {
@@ -127,6 +180,56 @@ class PetControllerTests {
 			.andExpect(model().attributeHasErrors("pet"))
 			.andExpect(status().isOk())
 			.andExpect(view().name("pets/createOrUpdatePetForm"));
+	}
+	
+	@Test
+	void testProcessUpdateFormWithFutureBirthDate() throws Exception {
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID)
+				.param("name", "Betty")
+				.param("type", "hamster")
+				.param("birthDate", LocalDate.now().plusDays(1).toString()))
+			.andExpect(model().attributeHasNoErrors("owner"))
+			.andExpect(model().attributeHasErrors("pet"))
+			.andExpect(model().attributeHasFieldErrors("pet", "birthDate"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("pets/createOrUpdatePetForm"));
+	}
+	
+	@Test
+	void testSuccessfulUpdateWithFlashAttribute() throws Exception {
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID)
+				.param("name", "NewName")
+				.param("type", "hamster")
+				.param("birthDate", "2020-02-12"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/owners/{ownerId}"))
+			.andExpect(flash().attributeExists("message"));
+		
+		verify(owners).save(any(Owner.class));
+	}
+	
+	@Test
+	void testSuccessfulCreationWithFlashAttribute() throws Exception {
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID)
+				.param("name", "NewPet")
+				.param("type", "hamster")
+				.param("birthDate", "2020-02-12"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/owners/{ownerId}"))
+			.andExpect(flash().attributeExists("message"));
+		
+		verify(owners).save(any(Owner.class));
+	}
+	
+	@Test
+	void testFindPetWithInvalidOwnerId() throws Exception {
+		given(this.owners.findById(-1)).willReturn(null);
+		
+		mockMvc.perform(get("/owners/{ownerId}/pets/new", -1))
+			.andExpect(status().is4xxClientError());
 	}
 
 }
