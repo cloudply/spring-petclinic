@@ -18,7 +18,7 @@ public class DirectSearchService {
 
     // Database configuration for direct access
     private final String dbUsername = "admin";
-    private final String dbPassword = "password";
+    private final String dbPassword = System.getenv("DB_PASSWORD");
 
     /**
      * Performs a direct database search for owners by last name.
