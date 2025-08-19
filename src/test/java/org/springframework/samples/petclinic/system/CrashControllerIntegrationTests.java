@@ -74,7 +74,7 @@ class CrashControllerIntegrationTests {
 		assertThat(resp.getBody()).containsKey("status");
 		assertThat(resp.getBody()).containsKey("error");
 		assertThat(resp.getBody()).containsEntry("message",
-				"Expected: controller used to showcase what happens when an exception is thrown");
+				"Expected: controller used to showcase what happens when an exception is thrown!");
 		assertThat(resp.getBody()).containsEntry("path", "/oups");
 	}
 
