@@ -85,8 +85,9 @@ class VetControllerTests {
 		mockMvc.perform(MockMvcRequestBuilders.get("/vets.html?page=1"))
 			.andExpect(status().isOk())
 			.andExpect(model().attributeExists("listVets"))
+			.andExpect(model().attribute("currentPage", 1))
+			.andExpect(model().attributeExists("totalPages"))
 			.andExpect(view().name("vets/vetList"));
-
 	}
 
 	@Test
@@ -94,7 +95,31 @@ class VetControllerTests {
 		ResultActions actions = mockMvc.perform(get("/vets").accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk());
 		actions.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-			.andExpect(jsonPath("$.vetList[0].id").value(1));
+			.andExpect(jsonPath("$.vetList[0].id").value(1))
+			.andExpect(jsonPath("$.vetList[0].firstName").value("James"))
+			.andExpect(jsonPath("$.vetList[1].specialties[0].name").value("radiology"));
+	}
+
+	@Test
+	void testShowVetListPagination() throws Exception {
+		mockMvc.perform(get("/vets.html?page=2"))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("currentPage", 2));
+	}
+
+	@Test
+	void testShowVetListWithSpecialties() throws Exception {
+		given(this.vets.findAll(any(Pageable.class)))
+			.willReturn(new PageImpl<>(Collections.singletonList(helen())));
+		
+		mockMvc.perform(get("/vets.html"))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("listVets", hasItem(
+				allOf(
+					hasProperty("firstName", is("Helen")),
+					hasProperty("nrOfSpecialties", is(1))
+				)
+			)));
 	}
 
 }

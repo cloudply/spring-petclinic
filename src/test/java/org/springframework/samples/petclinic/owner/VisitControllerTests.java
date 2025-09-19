@@ -73,9 +73,46 @@ class VisitControllerTests {
 		mockMvc
 			.perform(post("/owners/{ownerId}/pets/{petId}/visits/new", TEST_OWNER_ID, TEST_PET_ID)
 				.param("name", "George")
-				.param("description", "Visit Description"))
+				.param("description", "Visit Description")
+				.param("date", "2023-01-01"))
 			.andExpect(status().is3xxRedirection())
-			.andExpect(view().name("redirect:/owners/{ownerId}"));
+			.andExpect(view().name("redirect:/owners/{ownerId}"))
+			.andExpect(flash().attributeExists("message"));
+	}
+
+	@Test
+	void testProcessNewVisitFormInvalidPetId() throws Exception {
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/{petId}/visits/new", TEST_OWNER_ID, 99)
+				.param("name", "George")
+				.param("description", "Visit Description")
+				.param("date", "2023-01-01"))
+			.andExpect(status().isNotFound());
+	}
+
+	@Test
+	void testProcessNewVisitFormValidationErrors() throws Exception {
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/{petId}/visits/new", TEST_OWNER_ID, TEST_PET_ID)
+				.param("date", "")  // invalid date
+				.param("description", ""))  // empty description
+			.andExpect(model().attributeHasErrors("visit"))
+			.andExpect(model().attributeHasFieldErrors("visit", "date"))
+			.andExpect(model().attributeHasFieldErrors("visit", "description"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("pets/createOrUpdateVisitForm"));
+	}
+
+	@Test
+	void testProcessNewVisitFormFutureDate() throws Exception {
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/{petId}/visits/new", TEST_OWNER_ID, TEST_PET_ID)
+				.param("date", "2030-01-01")  // future date
+				.param("description", "test"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("pets/createOrUpdateVisitForm"))
+			.andExpect(model().attributeHasErrors("visit"))
+			.andExpect(model().attributeHasFieldErrors("visit", "date"));
 	}
 
 	@Test

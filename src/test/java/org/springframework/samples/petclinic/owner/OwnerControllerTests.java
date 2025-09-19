@@ -165,7 +165,43 @@ class OwnerControllerTests {
 			.andExpect(model().attributeHasFieldErrors("owner", "lastName"))
 			.andExpect(model().attributeHasFieldErrorCode("owner", "lastName", "notFound"))
 			.andExpect(view().name("owners/findOwners"));
+	}
 
+	@Test
+	void testProcessFindFormEmptyLastName() throws Exception {
+		mockMvc.perform(get("/owners?page=1").param("lastName", ""))
+			.andExpect(status().isOk())
+			.andExpect(view().name("owners/ownersList"))
+			.andExpect(model().attributeExists("listOwners"));
+	}
+
+	@Test
+	void testProcessFindFormWithPagination() throws Exception {
+		when(owners.findByLastName(anyString(), any())).thenReturn(new PageImpl<>(Collections.singletonList(george())));
+		
+		mockMvc.perform(get("/owners?page=2").param("lastName", "Franklin"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("owners/ownersList"))
+			.andExpect(model().attributeExists("listOwners"))
+			.andExpect(model().attribute("currentPage", 2));
+	}
+
+	@Test
+	void testShowOwnerWithInvalidId() throws Exception {
+		mockMvc.perform(get("/owners/{ownerId}", 99))
+			.andExpect(status().isNotFound())
+			.andExpect(view().name("error"));
+	}
+
+	@Test
+	void testProcessUpdateOwnerFormInvalidId() throws Exception {
+		mockMvc.perform(post("/owners/{ownerId}/edit", 99)
+			.param("firstName", "George")
+			.param("lastName", "Franklin")
+			.param("address", "110 W. Liberty St.")
+			.param("city", "Madison")
+			.param("telephone", "6085551023"))
+			.andExpect(status().isNotFound());
 	}
 
 	@Test

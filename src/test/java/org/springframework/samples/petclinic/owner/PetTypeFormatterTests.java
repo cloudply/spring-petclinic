@@ -75,6 +75,25 @@ class PetTypeFormatterTests {
 		});
 	}
 
+	@Test
+	void shouldHandleNullInputForParse() {
+		assertThatExceptionOfType(ParseException.class)
+			.isThrownBy(() -> petTypeFormatter.parse(null, Locale.ENGLISH))
+			.withMessageContaining("null");
+	}
+
+	@Test
+	void shouldHandleEmptyInputForParse() {
+		assertThatExceptionOfType(ParseException.class)
+			.isThrownBy(() -> petTypeFormatter.parse("", Locale.ENGLISH))
+			.withMessageContaining("empty");
+	}
+
+	@Test
+	void shouldPrintNullType() {
+		assertThat(petTypeFormatter.print(null, Locale.ENGLISH)).isEmpty();
+	}
+
 	/**
 	 * Helper method to produce some sample pet types just for test purpose
 	 * @return {@link Collection} of {@link PetType}
