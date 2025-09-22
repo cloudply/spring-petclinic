@@ -44,6 +44,13 @@ public class PetClinicIntegrationTests {
 	private RestTemplateBuilder builder;
 
 	@Test
+	void testResponsiveMetaTag() throws Exception {
+	    RestTemplate template = builder.rootUri("http://localhost:" + port).build();
+	    ResponseEntity<String> response = template.getForEntity("/", String.class);
+	    assertThat(response.getBody()).contains("viewport");
+	}
+
+	@Test
 	void testFindAll() throws Exception {
 		vets.findAll();
 		vets.findAll(); // served from cache
