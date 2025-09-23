@@ -18,7 +18,8 @@ package org.springframework.samples.petclinic.vet;
 import org.junit.jupiter.api.Test;
 import org.springframework.util.SerializationUtils;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * @author Dave Syer
@@ -26,11 +27,45 @@ import static org.assertj.core.api.Assertions.assertThat;
 class VetTests {
 
 	@Test
+	void testAddSpecialty() {
+		Vet vet = new Vet();
+		Specialty specialty = new Specialty();
+		specialty.setName("surgery");
+		
+		vet.addSpecialty(specialty);
+		
+		assertThat(vet.getNrOfSpecialties()).isEqualTo(1);
+		assertThat(vet.getSpecialties()).containsExactly(specialty);
+	}
+
+	@Test
+	void testAddNullSpecialty() {
+		Vet vet = new Vet();
+		
+		assertThatThrownBy(() -> vet.addSpecialty(null))
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("Specialty must not be null");
+	}
+
+	@Test
+	void testSpecialtyCount() {
+		Vet vet = new Vet();
+		vet.addSpecialty(new Specialty());
+		vet.addSpecialty(new Specialty());
+		
+		assertThat(vet.getNrOfSpecialties()).isEqualTo(2);
+	}
+
+	@Test
 	void testSerialization() {
 		Vet vet = new Vet();
 		vet.setFirstName("Zaphod");
 		vet.setLastName("Beeblebrox");
 		vet.setId(123);
+		Specialty specialty = new Specialty();
+		specialty.setName("test specialty");
+		vet.addSpecialty(specialty);
+		
 		@SuppressWarnings("deprecation")
 		Vet other = (Vet) SerializationUtils.deserialize(SerializationUtils.serialize(vet));
 		assertThat(other.getFirstName()).isEqualTo(vet.getFirstName());
