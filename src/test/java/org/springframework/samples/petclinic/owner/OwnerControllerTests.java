@@ -65,6 +65,7 @@ class OwnerControllerTests {
 	private static final String FIRST_NAME = "firstName";
 	private static final String ADDRESS = "address";
 	private static final String CITY_LONDON = "London";
+	private static final String TELEPHONE = "telephone";
 
 	@Autowired
 	private MockMvc mockMvc;
