@@ -107,4 +107,22 @@ class OwnerTests {
 		owner.addVisit(7, visit);
 		assertThat(pet.getVisits()).containsExactly(visit);
 	}
+
+	@Test
+	void addPetShouldSetBackReferenceOwnerOnPet() {
+		Owner owner = new Owner();
+		Pet pet = new Pet();
+		pet.setName("Buddy");
+
+		owner.addPet(pet);
+
+		assertThat(pet.getOwner()).isSameAs(owner);
+	}
+
+	@Test
+	void getPetByNameNullShouldThrowNullPointerException() {
+		Owner owner = new Owner();
+		assertThatThrownBy(() -> owner.getPet(null))
+			.isInstanceOf(NullPointerException.class);
+	}
 }
