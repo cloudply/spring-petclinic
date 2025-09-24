@@ -51,6 +51,8 @@ class PetControllerTests {
 	private static final int TEST_PET_ID = 1;
 	
 	private static final String PET_TYPE_NAME = "hamster";
+	
+	private static final String PETS_NEW_FORM_URL = "/owners/{ownerId}/pets/new";
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -73,7 +75,7 @@ class PetControllerTests {
 
 	@Test
 	void testInitCreationForm() throws Exception {
-		mockMvc.perform(get("/owners/{ownerId}/pets/new", TEST_OWNER_ID))
+		mockMvc.perform(get(PETS_NEW_FORM_URL, TEST_OWNER_ID))
 			.andExpect(status().isOk())
 			.andExpect(view().name("pets/createOrUpdatePetForm"))
 			.andExpect(model().attributeExists("pet"));
@@ -82,7 +84,7 @@ class PetControllerTests {
 	@Test
 	void testProcessCreationFormSuccess() throws Exception {
 		mockMvc
-			.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID).param("name", "Betty")
+			.perform(post(PETS_NEW_FORM_URL, TEST_OWNER_ID).param("name", "Betty")
 				.param("type", PET_TYPE_NAME)
 				.param("birthDate", "2015-02-12"))
 			.andExpect(status().is3xxRedirection())
@@ -92,7 +94,7 @@ class PetControllerTests {
 	@Test
 	void testProcessCreationFormHasErrors() throws Exception {
 		mockMvc
-			.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID).param("name", "Betty")
+			.perform(post(PETS_NEW_FORM_URL, TEST_OWNER_ID).param("name", "Betty")
 				.param("birthDate", "2015-02-12"))
 			.andExpect(model().attributeHasNoErrors("owner"))
 			.andExpect(model().attributeHasErrors("pet"))
