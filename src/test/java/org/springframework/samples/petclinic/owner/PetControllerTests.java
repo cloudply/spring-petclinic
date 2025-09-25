@@ -16,6 +16,8 @@
 
 package org.springframework.samples.petclinic.owner;
 
+import java.time.LocalDate;
+
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -127,6 +129,72 @@ class PetControllerTests {
 			.andExpect(model().attributeHasErrors("pet"))
 			.andExpect(status().isOk())
 			.andExpect(view().name("pets/createOrUpdatePetForm"));
+	}
+
+	@Test
+	void testProcessCreationFormDuplicateNameHasErrors() throws Exception {
+		Owner owner = this.owners.findById(TEST_OWNER_ID);
+		owner.getPet(TEST_PET_ID).setName("Betty");
+
+		mockMvc.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID)
+				.param("name", "Betty")
+				.param("type", "hamster")
+				.param("birthDate", "2015-02-12"))
+			.andExpect(model().attributeHasNoErrors("owner"))
+			.andExpect(model().attributeHasErrors("pet"))
+			.andExpect(model().attributeHasFieldErrors("pet", "name"))
+			.andExpect(model().attributeHasFieldErrorCode("pet", "name", "duplicate"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("pets/createOrUpdatePetForm"));
+	}
+
+	@Test
+	void testProcessCreationFormFutureBirthDateHasErrors() throws Exception {
+		String futureDate = LocalDate.now().plusDays(1).toString();
+
+		mockMvc.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID)
+				.param("name", "UniqueName")
+				.param("type", "hamster")
+				.param("birthDate", futureDate))
+			.andExpect(model().attributeHasNoErrors("owner"))
+			.andExpect(model().attributeHasErrors("pet"))
+			.andExpect(model().attributeHasFieldErrors("pet", "birthDate"))
+			.andExpect(model().attributeHasFieldErrorCode("pet", "birthDate", "typeMismatch.birthDate"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("pets/createOrUpdatePetForm"));
+	}
+
+	@Test
+	void testProcessUpdateFormDuplicateNameHasErrors() throws Exception {
+		Owner owner = this.owners.findById(TEST_OWNER_ID);
+		Pet another = new Pet();
+		another.setId(2);
+		another.setName("Betty");
+		owner.addPet(another);
+
+		mockMvc.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID)
+				.param("name", "Betty")
+				.param("type", "hamster")
+				.param("birthDate", "2015-02-12"))
+			.andExpect(model().attributeHasNoErrors("owner"))
+			.andExpect(model().attributeHasErrors("pet"))
+			.andExpect(model().attributeHasFieldErrors("pet", "name"))
+			.andExpect(model().attributeHasFieldErrorCode("pet", "name", "duplicate"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("pets/createOrUpdatePetForm"));
+	}
+
+	@Test
+	void testProcessUpdateFormSameNameSameIdSuccess() throws Exception {
+		Owner owner = this.owners.findById(TEST_OWNER_ID);
+		owner.getPet(TEST_PET_ID).setName("Betty");
+
+		mockMvc.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID)
+				.param("name", "Betty")
+				.param("type", "hamster")
+				.param("birthDate", "2015-02-12"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/owners/{ownerId}"));
 	}
 
 }
