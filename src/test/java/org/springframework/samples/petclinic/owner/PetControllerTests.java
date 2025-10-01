@@ -27,6 +27,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.test.context.aot.DisabledInAotMode;
 import org.springframework.test.web.servlet.MockMvc;
+import java.time.LocalDate;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -129,4 +130,91 @@ class PetControllerTests {
 			.andExpect(view().name("pets/createOrUpdatePetForm"));
 	}
 
+	@Test
+	void testProcessCreationFormWithDuplicatePetName() throws Exception {
+		Owner owner = new Owner();
+		Pet existingPet = new Pet();
+		existingPet.setName("Betty");
+		owner.addPet(existingPet);
+		given(this.owners.findById(TEST_OWNER_ID)).willReturn(owner);
+
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID)
+				.param("name", "Betty")
+				.param("type", "hamster")
+				.param("birthDate", "2015-02-12"))
+			.andExpect(model().attributeHasErrors("pet"))
+			.andExpect(model().attributeHasFieldErrors("pet", "name"))
+			.andExpect(model().attributeHasFieldErrorCode("pet", "name", "duplicate"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("pets/createOrUpdatePetForm"));
+	}
+
+	@Test
+	void testProcessCreationFormWithFutureBirthDate() throws Exception {
+		String futureDateString = LocalDate.now().plusYears(1).toString();
+		
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID)
+				.param("name", "Fluffy")
+				.param("type", "hamster")
+				.param("birthDate", futureDateString))
+			.andExpect(model().attributeHasErrors("pet"))
+			.andExpect(model().attributeHasFieldErrors("pet", "birthDate"))
+			.andExpect(model().attributeHasFieldErrorCode("pet", "birthDate", "typeMismatch.birthDate"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("pets/createOrUpdatePetForm"));
+	}
+
+	@Test
+	void testProcessUpdateFormWithDuplicatePetName() throws Exception {
+		Owner owner = new Owner();
+		Pet pet = new Pet();
+		pet.setId(TEST_PET_ID);
+		pet.setName("Max");
+		Pet anotherPet = new Pet();
+		anotherPet.setId(2);
+		anotherPet.setName("Betty");
+		owner.addPet(pet);
+		owner.addPet(anotherPet);
+		given(this.owners.findById(TEST_OWNER_ID)).willReturn(owner);
+
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID)
+				.param("name", "Betty")
+				.param("type", "hamster")
+				.param("birthDate", "2015-02-12"))
+			.andExpect(model().attributeHasErrors("pet"))
+			.andExpect(model().attributeHasFieldErrors("pet", "name"))
+			.andExpect(model().attributeHasFieldErrorCode("pet", "name", "duplicate"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("pets/createOrUpdatePetForm"));
+	}
+
+	@Test
+	void testProcessUpdateFormWithFutureBirthDate() throws Exception {
+		String futureDateString = LocalDate.now().plusYears(1).toString();
+		
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID)
+				.param("name", "Betty")
+				.param("type", "hamster")
+				.param("birthDate", futureDateString))
+			.andExpect(model().attributeHasErrors("pet"))
+			.andExpect(model().attributeHasFieldErrors("pet", "birthDate"))
+			.andExpect(model().attributeHasFieldErrorCode("pet", "birthDate", "typeMismatch.birthDate"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("pets/createOrUpdatePetForm"));
+	}
+
+	@Test
+	void testInitUpdateFormWithInvalidPetId() throws Exception {
+		Owner owner = new Owner();
+		given(this.owners.findById(TEST_OWNER_ID)).willReturn(owner);
+		
+		mockMvc.perform(get("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, 999))
+			.andExpect(status().isOk())
+			.andExpect(view().name("pets/createOrUpdatePetForm"))
+			.andExpect(model().attributeExists("pet"));
+	}
 }
