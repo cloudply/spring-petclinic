@@ -229,4 +229,42 @@ class OwnerControllerTests {
 			.andExpect(view().name("owners/ownerDetails"));
 	}
 
+	@Test
+	void testShowNonExistentOwner() throws Exception {
+		given(this.owners.findById(99)).willReturn(null);
+		
+		mockMvc.perform(get("/owners/{ownerId}", 99))
+			.andExpect(status().isOk())
+			.andExpect(view().name("exception"));
+	}
+	
+	@Test
+	void testProcessFindFormWithMultipleResults() throws Exception {
+		Owner owner1 = new Owner();
+		owner1.setId(1);
+		owner1.setLastName("Franklin");
+		
+		Owner owner2 = new Owner();
+		owner2.setId(2);
+		owner2.setLastName("Franklin");
+		
+		Page<Owner> tasks = new PageImpl<>(Lists.newArrayList(owner1, owner2));
+		Mockito.when(this.owners.findByLastName(eq("Franklin"), any(Pageable.class))).thenReturn(tasks);
+		
+		mockMvc.perform(get("/owners").param("lastName", "Franklin"))
+			.andExpect(status().isOk())
+			.andExpect(model().attributeExists("listOwners"))
+			.andExpect(view().name("owners/ownersList"));
+	}
+	
+	@Test
+	void testProcessFindFormWithEmptyLastName() throws Exception {
+		Page<Owner> tasks = new PageImpl<>(Lists.newArrayList(george()));
+		Mockito.when(this.owners.findAll(any(Pageable.class))).thenReturn(tasks);
+		
+		mockMvc.perform(get("/owners").param("lastName", ""))
+			.andExpect(status().isOk())
+			.andExpect(model().attributeExists("listOwners"))
+			.andExpect(view().name("owners/ownersList"));
+	}
 }

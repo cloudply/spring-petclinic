@@ -224,5 +224,56 @@ class ClinicServiceTests {
 			.extracting(Visit::getDate)
 			.isNotNull();
 	}
-
+	
+	@Test
+	@Transactional
+	void shouldDeletePet() {
+		Owner owner6 = this.owners.findById(6);
+		int found = owner6.getPets().size();
+		
+		// Remove the first pet
+		Pet pet = owner6.getPets().iterator().next();
+		owner6.getPets().remove(pet);
+		
+		this.owners.save(owner6);
+		
+		// Retrieve owner again to verify pet was removed
+		owner6 = this.owners.findById(6);
+		assertThat(owner6.getPets()).hasSize(found - 1);
+	}
+	
+	@Test
+	@Transactional
+	void shouldFindOwnerById() {
+		Owner owner = this.owners.findById(1);
+		assertThat(owner).isNotNull();
+		assertThat(owner.getFirstName()).isEqualTo("George");
+	}
+	
+	@Test
+	@Transactional
+	void shouldFindAllOwners() {
+		Page<Owner> owners = this.owners.findAll(pageable);
+		assertThat(owners).isNotNull();
+		assertThat(owners.getTotalElements()).isGreaterThan(0);
+	}
+	
+	@Test
+	@Transactional
+	void shouldUpdateVisit() {
+		Owner owner6 = this.owners.findById(6);
+		Pet pet7 = owner6.getPet(7);
+		Visit visit = pet7.getVisits().iterator().next();
+		String oldDescription = visit.getDescription();
+		String newDescription = oldDescription + "X";
+		
+		visit.setDescription(newDescription);
+		this.owners.save(owner6);
+		
+		// Retrieve owner again to verify the visit was updated
+		owner6 = this.owners.findById(6);
+		pet7 = owner6.getPet(7);
+		visit = pet7.getVisits().iterator().next();
+		assertThat(visit.getDescription()).isEqualTo(newDescription);
+	}
 }
