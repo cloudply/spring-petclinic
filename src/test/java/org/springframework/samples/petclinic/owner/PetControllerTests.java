@@ -234,4 +234,80 @@ class PetControllerTests {
 			.andExpect(model().attributeExists("pet"));
 	}
 
+	@Test
+	void testProcessUpdateFormWithEmptyName() throws Exception {
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID)
+				.param("name", "")
+				.param("type", "hamster")
+				.param("birthDate", "2015-02-12"))
+			.andExpect(model().attributeHasErrors("pet"))
+			.andExpect(model().attributeHasFieldErrors("pet", "name"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("pets/createOrUpdatePetForm"));
+	}
+
+	@Test
+	void testProcessCreationFormWithEmptyName() throws Exception {
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID)
+				.param("name", "")
+				.param("type", "hamster")
+				.param("birthDate", "2015-02-12"))
+			.andExpect(model().attributeHasErrors("pet"))
+			.andExpect(model().attributeHasFieldErrors("pet", "name"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("pets/createOrUpdatePetForm"));
+	}
+
+	@Test
+	void testProcessCreationFormWithNullBirthDate() throws Exception {
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID)
+				.param("name", "Fluffy")
+				.param("type", "hamster"))
+			.andExpect(model().attributeHasErrors("pet"))
+			.andExpect(model().attributeHasFieldErrors("pet", "birthDate"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("pets/createOrUpdatePetForm"));
+	}
+
+	@Test
+	void testProcessUpdateFormWithNullBirthDate() throws Exception {
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID)
+				.param("name", "Leo")
+				.param("type", "hamster"))
+			.andExpect(model().attributeHasErrors("pet"))
+			.andExpect(model().attributeHasFieldErrors("pet", "birthDate"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("pets/createOrUpdatePetForm"));
+	}
+
+	@Test
+	void testProcessUpdateFormWithSameName() throws Exception {
+		// Using the same name for the same pet should be allowed
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID)
+				.param("name", "Leo")
+				.param("type", "hamster")
+				.param("birthDate", "2015-02-12"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/owners/{ownerId}"))
+			.andExpect(flash().attributeExists("message"));
+	}
+
+	@Test
+	void testFindOwnerWithInvalidId() throws Exception {
+		given(this.owners.findById(99)).willReturn(null);
+
+		try {
+			mockMvc.perform(get("/owners/{ownerId}/pets/new", 99))
+				.andExpect(status().isOk());
+		}
+		catch (IllegalArgumentException ex) {
+			// Expected exception
+			assert(ex.getMessage().contains("Owner ID not found"));
+		}
+	}
 }
