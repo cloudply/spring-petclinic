@@ -234,4 +234,61 @@ class PetControllerTests {
 			.andExpect(model().attributeExists("pet"));
 	}
 
+	@Test
+	void testFindPetWithInvalidOwnerId() throws Exception {
+		given(this.owners.findById(99)).willReturn(null);
+		
+		mockMvc.perform(get("/owners/{ownerId}/pets/{petId}/edit", 99, TEST_PET_ID))
+			.andExpect(status().is5xxServerError())
+			.andExpect(result -> assertTrue(result.getResolvedException() instanceof IllegalArgumentException))
+			.andExpect(result -> assertEquals("Owner ID not found: 99", result.getResolvedException().getMessage()));
+	}
+	
+	@Test
+	void testProcessCreationFormWithEmptyName() throws Exception {
+		mockMvc.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID)
+				.param("name", "")
+				.param("type", "hamster")
+				.param("birthDate", "2022-02-12"))
+			.andExpect(model().attributeHasErrors("pet"))
+			.andExpect(model().attributeHasFieldErrors("pet", "name"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("pets/createOrUpdatePetForm"));
+	}
+	
+	@Test
+	void testProcessCreationFormWithExactFlashMessage() throws Exception {
+		mockMvc.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID)
+				.param("name", "Fluffy")
+				.param("type", "hamster")
+				.param("birthDate", "2022-02-12"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/owners/{ownerId}"))
+			.andExpect(flash().attributeExists("message"))
+			.andExpect(flash().attribute("message", "New Pet has been Added"));
+	}
+	
+	@Test
+	void testProcessUpdateFormWithExactFlashMessage() throws Exception {
+		mockMvc.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID)
+				.param("name", "Leo Updated")
+				.param("type", "hamster")
+				.param("birthDate", "2022-02-12"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/owners/{ownerId}"))
+			.andExpect(flash().attributeExists("message"))
+			.andExpect(flash().attribute("message", "Pet details has been edited"));
+	}
+	
+	@Test
+	void testProcessUpdateFormWithEmptyName() throws Exception {
+		mockMvc.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID)
+				.param("name", "")
+				.param("type", "hamster")
+				.param("birthDate", "2022-02-12"))
+			.andExpect(model().attributeHasErrors("pet"))
+			.andExpect(model().attributeHasFieldErrors("pet", "name"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("pets/createOrUpdatePetForm"));
+	}
 }
