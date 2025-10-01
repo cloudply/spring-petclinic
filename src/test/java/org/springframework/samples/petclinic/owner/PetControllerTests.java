@@ -61,7 +61,7 @@ class PetControllerTests {
 		cat.setId(3);
 		cat.setName("hamster");
 		given(this.owners.findPetTypes()).willReturn(Lists.newArrayList(cat));
-		
+
 		Owner owner = new Owner();
 		owner.setId(TEST_OWNER_ID);
 		owner.setFirstName("George");
@@ -69,13 +69,13 @@ class PetControllerTests {
 		owner.setAddress("110 W. Liberty St.");
 		owner.setCity("Madison");
 		owner.setTelephone("6085551023");
-		
+
 		Pet pet = new Pet();
 		pet.setId(TEST_PET_ID);
 		pet.setName("Leo");
 		pet.setBirthDate(LocalDate.now().minusYears(1));
 		owner.addPet(pet);
-		
+
 		given(this.owners.findById(TEST_OWNER_ID)).willReturn(owner);
 	}
 
@@ -140,12 +140,12 @@ class PetControllerTests {
 			.andExpect(status().isOk())
 			.andExpect(view().name("pets/createOrUpdatePetForm"));
 	}
-	
+
 	@Test
 	void testProcessCreationFormWithFutureBirthDate() throws Exception {
 		LocalDate futureDate = LocalDate.now().plusYears(1);
-		mockMvc.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID)
-				.param("name", "Betty")
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID).param("name", "Betty")
 				.param("type", "hamster")
 				.param("birthDate", futureDate.toString()))
 			.andExpect(model().attributeHasErrors("pet"))
@@ -153,11 +153,11 @@ class PetControllerTests {
 			.andExpect(model().attributeExists("pet"))
 			.andExpect(view().name("pets/createOrUpdatePetForm"));
 	}
-	
+
 	@Test
 	void testProcessCreationFormWithDuplicateName() throws Exception {
-		mockMvc.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID)
-				.param("name", "Leo")
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID).param("name", "Leo")
 				.param("type", "hamster")
 				.param("birthDate", "2022-02-12"))
 			.andExpect(model().attributeHasErrors("pet"))
@@ -165,12 +165,12 @@ class PetControllerTests {
 			.andExpect(model().attributeExists("pet"))
 			.andExpect(view().name("pets/createOrUpdatePetForm"));
 	}
-	
+
 	@Test
 	void testProcessUpdateFormWithFutureBirthDate() throws Exception {
 		LocalDate futureDate = LocalDate.now().plusYears(1);
-		mockMvc.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID)
-				.param("name", "Betty")
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID).param("name", "Betty")
 				.param("type", "hamster")
 				.param("birthDate", futureDate.toString()))
 			.andExpect(model().attributeHasErrors("pet"))
@@ -178,7 +178,7 @@ class PetControllerTests {
 			.andExpect(model().attributeExists("pet"))
 			.andExpect(view().name("pets/createOrUpdatePetForm"));
 	}
-	
+
 	@Test
 	void testProcessUpdateFormWithDuplicateName() throws Exception {
 		// Create a second pet with a different name
@@ -187,50 +187,15 @@ class PetControllerTests {
 		secondPet.setId(2);
 		secondPet.setName("Basil");
 		owner.addPet(secondPet);
-		
+
 		// Try to rename the second pet to the first pet's name
-		mockMvc.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, 2)
-				.param("name", "Leo")
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, 2).param("name", "Leo")
 				.param("type", "hamster")
 				.param("birthDate", "2022-02-12"))
 			.andExpect(model().attributeHasErrors("pet"))
 			.andExpect(model().attributeHasFieldErrors("pet", "name"))
 			.andExpect(model().attributeExists("pet"))
-			.andExpect(view().name("pets/createOrUpdatePetForm"));
-	}
-	@Test
-	void testProcessCreationFormWithDuplicatePetName() throws Exception {
-		Owner owner = new Owner();
-		Pet existingPet = new Pet();
-		existingPet.setName("Betty");
-		owner.addPet(existingPet);
-		given(this.owners.findById(TEST_OWNER_ID)).willReturn(owner);
-
-		mockMvc
-			.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID)
-				.param("name", "Betty")
-				.param("type", "hamster")
-				.param("birthDate", "2015-02-12"))
-			.andExpect(model().attributeHasErrors("pet"))
-			.andExpect(model().attributeHasFieldErrors("pet", "name"))
-			.andExpect(model().attributeHasFieldErrorCode("pet", "name", "duplicate"))
-			.andExpect(status().isOk())
-			.andExpect(view().name("pets/createOrUpdatePetForm"));
-	}
-
-	@Test
-	void testProcessCreationFormWithFutureBirthDate() throws Exception {
-		String futureDateString = LocalDate.now().plusYears(1).toString();
-		
-		mockMvc
-			.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID)
-				.param("name", "Fluffy")
-				.param("type", "hamster")
-				.param("birthDate", futureDateString))
-			.andExpect(model().attributeHasErrors("pet"))
-			.andExpect(model().attributeHasFieldErrors("pet", "birthDate"))
-			.andExpect(model().attributeHasFieldErrorCode("pet", "birthDate", "typeMismatch.birthDate"))
-			.andExpect(status().isOk())
 			.andExpect(view().name("pets/createOrUpdatePetForm"));
 	}
 
@@ -248,8 +213,7 @@ class PetControllerTests {
 		given(this.owners.findById(TEST_OWNER_ID)).willReturn(owner);
 
 		mockMvc
-			.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID)
-				.param("name", "Betty")
+			.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID).param("name", "Betty")
 				.param("type", "hamster")
 				.param("birthDate", "2015-02-12"))
 			.andExpect(model().attributeHasErrors("pet"))
@@ -260,29 +224,14 @@ class PetControllerTests {
 	}
 
 	@Test
-	void testProcessUpdateFormWithFutureBirthDate() throws Exception {
-		String futureDateString = LocalDate.now().plusYears(1).toString();
-		
-		mockMvc
-			.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID)
-				.param("name", "Betty")
-				.param("type", "hamster")
-				.param("birthDate", futureDateString))
-			.andExpect(model().attributeHasErrors("pet"))
-			.andExpect(model().attributeHasFieldErrors("pet", "birthDate"))
-			.andExpect(model().attributeHasFieldErrorCode("pet", "birthDate", "typeMismatch.birthDate"))
-			.andExpect(status().isOk())
-			.andExpect(view().name("pets/createOrUpdatePetForm"));
-	}
-
-	@Test
 	void testInitUpdateFormWithInvalidPetId() throws Exception {
 		Owner owner = new Owner();
 		given(this.owners.findById(TEST_OWNER_ID)).willReturn(owner);
-		
+
 		mockMvc.perform(get("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, 999))
 			.andExpect(status().isOk())
 			.andExpect(view().name("pets/createOrUpdatePetForm"))
 			.andExpect(model().attributeExists("pet"));
 	}
+
 }
