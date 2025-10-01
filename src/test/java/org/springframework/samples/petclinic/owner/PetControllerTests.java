@@ -233,5 +233,45 @@ class PetControllerTests {
 			.andExpect(view().name("pets/createOrUpdatePetForm"))
 			.andExpect(model().attributeExists("pet"));
 	}
+	
+	@Test
+	void testRedirectAttributesOnSuccessfulPetCreation() throws Exception {
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID).param("name", "Fluffy")
+				.param("type", "hamster")
+				.param("birthDate", "2021-01-01"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/owners/{ownerId}"))
+			.andExpect(flash().attributeExists("message"))
+			.andExpect(flash().attribute("message", "New Pet has been Added"));
+	}
+	
+	@Test
+	void testRedirectAttributesOnSuccessfulPetUpdate() throws Exception {
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID).param("name", "Leo")
+				.param("type", "hamster")
+				.param("birthDate", "2020-09-07"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/owners/{ownerId}"))
+			.andExpect(flash().attributeExists("message"))
+			.andExpect(flash().attribute("message", "Pet details has been edited"));
+	}
+	
+	@Test
+	void testFindPetWithNullPetId() throws Exception {
+		mockMvc.perform(get("/owners/{ownerId}/pets/new", TEST_OWNER_ID))
+			.andExpect(status().isOk())
+			.andExpect(model().attributeExists("pet"))
+			.andExpect(view().name("pets/createOrUpdatePetForm"));
+	}
+	
+	@Test
+	void testFindOwnerWithInvalidOwnerId() throws Exception {
+		given(this.owners.findById(99)).willReturn(null);
+		
+		mockMvc.perform(get("/owners/{ownerId}/pets/new", 99))
+			.andExpect(status().is4xxClientError());
+	}
 
 }
