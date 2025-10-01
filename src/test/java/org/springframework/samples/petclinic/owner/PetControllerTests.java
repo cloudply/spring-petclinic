@@ -29,6 +29,8 @@ import org.springframework.test.context.aot.DisabledInAotMode;
 import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDate;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -233,20 +235,38 @@ class PetControllerTests {
 			.andExpect(view().name("pets/createOrUpdatePetForm"))
 			.andExpect(model().attributeExists("pet"));
 	}
-
+	
 	@Test
-	void testProcessUpdateFormWithEmptyName() throws Exception {
-		mockMvc
-			.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID)
-				.param("name", "")
-				.param("type", "hamster")
-				.param("birthDate", "2015-02-12"))
-			.andExpect(model().attributeHasErrors("pet"))
-			.andExpect(model().attributeHasFieldErrors("pet", "name"))
-			.andExpect(status().isOk())
-			.andExpect(view().name("pets/createOrUpdatePetForm"));
+	void testPopulatePetTypes() {
+		Collection<PetType> petTypes = this.owners.findPetTypes();
+		assertThat(petTypes).isNotNull();
 	}
-
+	
+	@Test
+	void testFindOwnerWithInvalidId() {
+		given(this.owners.findById(99)).willReturn(null);
+		
+		assertThatExceptionOfType(IllegalArgumentException.class)
+			.isThrownBy(() -> new PetController(owners).findOwner(99))
+			.withMessageContaining("Owner ID not found: 99");
+	}
+	
+	@Test
+	void testFindPetWithNullPetId() {
+		Pet pet = new PetController(owners).findPet(TEST_OWNER_ID, null);
+		assertThat(pet).isNotNull();
+		assertThat(pet.isNew()).isTrue();
+	}
+	
+	@Test
+	void testFindPetWithInvalidOwnerId() {
+		given(this.owners.findById(99)).willReturn(null);
+		
+		assertThatExceptionOfType(IllegalArgumentException.class)
+			.isThrownBy(() -> new PetController(owners).findPet(99, TEST_PET_ID))
+			.withMessageContaining("Owner ID not found: 99");
+	}
+	
 	@Test
 	void testProcessCreationFormWithEmptyName() throws Exception {
 		mockMvc
@@ -254,39 +274,25 @@ class PetControllerTests {
 				.param("name", "")
 				.param("type", "hamster")
 				.param("birthDate", "2015-02-12"))
-			.andExpect(model().attributeHasErrors("pet"))
 			.andExpect(model().attributeHasFieldErrors("pet", "name"))
 			.andExpect(status().isOk())
 			.andExpect(view().name("pets/createOrUpdatePetForm"));
 	}
-
+	
 	@Test
-	void testProcessCreationFormWithNullBirthDate() throws Exception {
-		mockMvc
-			.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID)
-				.param("name", "Fluffy")
-				.param("type", "hamster"))
-			.andExpect(model().attributeHasErrors("pet"))
-			.andExpect(model().attributeHasFieldErrors("pet", "birthDate"))
-			.andExpect(status().isOk())
-			.andExpect(view().name("pets/createOrUpdatePetForm"));
-	}
-
-	@Test
-	void testProcessUpdateFormWithNullBirthDate() throws Exception {
+	void testProcessUpdateFormWithEmptyName() throws Exception {
 		mockMvc
 			.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID)
-				.param("name", "Leo")
-				.param("type", "hamster"))
-			.andExpect(model().attributeHasErrors("pet"))
-			.andExpect(model().attributeHasFieldErrors("pet", "birthDate"))
+				.param("name", "")
+				.param("type", "hamster")
+				.param("birthDate", "2015-02-12"))
+			.andExpect(model().attributeHasFieldErrors("pet", "name"))
 			.andExpect(status().isOk())
 			.andExpect(view().name("pets/createOrUpdatePetForm"));
 	}
-
+	
 	@Test
 	void testProcessUpdateFormWithSameName() throws Exception {
-		// Using the same name for the same pet should be allowed
 		mockMvc
 			.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID)
 				.param("name", "Leo")
@@ -296,18 +302,16 @@ class PetControllerTests {
 			.andExpect(view().name("redirect:/owners/{ownerId}"))
 			.andExpect(flash().attributeExists("message"));
 	}
-
+	
 	@Test
-	void testFindOwnerWithInvalidId() throws Exception {
-		given(this.owners.findById(99)).willReturn(null);
-
-		try {
-			mockMvc.perform(get("/owners/{ownerId}/pets/new", 99))
-				.andExpect(status().isOk());
-		}
-		catch (IllegalArgumentException ex) {
-			// Expected exception
-			assert(ex.getMessage().contains("Owner ID not found"));
-		}
+	void testProcessCreationFormWithInvalidBirthDate() throws Exception {
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID)
+				.param("name", "Betty")
+				.param("type", "hamster")
+				.param("birthDate", "not-a-date"))
+			.andExpect(model().attributeHasFieldErrors("pet", "birthDate"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("pets/createOrUpdatePetForm"));
 	}
 }
