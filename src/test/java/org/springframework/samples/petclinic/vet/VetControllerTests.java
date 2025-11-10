@@ -30,6 +30,7 @@ import org.springframework.test.context.aot.DisabledInAotMode;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import static org.hamcrest.Matchers.hasSize;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -95,6 +96,56 @@ class VetControllerTests {
 			.andExpect(status().isOk());
 		actions.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.vetList[0].id").value(1));
+	}
+	
+	@Test
+	void testShowVetListWithSpecificPage() throws Exception {
+		Page<Vet> vetPage = new PageImpl<>(Lists.newArrayList(james(), helen()));
+		given(this.vets.findAll(any(Pageable.class))).willReturn(vetPage);
+		
+		mockMvc.perform(get("/vets.html").param("page", "2"))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("currentPage", 2))
+			.andExpect(model().attributeExists("totalPages"))
+			.andExpect(model().attributeExists("totalItems"))
+			.andExpect(model().attributeExists("listVets"))
+			.andExpect(view().name("vets/vetList"));
+	}
+	
+	@Test
+	void testShowVetListWithEmptyList() throws Exception {
+		Page<Vet> emptyPage = new PageImpl<>(Lists.newArrayList());
+		given(this.vets.findAll(any(Pageable.class))).willReturn(emptyPage);
+		
+		mockMvc.perform(get("/vets.html"))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("listVets", hasSize(0)))
+			.andExpect(view().name("vets/vetList"));
+	}
+	
+	@Test
+	void testShowResourcesVetListWithEmptyList() throws Exception {
+		given(this.vets.findAll()).willReturn(Lists.newArrayList());
+		
+		mockMvc.perform(get("/vets").accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$.vetList", hasSize(0)));
+	}
+	
+	@Test
+	void testShowResourcesVetListWithFullDetails() throws Exception {
+		given(this.vets.findAll()).willReturn(Lists.newArrayList(james(), helen()));
+		
+		mockMvc.perform(get("/vets").accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$.vetList[0].firstName").value("James"))
+			.andExpect(jsonPath("$.vetList[0].lastName").value("Carter"))
+			.andExpect(jsonPath("$.vetList[0].specialties").isEmpty())
+			.andExpect(jsonPath("$.vetList[1].firstName").value("Helen"))
+			.andExpect(jsonPath("$.vetList[1].lastName").value("Leary"))
+			.andExpect(jsonPath("$.vetList[1].specialties[0].name").value("radiology"));
 	}
 
 }
