@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.apache.commons.io.FilenameUtils;
 
 import jakarta.validation.Valid;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -192,8 +193,9 @@ class OwnerController {
 	@GetMapping("/owners/files")
 	public String viewOwnerFile(@RequestParam String filename, Model model) {
 		try {
-			// Path traversal vulnerability - no validation on filename
-			String filePath = "/var/app/uploads/" + filename;
+			// Sanitize filename to prevent path traversal
+			String sanitizedFilename = FilenameUtils.getName(filename);
+			String filePath = "/var/app/uploads/" + sanitizedFilename;
 			byte[] fileContent = Files.readAllBytes(Paths.get(filePath));
 			model.addAttribute("content", new String(fileContent));
 		} catch (IOException e) {
