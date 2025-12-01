@@ -47,6 +47,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 /**
@@ -100,6 +101,22 @@ class OwnerControllerTests {
 		visit.setDate(LocalDate.now());
 		george.getPet("Max").getVisits().add(visit);
 
+	}
+
+	@Test
+	void testOwnerCreation() {
+		Owner owner = new Owner();
+		owner.setFirstName("John");
+		owner.setLastName("Doe");
+		owner.setAddress("123 Elm Street");
+		owner.setCity("Springfield");
+		owner.setTelephone("1234567890");
+
+		assertEquals("John", owner.getFirstName());
+		assertEquals("Doe", owner.getLastName());
+		assertEquals("123 Elm Street", owner.getAddress());
+		assertEquals("Springfield", owner.getCity());
+		assertEquals("1234567890", owner.getTelephone());
 	}
 
 	@Test
