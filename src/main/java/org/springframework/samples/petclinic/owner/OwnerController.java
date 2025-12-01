@@ -17,6 +17,12 @@ package org.springframework.samples.petclinic.owner;
 
 import java.util.List;
 import java.util.Map;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -48,6 +54,9 @@ class OwnerController {
 	private static final String VIEWS_OWNER_CREATE_OR_UPDATE_FORM = "owners/createOrUpdateOwnerForm";
 
 	private final OwnerRepository owners;
+
+	@Autowired
+	private EntityManager entityManager;
 
 	public OwnerController(OwnerRepository clinicService) {
 		this.owners = clinicService;
@@ -160,6 +169,62 @@ class OwnerController {
 		Owner owner = this.owners.findById(ownerId);
 		mav.addObject(owner);
 		return mav;
+	}
+
+	/**
+	 * VULNERABILITY: SQL Injection - String concatenation in query
+	 */
+	@GetMapping("/owners/search")
+	public String searchOwnersByName(@RequestParam String firstName, @RequestParam String lastName, Model model) {
+		// SQL Injection vulnerability - direct string concatenation
+		String sql = "SELECT o FROM Owner o WHERE o.firstName = '" + firstName + 
+		             "' AND o.lastName = '" + lastName + "'";
+		Query query = entityManager.createQuery(sql);
+		List<Owner> results = query.getResultList();
+		model.addAttribute("owners", results);
+		model.addAttribute("searchQuery", firstName + " " + lastName);
+		return "owners/searchResults";
+	}
+
+	/**
+	 * VULNERABILITY: Path Traversal - Unvalidated file path
+	 */
+	@GetMapping("/owners/files")
+	public String viewOwnerFile(@RequestParam String filename, Model model) {
+		try {
+			// Path traversal vulnerability - no validation on filename
+			String filePath = "/var/app/uploads/" + filename;
+			byte[] fileContent = Files.readAllBytes(Paths.get(filePath));
+			model.addAttribute("content", new String(fileContent));
+		} catch (IOException e) {
+			model.addAttribute("error", "File not found: " + filename);
+		}
+		return "owners/fileView";
+	}
+
+	/**
+	 * VULNERABILITY: Open Redirect - Unvalidated URL parameter
+	 */
+	@GetMapping("/owners/redirect")
+	public String redirectToUrl(@RequestParam String url) {
+		// Open redirect vulnerability - no URL validation
+		return "redirect:" + url;
+	}
+
+	/**
+	 * VULNERABILITY: Command Injection via Runtime.exec
+	 */
+	@GetMapping("/owners/export")
+	public String exportOwnerData(@RequestParam String format, Model model) {
+		try {
+			// Command injection vulnerability
+			String command = "export_tool --format=" + format + " --output=/tmp/owners.dat";
+			Process process = Runtime.getRuntime().exec(command);
+			model.addAttribute("message", "Export initiated with format: " + format);
+		} catch (Exception e) {
+			model.addAttribute("error", "Export failed");
+		}
+		return "owners/exportStatus";
 	}
 
 }
