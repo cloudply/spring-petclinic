@@ -38,6 +38,7 @@ public class FileProcessingUtil {
 		try {
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			// XXE vulnerability - external entities not disabled
+			factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			builder.parse(new InputSource(new StringReader(xmlContent)));
 		} catch (Exception e) {
