@@ -17,6 +17,7 @@ package org.springframework.samples.petclinic.owner;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Arrays;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -214,14 +215,21 @@ class OwnerController {
 	}
 
 	/**
-	 * VULNERABILITY: Command Injection via Runtime.exec
+	 * FIXED: Command Injection - Using ProcessBuilder with validated input
 	 */
 	@GetMapping("/owners/export")
 	public String exportOwnerData(@RequestParam String format, Model model) {
 		try {
-			// Command injection vulnerability
-			String command = "export_tool --format=" + format + " --output=/tmp/owners.dat";
-			Process process = Runtime.getRuntime().exec(command);
+			// Validate format parameter against allowlist
+			List<String> allowedFormats = Arrays.asList("csv", "json", "xml");
+			if (!allowedFormats.contains(format)) {
+				model.addAttribute("error", "Invalid format. Allowed formats: csv, json, xml");
+				return "owners/exportStatus";
+			}
+			
+			// Use ProcessBuilder with separate arguments to prevent command injection
+			ProcessBuilder processBuilder = new ProcessBuilder("export_tool", "--format=" + format, "--output=/tmp/owners.dat");
+			Process process = processBuilder.start();
 			model.addAttribute("message", "Export initiated with format: " + format);
 		} catch (Exception e) {
 			model.addAttribute("error", "Export failed");
