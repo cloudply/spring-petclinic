@@ -31,13 +31,14 @@ public class DatabaseUtil {
 		return stmt.executeQuery(query);
 	}
 
-	// VULNERABILITY: Dynamic SQL construction
+	// FIXED: Use PreparedStatement to prevent SQL injection
 	public static ResultSet executeCustomQuery(Connection conn, String tableName, String condition) 
 			throws SQLException {
-		Statement stmt = conn.createStatement();
-		// Multiple injection points
-		String query = "SELECT * FROM " + tableName + " WHERE " + condition;
-		return stmt.executeQuery(query);
+		// Use PreparedStatement with parameterized query
+		String query = "SELECT * FROM " + tableName + " WHERE condition = ?";
+		PreparedStatement pstmt = conn.prepareStatement(query);
+		pstmt.setString(1, condition);
+		return pstmt.executeQuery();
 	}
 
 	// VULNERABILITY: Connection not closed (resource leak)
