@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -192,8 +193,9 @@ class OwnerController {
 	@GetMapping("/owners/files")
 	public String viewOwnerFile(@RequestParam String filename, Model model) {
 		try {
-			// Path traversal vulnerability - no validation on filename
-			String filePath = "/var/app/uploads/" + filename;
+			// Sanitize filename to prevent path traversal
+			String sanitizedFilename = FilenameUtils.getName(filename);
+			String filePath = "/var/app/uploads/" + sanitizedFilename;
 			byte[] fileContent = Files.readAllBytes(Paths.get(filePath));
 			model.addAttribute("content", new String(fileContent));
 		} catch (IOException e) {
