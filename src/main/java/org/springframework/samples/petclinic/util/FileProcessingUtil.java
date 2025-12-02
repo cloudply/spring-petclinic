@@ -46,18 +46,6 @@ public class FileProcessingUtil {
 		}
 	}
 
-	// VULNERABILITY: Insecure deserialization
-	public static Object deserialize(byte[] data) {
-		try {
-			ByteArrayInputStream bis = new ByteArrayInputStream(data);
-			ObjectInputStream ois = new ObjectInputStream(bis);
-			// Insecure deserialization vulnerability
-			return ois.readObject();
-		} catch (Exception e) {
-			return null;
-		}
-	}
-
 	// VULNERABILITY: Resource leak - stream not closed
 	public static String readFileWithLeak(String path) throws IOException {
 		FileInputStream fis = new FileInputStream(path);
