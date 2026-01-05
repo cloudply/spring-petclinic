@@ -158,4 +158,77 @@ class VetTests {
 		assertThat(vet.getNrOfSpecialties()).isEqualTo(3);
 	}
 
+	@Test
+	void testSpecialtiesWithNullName() {
+		Vet vet = new Vet();
+		
+		// Add a specialty with null name
+		Specialty specialty = new Specialty();
+		vet.addSpecialty(specialty);
+		
+		assertThat(vet.getNrOfSpecialties()).isEqualTo(1);
+		assertThat(vet.getSpecialties()).contains(specialty);
+	}
+	
+	@Test
+	void testSpecialtiesSorting() {
+		Vet vet = new Vet();
+		
+		// Add specialties in non-alphabetical order
+		Specialty zSpecialty = new Specialty();
+		zSpecialty.setName("zoology");
+		
+		Specialty aSpecialty = new Specialty();
+		aSpecialty.setName("anesthesiology");
+		
+		Specialty mSpecialty = new Specialty();
+		mSpecialty.setName("microbiology");
+		
+		vet.addSpecialty(zSpecialty);
+		vet.addSpecialty(aSpecialty);
+		vet.addSpecialty(mSpecialty);
+		
+		List<Specialty> specialties = vet.getSpecialties();
+		
+		// Verify they're returned in alphabetical order
+		assertThat(specialties.get(0).getName()).isEqualTo("anesthesiology");
+		assertThat(specialties.get(1).getName()).isEqualTo("microbiology");
+		assertThat(specialties.get(2).getName()).isEqualTo("zoology");
+	}
+	
+	@Test
+	void testSpecialtiesUnmodifiable() {
+		Vet vet = new Vet();
+		Specialty specialty = new Specialty();
+		specialty.setName("surgery");
+		vet.addSpecialty(specialty);
+		
+		List<Specialty> specialties = vet.getSpecialties();
+		
+		// Verify the list is unmodifiable
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+			.isThrownBy(() -> specialties.remove(0));
+	}
+	
+	@Test
+	void testSerializationWithSpecialties() {
+		Vet vet = new Vet();
+		vet.setFirstName("James");
+		vet.setLastName("Herriot");
+		vet.setId(456);
+		
+		Specialty specialty = new Specialty();
+		specialty.setName("surgery");
+		specialty.setId(1);
+		vet.addSpecialty(specialty);
+		
+		@SuppressWarnings("deprecation")
+		Vet other = (Vet) SerializationUtils.deserialize(SerializationUtils.serialize(vet));
+		
+		assertThat(other.getFirstName()).isEqualTo(vet.getFirstName());
+		assertThat(other.getLastName()).isEqualTo(vet.getLastName());
+		assertThat(other.getId()).isEqualTo(vet.getId());
+		assertThat(other.getNrOfSpecialties()).isEqualTo(1);
+		assertThat(other.getSpecialties().get(0).getName()).isEqualTo("surgery");
+	}
 }
