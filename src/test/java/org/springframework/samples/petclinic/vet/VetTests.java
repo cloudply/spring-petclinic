@@ -157,5 +157,59 @@ class VetTests {
 
 		assertThat(vet.getNrOfSpecialties()).isEqualTo(3);
 	}
-
+	
+	@Test
+	void testSpecialtiesWithSameNameButDifferentIds() {
+		Vet vet = new Vet();
+		
+		// Create two specialties with same name but different IDs
+		Specialty surgery1 = new Specialty();
+		surgery1.setName("surgery");
+		surgery1.setId(1);
+		
+		Specialty surgery2 = new Specialty();
+		surgery2.setName("surgery");
+		surgery2.setId(2);
+		
+		vet.addSpecialty(surgery1);
+		vet.addSpecialty(surgery2);
+		
+		// Both should be added since they have different IDs
+		assertThat(vet.getNrOfSpecialties()).isEqualTo(2);
+	}
+	
+	@Test
+	void testSpecialtiesWithSameIdButDifferentNames() {
+		Vet vet = new Vet();
+		
+		// Create two specialties with different names but same ID
+		Specialty specialty1 = new Specialty();
+		specialty1.setName("surgery");
+		specialty1.setId(1);
+		
+		Specialty specialty2 = new Specialty();
+		specialty2.setName("radiology");
+		specialty2.setId(1);
+		
+		vet.addSpecialty(specialty1);
+		vet.addSpecialty(specialty2);
+		
+		// Both should be added since Set uses object equality by default
+		assertThat(vet.getNrOfSpecialties()).isEqualTo(2);
+	}
+	
+	@Test
+	void testSpecialtiesWithNullName() {
+		Vet vet = new Vet();
+		
+		Specialty specialty = new Specialty();
+		specialty.setName(null);
+		specialty.setId(1);
+		
+		vet.addSpecialty(specialty);
+		
+		// Should be added even with null name
+		assertThat(vet.getNrOfSpecialties()).isEqualTo(1);
+		assertThat(vet.getSpecialties().get(0).getName()).isNull();
+	}
 }
