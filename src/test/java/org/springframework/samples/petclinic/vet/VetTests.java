@@ -15,6 +15,7 @@
  */
 package org.springframework.samples.petclinic.vet;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.util.SerializationUtils;
 
@@ -30,12 +31,18 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 class VetTests {
 
-	@Test
-	void testSerialization() {
-		Vet vet = new Vet();
+	private Vet vet;
+	
+	@BeforeEach
+	void setUp() {
+		vet = new Vet();
 		vet.setFirstName("Zaphod");
 		vet.setLastName("Beeblebrox");
 		vet.setId(123);
+	}
+
+	@Test
+	void testSerialization() {
 		@SuppressWarnings("deprecation")
 		Vet other = (Vet) SerializationUtils.deserialize(SerializationUtils.serialize(vet));
 		assertThat(other.getFirstName()).isEqualTo(vet.getFirstName());
@@ -46,7 +53,6 @@ class VetTests {
 	@Test
 	void testGetSpecialtiesInternal() {
 		// Test when specialties is null
-		Vet vet = new Vet();
 		Set<Specialty> specialties = vet.getSpecialtiesInternal();
 		assertThat(specialties).isNotNull();
 		assertThat(specialties).isEmpty();
@@ -59,11 +65,14 @@ class VetTests {
 		Set<Specialty> specialtiesAgain = vet.getSpecialtiesInternal();
 		assertThat(specialtiesAgain).isEqualTo(specialties);
 		assertThat(specialtiesAgain).hasSize(1);
+		
+		// Test that the same instance is returned on subsequent calls
+		Set<Specialty> specialtiesThird = vet.getSpecialtiesInternal();
+		assertThat(specialtiesThird).isSameAs(specialties);
 	}
 
 	@Test
 	void testSetSpecialtiesInternal() {
-		Vet vet = new Vet();
 		Set<Specialty> specialties = new HashSet<>();
 		Specialty specialty = new Specialty();
 		specialty.setName("dentistry");
@@ -72,12 +81,11 @@ class VetTests {
 		vet.setSpecialtiesInternal(specialties);
 
 		assertThat(vet.getSpecialtiesInternal()).isEqualTo(specialties);
+		assertThat(vet.getSpecialtiesInternal()).isSameAs(specialties);
 	}
 
 	@Test
 	void testGetSpecialties() {
-		Vet vet = new Vet();
-
 		// Test with empty specialties
 		List<Specialty> emptySpecialties = vet.getSpecialties();
 		assertThat(emptySpecialties).isEmpty();
@@ -110,6 +118,11 @@ class VetTests {
 		// Verify unmodifiable
 		assertThatExceptionOfType(UnsupportedOperationException.class)
 			.isThrownBy(() -> specialties.add(new Specialty()));
+			
+		// Test that a new list is created each time
+		List<Specialty> specialtiesAgain = vet.getSpecialties();
+		assertThat(specialtiesAgain).isNotSameAs(specialties);
+		assertThat(specialtiesAgain).containsExactlyElementsOf(specialties);
 	}
 
 	@Test
@@ -130,7 +143,6 @@ class VetTests {
 
 	@Test
 	void testAddSpecialty() {
-		Vet vet = new Vet();
 		assertThat(vet.getNrOfSpecialties()).isEqualTo(0);
 
 		// Add first specialty
@@ -157,5 +169,35 @@ class VetTests {
 
 		assertThat(vet.getNrOfSpecialties()).isEqualTo(3);
 	}
-
+	
+	@Test
+	void testSpecialtyWithNullName() {
+		// Test with null name specialty
+		Specialty specialty = new Specialty();
+		specialty.setId(1);
+		// name is null
+		
+		vet.addSpecialty(specialty);
+		
+		assertThat(vet.getNrOfSpecialties()).isEqualTo(1);
+		assertThat(vet.getSpecialties().get(0).getName()).isNull();
+	}
+	
+	@Test
+	void testSpecialtyWithSameIdDifferentNames() {
+		// Test adding specialties with same ID but different names
+		Specialty specialty1 = new Specialty();
+		specialty1.setId(1);
+		specialty1.setName("surgery");
+		
+		Specialty specialty2 = new Specialty();
+		specialty2.setId(1);
+		specialty2.setName("radiology");
+		
+		vet.addSpecialty(specialty1);
+		vet.addSpecialty(specialty2);
+		
+		assertThat(vet.getNrOfSpecialties()).isEqualTo(2);
+		assertThat(vet.getSpecialties()).containsExactlyInAnyOrder(specialty1, specialty2);
+	}
 }
