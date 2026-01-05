@@ -59,6 +59,9 @@ class VetTests {
 		Set<Specialty> specialtiesAgain = vet.getSpecialtiesInternal();
 		assertThat(specialtiesAgain).isEqualTo(specialties);
 		assertThat(specialtiesAgain).hasSize(1);
+		
+		// Test that the same instance is returned
+		assertThat(specialtiesAgain).isSameAs(specialties);
 	}
 
 	@Test
@@ -156,6 +159,77 @@ class VetTests {
 		vet.addSpecialty(surgeryCopy);
 
 		assertThat(vet.getNrOfSpecialties()).isEqualTo(3);
+		
+		// Test adding null specialty (should not throw exception)
+		vet.addSpecialty(null);
+		// Size should remain the same as null shouldn't be added to a HashSet
+		assertThat(vet.getNrOfSpecialties()).isEqualTo(3);
 	}
 
+	@Test
+	void testVetInheritance() {
+		// Test that Vet properly inherits from Person
+		Vet vet = new Vet();
+		vet.setFirstName("John");
+		vet.setLastName("Doe");
+		vet.setId(42);
+		
+		assertThat(vet.getFirstName()).isEqualTo("John");
+		assertThat(vet.getLastName()).isEqualTo("Doe");
+		assertThat(vet.getId()).isEqualTo(42);
+	}
+	
+	@Test
+	void testSpecialtiesWithSameNameButDifferentIds() {
+		Vet vet = new Vet();
+		
+		// Create two specialties with same name but different IDs
+		Specialty specialty1 = new Specialty();
+		specialty1.setName("cardiology");
+		specialty1.setId(1);
+		
+		Specialty specialty2 = new Specialty();
+		specialty2.setName("cardiology");
+		specialty2.setId(2);
+		
+		// Add both to the vet
+		vet.addSpecialty(specialty1);
+		vet.addSpecialty(specialty2);
+		
+		// Both should be added since they have different IDs
+		assertThat(vet.getNrOfSpecialties()).isEqualTo(2);
+		
+		// The list should contain both specialties
+		List<Specialty> specialties = vet.getSpecialties();
+		assertThat(specialties).hasSize(2);
+		
+		// Both should have the same name
+		assertThat(specialties.stream().map(Specialty::getName).distinct().count()).isEqualTo(1);
+	}
+	
+	@Test
+	void testSpecialtiesSorting() {
+		Vet vet = new Vet();
+		
+		// Add specialties in non-alphabetical order
+		Specialty specialty1 = new Specialty();
+		specialty1.setName("zoology");
+		vet.addSpecialty(specialty1);
+		
+		Specialty specialty2 = new Specialty();
+		specialty2.setName("anesthesiology");
+		vet.addSpecialty(specialty2);
+		
+		Specialty specialty3 = new Specialty();
+		specialty3.setName("neurology");
+		vet.addSpecialty(specialty3);
+		
+		// Get specialties - should be sorted by name
+		List<Specialty> specialties = vet.getSpecialties();
+		
+		// Verify sorting
+		assertThat(specialties.get(0).getName()).isEqualTo("anesthesiology");
+		assertThat(specialties.get(1).getName()).isEqualTo("neurology");
+		assertThat(specialties.get(2).getName()).isEqualTo("zoology");
+	}
 }
