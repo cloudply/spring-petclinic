@@ -158,4 +158,56 @@ class VetTests {
 		assertThat(vet.getNrOfSpecialties()).isEqualTo(3);
 	}
 
+	@Test
+	void testInheritanceFromPerson() {
+		Vet vet = new Vet();
+		vet.setFirstName("John");
+		vet.setLastName("Doe");
+		vet.setId(1);
+		
+		assertThat(vet.getFirstName()).isEqualTo("John");
+		assertThat(vet.getLastName()).isEqualTo("Doe");
+		assertThat(vet.getId()).isEqualTo(1);
+	}
+	
+	@Test
+	void testSpecialtiesWithNullValue() {
+		Vet vet = new Vet();
+		
+		// Add a null specialty
+		vet.addSpecialty(null);
+		
+		// Should not throw exception and null should be in the set
+		assertThat(vet.getNrOfSpecialties()).isEqualTo(1);
+		assertThat(vet.getSpecialties()).contains((Specialty) null);
+	}
+	
+	@Test
+	void testSpecialtiesSorting() {
+		Vet vet = new Vet();
+		
+		// Add specialties in non-alphabetical order
+		Specialty surgery = new Specialty();
+		surgery.setName("surgery");
+		surgery.setId(1);
+		
+		Specialty anesthesiology = new Specialty();
+		anesthesiology.setName("anesthesiology");
+		anesthesiology.setId(2);
+		
+		Specialty zoology = new Specialty();
+		zoology.setName("zoology");
+		zoology.setId(3);
+		
+		vet.addSpecialty(surgery);
+		vet.addSpecialty(zoology);
+		vet.addSpecialty(anesthesiology);
+		
+		// Verify they're returned in alphabetical order
+		List<Specialty> specialties = vet.getSpecialties();
+		assertThat(specialties).hasSize(3);
+		assertThat(specialties.get(0).getName()).isEqualTo("anesthesiology");
+		assertThat(specialties.get(1).getName()).isEqualTo("surgery");
+		assertThat(specialties.get(2).getName()).isEqualTo("zoology");
+	}
 }
