@@ -31,6 +31,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.List;
+
+import static org.hamcrest.Matchers.hasSize;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -49,7 +53,7 @@ class VetControllerTests {
 	private MockMvc mockMvc;
 
 	@MockBean
-	private VetRepository vets;
+	private VetRepository vetRepository;
 
 	private Vet james() {
 		Vet james = new Vet();
@@ -73,20 +77,51 @@ class VetControllerTests {
 
 	@BeforeEach
 	void setup() {
-		given(this.vets.findAll()).willReturn(Lists.newArrayList(james(), helen()));
-		given(this.vets.findAll(any(Pageable.class)))
+		given(this.vetRepository.findAll()).willReturn(Lists.newArrayList(james(), helen()));
+		given(this.vetRepository.findAll(any(Pageable.class)))
 			.willReturn(new PageImpl<Vet>(Lists.newArrayList(james(), helen())));
-
 	}
 
 	@Test
 	void testShowVetListHtml() throws Exception {
-
 		mockMvc.perform(MockMvcRequestBuilders.get("/vets.html?page=1"))
 			.andExpect(status().isOk())
 			.andExpect(model().attributeExists("listVets"))
 			.andExpect(view().name("vets/vetList"));
-
+	}
+	
+	@Test
+	void testShowVetListWithPagination() throws Exception {
+		mockMvc.perform(get("/vets.html").param("page", "2"))
+			.andExpect(status().isOk())
+			.andExpect(model().attributeExists("currentPage"))
+			.andExpect(model().attribute("currentPage", 2))
+			.andExpect(model().attributeExists("totalPages"))
+			.andExpect(model().attributeExists("totalItems"))
+			.andExpect(model().attributeExists("listVets"))
+			.andExpect(view().name("vets/vetList"));
+	}
+	
+	@Test
+	void testShowVetListWithDefaultPagination() throws Exception {
+		mockMvc.perform(get("/vets.html"))
+			.andExpect(status().isOk())
+			.andExpect(model().attributeExists("currentPage"))
+			.andExpect(model().attribute("currentPage", 1))
+			.andExpect(model().attributeExists("listVets"))
+			.andExpect(view().name("vets/vetList"));
+	}
+	
+	@Test
+	void testShowVetListWithEmptyRepository() throws Exception {
+		given(this.vetRepository.findAll(any(Pageable.class)))
+			.willReturn(new PageImpl<>(List.of()));
+		
+		mockMvc.perform(get("/vets.html"))
+			.andExpect(status().isOk())
+			.andExpect(model().attributeExists("listVets"))
+			.andExpect(model().attribute("listVets", hasSize(0)))
+			.andExpect(view().name("vets/vetList"));
 	}
 
 	@Test
@@ -94,7 +129,54 @@ class VetControllerTests {
 		ResultActions actions = mockMvc.perform(get("/vets").accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk());
 		actions.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-			.andExpect(jsonPath("$.vetList[0].id").value(1));
+			.andExpect(jsonPath("$.vetList[0].id").value(1))
+			.andExpect(jsonPath("$.vetList[0].firstName").value("James"))
+			.andExpect(jsonPath("$.vetList[0].lastName").value("Carter"))
+			.andExpect(jsonPath("$.vetList[1].id").value(2))
+			.andExpect(jsonPath("$.vetList[1].firstName").value("Helen"))
+			.andExpect(jsonPath("$.vetList[1].lastName").value("Leary"))
+			.andExpect(jsonPath("$.vetList[1].specialties[0].name").value("radiology"));
+	}
+	
+	@Test
+	void testShowResourcesVetListWithEmptyRepository() throws Exception {
+		given(this.vetRepository.findAll()).willReturn(List.of());
+		
+		mockMvc.perform(get("/vets").accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$.vetList").isArray())
+			.andExpect(jsonPath("$.vetList").isEmpty());
+	}
+	
+	@Test
+	void testShowResourcesVetListWithMultipleSpecialties() throws Exception {
+		Vet linda = new Vet();
+		linda.setFirstName("Linda");
+		linda.setLastName("Douglas");
+		linda.setId(3);
+		
+		Specialty surgery = new Specialty();
+		surgery.setId(2);
+		surgery.setName("surgery");
+		linda.addSpecialty(surgery);
+		
+		Specialty dentistry = new Specialty();
+		dentistry.setId(3);
+		dentistry.setName("dentistry");
+		linda.addSpecialty(dentistry);
+		
+		given(this.vetRepository.findAll()).willReturn(List.of(linda));
+		
+		mockMvc.perform(get("/vets").accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$.vetList[0].id").value(3))
+			.andExpect(jsonPath("$.vetList[0].firstName").value("Linda"))
+			.andExpect(jsonPath("$.vetList[0].lastName").value("Douglas"))
+			.andExpect(jsonPath("$.vetList[0].specialties", hasSize(2)))
+			.andExpect(jsonPath("$.vetList[0].specialties[0].name").value("surgery"))
+			.andExpect(jsonPath("$.vetList[0].specialties[1].name").value("dentistry"));
 	}
 
 }
