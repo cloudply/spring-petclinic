@@ -45,6 +45,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
@@ -118,7 +119,9 @@ class OwnerControllerTests {
 				.param("address", "123 Caramel Street")
 				.param("city", "London")
 				.param("telephone", "1316761638"))
-			.andExpect(status().is3xxRedirection());
+			.andExpect(status().is3xxRedirection())
+			.andExpect(flash().attributeExists("message"))
+			.andExpect(flash().attribute("message", "New Owner Created"));
 	}
 
 	@Test
@@ -129,7 +132,9 @@ class OwnerControllerTests {
 			.andExpect(model().attributeHasErrors("owner"))
 			.andExpect(model().attributeHasFieldErrors("owner", "address"))
 			.andExpect(model().attributeHasFieldErrors("owner", "telephone"))
-			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
+			.andExpect(view().name("owners/createOrUpdateOwnerForm"))
+			.andExpect(flash().attributeExists("error"))
+			.andExpect(flash().attribute("error", "There was an error in creating the owner."));
 	}
 
 	@Test
@@ -154,6 +159,27 @@ class OwnerControllerTests {
 		mockMvc.perform(get("/owners?page=1").param("lastName", "Franklin"))
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID));
+	}
+	
+	@Test
+	void testPaginationForOwners() throws Exception {
+		List<Owner> owners = Lists.newArrayList(george());
+		owners.add(new Owner());
+		owners.add(new Owner());
+		owners.add(new Owner());
+		owners.add(new Owner());
+		owners.add(new Owner());
+		
+		Page<Owner> paginated = new PageImpl<>(owners);
+		given(this.owners.findByLastName(eq(""), any(Pageable.class))).willReturn(paginated);
+		
+		mockMvc.perform(get("/owners?page=1"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("owners/ownersList"))
+			.andExpect(model().attributeExists("listOwners"))
+			.andExpect(model().attribute("totalPages", 1))
+			.andExpect(model().attribute("totalItems", 6L))
+			.andExpect(model().attribute("currentPage", 1));
 	}
 
 	@Test
@@ -190,7 +216,9 @@ class OwnerControllerTests {
 				.param("city", "London")
 				.param("telephone", "1616291589"))
 			.andExpect(status().is3xxRedirection())
-			.andExpect(view().name("redirect:/owners/{ownerId}"));
+			.andExpect(view().name("redirect:/owners/{ownerId}"))
+			.andExpect(flash().attributeExists("message"))
+			.andExpect(flash().attribute("message", "Owner Values Updated"));
 	}
 
 	@Test
@@ -211,7 +239,9 @@ class OwnerControllerTests {
 			.andExpect(model().attributeHasErrors("owner"))
 			.andExpect(model().attributeHasFieldErrors("owner", "address"))
 			.andExpect(model().attributeHasFieldErrors("owner", "telephone"))
-			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
+			.andExpect(view().name("owners/createOrUpdateOwnerForm"))
+			.andExpect(flash().attributeExists("error"))
+			.andExpect(flash().attribute("error", "There was an error in updating the owner."));
 	}
 
 	@Test
