@@ -26,6 +26,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.aot.DisabledInAotMode;
 import org.springframework.test.web.servlet.MockMvc;
@@ -43,11 +44,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 
 /**
  * Test class for {@link OwnerController}
@@ -127,7 +131,7 @@ class OwnerControllerTests {
 			.perform(post("/owners/new").param("firstName", "Joe").param("lastName", "Bloggs").param("city", "London"))
 			.andExpect(status().isOk())
 			.andExpect(model().attributeHasErrors("owner"))
-			.andExpect(model().attributeHasFieldErrors("owner", "address"))
+			.andExpected(model().attributeHasFieldErrors("owner", "address"))
 			.andExpect(model().attributeHasFieldErrors("owner", "telephone"))
 			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
 	}
@@ -227,6 +231,243 @@ class OwnerControllerTests {
 			.andExpect(model().attribute("owner",
 					hasProperty("pets", hasItem(hasProperty("visits", hasSize(greaterThan(0)))))))
 			.andExpect(view().name("owners/ownerDetails"));
+	}
+
+	// Additional comprehensive tests
+
+	@Test
+	void testProcessCreationFormWithFlashMessage() throws Exception {
+		mockMvc.perform(post("/owners/new")
+			.param("firstName", "John")
+			.param("lastName", "Doe")
+			.param("address", "456 Oak Street")
+			.param("city", "Springfield")
+			.param("telephone", "5551234567"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(flash().attributeExists("message"));
+		
+		verify(owners, times(1)).save(any(Owner.class));
+	}
+
+	@Test
+	void testProcessCreationFormWithValidationErrorsAndFlashMessage() throws Exception {
+		mockMvc.perform(post("/owners/new")
+			.param("firstName", "")
+			.param("lastName", "")
+			.param("address", "")
+			.param("city", "")
+			.param("telephone", ""))
+			.andExpect(status().isOk())
+			.andExpect(model().attributeHasErrors("owner"))
+			.andExpect(flash().attributeExists("error"))
+			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
+	}
+
+	@Test
+	void testProcessUpdateOwnerFormWithFlashMessage() throws Exception {
+		mockMvc.perform(post("/owners/{ownerId}/edit", TEST_OWNER_ID)
+			.param("firstName", "UpdatedJoe")
+			.param("lastName", "UpdatedBloggs")
+			.param("address", "789 Updated Street")
+			.param("city", "UpdatedCity")
+			.param("telephone", "9876543210"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/owners/{ownerId}"))
+			.andExpect(flash().attributeExists("message"));
+		
+		verify(owners, times(1)).save(any(Owner.class));
+	}
+
+	@Test
+	void testProcessUpdateOwnerFormWithValidationErrorsAndFlashMessage() throws Exception {
+		mockMvc.perform(post("/owners/{ownerId}/edit", TEST_OWNER_ID)
+			.param("firstName", "")
+			.param("lastName", "")
+			.param("address", "")
+			.param("city", "")
+			.param("telephone", ""))
+			.andExpect(status().isOk())
+			.andExpect(model().attributeHasErrors("owner"))
+			.andExpect(flash().attributeExists("error"))
+			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
+	}
+
+	@Test
+	void testProcessFindFormWithMultipleOwners() throws Exception {
+		Owner owner1 = new Owner();
+		owner1.setId(1);
+		owner1.setLastName("Smith");
+		
+		Owner owner2 = new Owner();
+		owner2.setId(2);
+		owner2.setLastName("Smith");
+		
+		Owner owner3 = new Owner();
+		owner3.setId(3);
+		owner3.setLastName("Smith");
+
+		Page<Owner> multipleOwners = new PageImpl<>(Lists.newArrayList(owner1, owner2, owner3), 
+			PageRequest.of(0, 5), 3);
+		
+		Mockito.when(this.owners.findByLastName(eq("Smith"), any(Pageable.class))).thenReturn(multipleOwners);
+		
+		mockMvc.perform(get("/owners").param("lastName", "Smith"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("owners/ownersList"))
+			.andExpect(model().attribute("listOwners", hasSize(3)))
+			.andExpect(model().attribute("currentPage", is(1)))
+			.andExpect(model().attribute("totalPages", is(1)))
+			.andExpect(model().attribute("totalItems", is(3L)));
+	}
+
+	@Test
+	void testProcessFindFormWithPagination() throws Exception {
+		Owner owner1 = new Owner();
+		owner1.setId(1);
+		owner1.setLastName("Johnson");
+		
+		Owner owner2 = new Owner();
+		owner2.setId(2);
+		owner2.setLastName("Johnson");
+
+		Page<Owner> paginatedOwners = new PageImpl<>(Lists.newArrayList(owner1, owner2), 
+			PageRequest.of(1, 5), 7);
+		
+		Mockito.when(this.owners.findByLastName(eq("Johnson"), any(Pageable.class))).thenReturn(paginatedOwners);
+		
+		mockMvc.perform(get("/owners").param("lastName", "Johnson").param("page", "2"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("owners/ownersList"))
+			.andExpect(model().attribute("listOwners", hasSize(2)))
+			.andExpect(model().attribute("currentPage", is(2)))
+			.andExpect(model().attribute("totalPages", is(2)))
+			.andExpect(model().attribute("totalItems", is(7L)));
+	}
+
+	@Test
+	void testProcessFindFormWithEmptyLastName() throws Exception {
+		Page<Owner> allOwners = new PageImpl<>(Lists.newArrayList(george(), new Owner()));
+		Mockito.when(this.owners.findByLastName(eq(""), any(Pageable.class))).thenReturn(allOwners);
+		
+		mockMvc.perform(get("/owners").param("lastName", ""))
+			.andExpect(status().isOk())
+			.andExpect(view().name("owners/ownersList"));
+	}
+
+	@Test
+	void testProcessFindFormWithNullLastName() throws Exception {
+		Page<Owner> allOwners = new PageImpl<>(Lists.newArrayList(george(), new Owner()));
+		Mockito.when(this.owners.findByLastName(eq(""), any(Pageable.class))).thenReturn(allOwners);
+		
+		mockMvc.perform(get("/owners"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("owners/ownersList"));
+	}
+
+	@Test
+	void testFindOwnerModelAttributeWithValidId() throws Exception {
+		mockMvc.perform(get("/owners/{ownerId}", TEST_OWNER_ID))
+			.andExpect(status().isOk())
+			.andExpect(model().attributeExists("owner"));
+		
+		verify(owners, times(1)).findById(TEST_OWNER_ID);
+	}
+
+	@Test
+	void testInitCreationFormModelAttributes() throws Exception {
+		mockMvc.perform(get("/owners/new"))
+			.andExpect(status().isOk())
+			.andExpect(model().attributeExists("owner"))
+			.andExpect(model().attribute("owner", hasProperty("id", is((Integer) null))))
+			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
+	}
+
+	@Test
+	void testShowOwnerWithPets() throws Exception {
+		Owner ownerWithPets = george(); // This owner already has a pet
+		given(this.owners.findById(TEST_OWNER_ID)).willReturn(ownerWithPets);
+		
+		mockMvc.perform(get("/owners/{ownerId}", TEST_OWNER_ID))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("owner", hasProperty("pets", hasSize(1))))
+			.andExpect(view().name("owners/ownerDetails"));
+	}
+
+	@Test
+	void testProcessFindFormDefaultPage() throws Exception {
+		Page<Owner> owners = new PageImpl<>(Lists.newArrayList(george(), new Owner()));
+		Mockito.when(this.owners.findByLastName(eq(""), any(Pageable.class))).thenReturn(owners);
+		
+		mockMvc.perform(get("/owners"))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("currentPage", is(1)))
+			.andExpect(view().name("owners/ownersList"));
+	}
+
+	@Test
+	void testProcessCreationFormWithInvalidData() throws Exception {
+		mockMvc.perform(post("/owners/new")
+			.param("firstName", "")
+			.param("lastName", "")
+			.param("address", "")
+			.param("city", "")
+			.param("telephone", ""))
+			.andExpect(status().isOk())
+			.andExpect(model().attributeHasErrors("owner"))
+			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
+	}
+
+	@Test
+	void testProcessUpdateFormWithPartialData() throws Exception {
+		mockMvc.perform(post("/owners/{ownerId}/edit", TEST_OWNER_ID)
+			.param("firstName", "George")
+			.param("lastName", "Franklin")
+			.param("address", "")
+			.param("city", "Madison")
+			.param("telephone", ""))
+			.andExpect(status().isOk())
+			.andExpect(model().attributeHasErrors("owner"))
+			.andExpect(model().attributeHasFieldErrors("owner", "address"))
+			.andExpect(model().attributeHasFieldErrors("owner", "telephone"))
+			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
+	}
+
+	@Test
+	void testProcessFindFormWithSpecialCharacters() throws Exception {
+		Page<Owner> tasks = new PageImpl<>(Lists.newArrayList());
+		Mockito.when(this.owners.findByLastName(eq("O'Connor"), any(Pageable.class))).thenReturn(tasks);
+		
+		mockMvc.perform(get("/owners").param("lastName", "O'Connor"))
+			.andExpect(status().isOk())
+			.andExpect(model().attributeHasFieldErrors("owner", "lastName"))
+			.andExpect(view().name("owners/findOwners"));
+	}
+
+	@Test
+	void testProcessFindFormWithLongLastName() throws Exception {
+		String longLastName = "VeryLongLastNameThatExceedsNormalLimits";
+		Page<Owner> tasks = new PageImpl<>(Lists.newArrayList());
+		Mockito.when(this.owners.findByLastName(eq(longLastName), any(Pageable.class))).thenReturn(tasks);
+		
+		mockMvc.perform(get("/owners").param("lastName", longLastName))
+			.andExpect(status().isOk())
+			.andExpect(model().attributeHasFieldErrors("owner", "lastName"))
+			.andExpect(view().name("owners/findOwners"));
+	}
+
+	@Test
+	void testDataBinderDisallowsIdField() throws Exception {
+		mockMvc.perform(post("/owners/new")
+			.param("id", "999")
+			.param("firstName", "John")
+			.param("lastName", "Doe")
+			.param("address", "123 Main St")
+			.param("city", "Anytown")
+			.param("telephone", "1234567890"))
+			.andExpect(status().is3xxRedirection());
+		
+		// Verify that the ID field was not bound
+		verify(owners, times(1)).save(any(Owner.class));
 	}
 
 }
