@@ -45,6 +45,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
@@ -118,7 +119,9 @@ class OwnerControllerTests {
 				.param("address", "123 Caramel Street")
 				.param("city", "London")
 				.param("telephone", "1316761638"))
-			.andExpect(status().is3xxRedirection());
+			.andExpect(status().is3xxRedirection())
+			.andExpect(flash().attributeExists("message"))
+			.andExpect(flash().attribute("message", "New Owner Created"));
 	}
 
 	@Test
@@ -129,7 +132,9 @@ class OwnerControllerTests {
 			.andExpect(model().attributeHasErrors("owner"))
 			.andExpect(model().attributeHasFieldErrors("owner", "address"))
 			.andExpect(model().attributeHasFieldErrors("owner", "telephone"))
-			.andExpect(view().name("owners/createOrUpdateOwnerFo"));
+			.andExpect(view().name("owners/createOrUpdateOwnerForm"))
+			.andExpect(flash().attributeExists("error"))
+			.andExpect(flash().attribute("error", "There was an error in creating the owner."));
 	}
 
 	@Test
@@ -190,7 +195,9 @@ class OwnerControllerTests {
 				.param("city", "London")
 				.param("telephone", "1616291589"))
 			.andExpect(status().is3xxRedirection())
-			.andExpect(view().name("redirect:/owners/{ownerId}"));
+			.andExpect(view().name("redirect:/owners/{ownerId}"))
+			.andExpect(flash().attributeExists("message"))
+			.andExpect(flash().attribute("message", "Owner Values Updated"));
 	}
 
 	@Test
@@ -211,7 +218,9 @@ class OwnerControllerTests {
 			.andExpect(model().attributeHasErrors("owner"))
 			.andExpect(model().attributeHasFieldErrors("owner", "address"))
 			.andExpect(model().attributeHasFieldErrors("owner", "telephone"))
-			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
+			.andExpect(view().name("owners/createOrUpdateOwnerForm"))
+			.andExpect(flash().attributeExists("error"))
+			.andExpect(flash().attribute("error", "There was an error in updating the owner."));
 	}
 
 	@Test
@@ -227,6 +236,67 @@ class OwnerControllerTests {
 			.andExpect(model().attribute("owner",
 					hasProperty("pets", hasItem(hasProperty("visits", hasSize(greaterThan(0)))))))
 			.andExpect(view().name("owners/ownerDetails"));
+	}
+	
+	@Test
+	void testPaginationForOwners() throws Exception {
+		Owner secondOwner = new Owner();
+		secondOwner.setId(2);
+		secondOwner.setFirstName("Betty");
+		secondOwner.setLastName("Davis");
+		secondOwner.setAddress("638 Cardinal Ave.");
+		secondOwner.setCity("Sun Prairie");
+		secondOwner.setTelephone("6085551749");
+		
+		Page<Owner> paginated = new PageImpl<>(List.of(george(), secondOwner));
+		given(this.owners.findByLastName(eq(""), any(Pageable.class)))
+				.willReturn(paginated);
+				
+		mockMvc.perform(get("/owners").param("page", "1"))
+				.andExpect(status().isOk())
+				.andExpect(view().name("owners/ownersList"))
+				.andExpect(model().attribute("currentPage", 1))
+				.andExpect(model().attribute("totalPages", 1))
+				.andExpect(model().attribute("totalItems", 2L))
+				.andExpect(model().attributeExists("listOwners"));
+	}
+	
+	@Test
+	void testFindPaginatedForOwnersLastName() throws Exception {
+		int page = 2;
+		String lastName = "Davis";
+		
+		Owner owner = new Owner();
+		owner.setId(2);
+		owner.setFirstName("Betty");
+		owner.setLastName(lastName);
+		
+		Page<Owner> paginated = new PageImpl<>(List.of(owner));
+		given(this.owners.findByLastName(eq(lastName), any(Pageable.class)))
+				.willReturn(paginated);
+				
+		mockMvc.perform(get("/owners")
+				.param("page", String.valueOf(page))
+				.param("lastName", lastName))
+				.andExpect(status().is3xxRedirection())
+				.andExpect(view().name("redirect:/owners/2"));
+	}
+	
+	@Test
+	void testMultipleOwnersFound() throws Exception {
+		Owner secondOwner = new Owner();
+		secondOwner.setId(2);
+		secondOwner.setFirstName("Betty");
+		secondOwner.setLastName("Franklin");
+		
+		Page<Owner> paginated = new PageImpl<>(List.of(george(), secondOwner));
+		given(this.owners.findByLastName(eq("Franklin"), any(Pageable.class)))
+				.willReturn(paginated);
+				
+		mockMvc.perform(get("/owners").param("lastName", "Franklin"))
+				.andExpect(status().isOk())
+				.andExpect(view().name("owners/ownersList"))
+				.andExpect(model().attributeExists("listOwners"));
 	}
 
 }
