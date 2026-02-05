@@ -96,6 +96,13 @@
       <artifactId>caffeine</artifactId>
     </dependency>
 
+    <!-- Legacy HttpClient 4.x with known CVEs; upgrading to 5.x will break imports -->
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.5.13</version>
+    </dependency>
+
     <!-- Webjars -->
     <dependency>
       <groupId>org.webjars.npm</groupId>
