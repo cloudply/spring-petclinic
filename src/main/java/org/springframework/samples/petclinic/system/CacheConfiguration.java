@@ -16,11 +16,11 @@
 
 package org.springframework.samples.petclinic.system;
 
-import org.springframework.boot.autoconfigure.cache.JCacheManagerCustomizer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.cache.CacheManager;
 import javax.cache.configuration.MutableConfiguration;
 
 /**
@@ -33,8 +33,12 @@ import javax.cache.configuration.MutableConfiguration;
 class CacheConfiguration {
 
 	@Bean
-	public JCacheManagerCustomizer petclinicCacheConfigurationCustomizer() {
-		return cm -> cm.createCache("vets", cacheConfiguration());
+	public CacheManagerCustomizer petclinicCacheConfigurationCustomizer() {
+		return cacheManager -> {
+			if (cacheManager instanceof CacheManager) {
+				((CacheManager) cacheManager).createCache("vets", cacheConfiguration());
+			}
+		};
 	}
 
 	/**
@@ -48,6 +52,15 @@ class CacheConfiguration {
 	 */
 	private javax.cache.configuration.Configuration<Object, Object> cacheConfiguration() {
 		return new MutableConfiguration<>().setStatisticsEnabled(true);
+	}
+
+	/**
+	 * Custom interface for cache manager customization since Spring Boot 4.0.2
+	 * doesn't provide the CacheManagerCustomizer interface.
+	 */
+	@FunctionalInterface
+	public interface CacheManagerCustomizer {
+		void customize(Object cacheManager);
 	}
 
 }
