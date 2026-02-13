@@ -16,12 +16,15 @@
 
 package org.springframework.samples.petclinic.system;
 
-import org.springframework.boot.autoconfigure.cache.JCacheManagerCustomizer;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.jcache.JCacheCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.cache.CacheManager;
+import javax.cache.Caching;
 import javax.cache.configuration.MutableConfiguration;
+import javax.cache.spi.CachingProvider;
 
 /**
  * Cache configuration intended for caches providing the JCache API. This configuration
@@ -33,8 +36,18 @@ import javax.cache.configuration.MutableConfiguration;
 class CacheConfiguration {
 
 	@Bean
-	public JCacheManagerCustomizer petclinicCacheConfigurationCustomizer() {
-		return cm -> cm.createCache("vets", cacheConfiguration());
+	public JCacheCacheManager cacheManager() {
+		JCacheCacheManager cacheManager = new JCacheCacheManager();
+		CachingProvider cachingProvider = Caching.getCachingProvider();
+		CacheManager jCacheManager = cachingProvider.getCacheManager();
+		
+		// Create the vets cache if it doesn't exist
+		if (jCacheManager.getCache("vets") == null) {
+			jCacheManager.createCache("vets", cacheConfiguration());
+		}
+		
+		cacheManager.setCacheManager(jCacheManager);
+		return cacheManager;
 	}
 
 	/**
