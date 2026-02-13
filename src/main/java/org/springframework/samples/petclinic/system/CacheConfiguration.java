@@ -16,8 +16,9 @@
 
 package org.springframework.samples.petclinic.system;
 
-import org.springframework.boot.autoconfigure.cache.JCacheManagerCustomizer;
+import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.jcache.JCacheCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -33,8 +34,8 @@ import javax.cache.configuration.MutableConfiguration;
 class CacheConfiguration {
 
 	@Bean
-	public JCacheManagerCustomizer petclinicCacheConfigurationCustomizer() {
-		return cm -> cm.createCache("vets", cacheConfiguration());
+	public CacheManagerCustomizer<JCacheCacheManager> petclinicCacheConfigurationCustomizer() {
+		return cm -> cm.getCacheManager().createCache("vets", cacheConfiguration());
 	}
 
 	/**
