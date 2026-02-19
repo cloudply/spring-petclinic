@@ -1,7 +1,7 @@
 package org.springframework.samples.petclinic.system;
 
 import java.io.IOException;
-import org.apache.hc.client5.http.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
@@ -27,7 +27,7 @@ public class LegacyHttpClient {
   public int ping(String url) throws IOException {
     HttpGet request = new HttpGet(url);
     try (CloseableHttpResponse response = client.execute(request)) {
-      return response.getStatusLine().getStatusCode();
+      return response.getCode();
     }
   }
 }
