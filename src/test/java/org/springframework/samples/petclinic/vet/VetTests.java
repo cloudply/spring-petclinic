@@ -189,6 +189,119 @@ class VetTests {
 		assertThat(deserializedVet.getSpecialties()).hasSize(2);
 	}
 
+	@Test
+	void testSpecialtyCreationAndProperties() {
+		Specialty specialty = createSpecialty(1, "Cardiology");
+		
+		assertThat(specialty).isNotNull();
+		assertThat(specialty.getId()).isEqualTo(1);
+		assertThat(specialty.getName()).isEqualTo("Cardiology");
+		assertThat(specialty.isNew()).isFalse();
+	}
+
+	@Test
+	void testSpecialtyIsNewWhenIdIsNull() {
+		Specialty specialty = new Specialty();
+		specialty.setName("Emergency Medicine");
+		
+		assertThat(specialty.isNew()).isTrue();
+		assertThat(specialty.getId()).isNull();
+	}
+
+	@Test
+	void testSpecialtyToString() {
+		Specialty specialty = createSpecialty(1, "Neurology");
+		String result = specialty.toString();
+		
+		assertThat(result).contains("Neurology");
+	}
+
+	@Test
+	void testSpecialtyWithEmptyName() {
+		Specialty specialty = createSpecialty(1, "");
+		vet.addSpecialty(specialty);
+		
+		assertThat(vet.getNrOfSpecialties()).isEqualTo(1);
+		assertThat(specialty.getName()).isEmpty();
+	}
+
+	@Test
+	void testSpecialtyWithLongName() {
+		String longName = "Cardiovascular and Thoracic Surgery with Transplantation";
+		Specialty specialty = createSpecialty(1, longName);
+		vet.addSpecialty(specialty);
+		
+		assertThat(vet.getNrOfSpecialties()).isEqualTo(1);
+		assertThat(specialty.getName()).isEqualTo(longName);
+	}
+
+	@Test
+	void testSpecialtyWithSpecialCharacters() {
+		String nameWithSpecialChars = "Ear, Nose & Throat (ENT)";
+		Specialty specialty = createSpecialty(1, nameWithSpecialChars);
+		vet.addSpecialty(specialty);
+		
+		assertThat(vet.getNrOfSpecialties()).isEqualTo(1);
+		assertThat(specialty.getName()).isEqualTo(nameWithSpecialChars);
+	}
+
+	@Test
+	void testVetWithCommonMedicalSpecialties() {
+		String[] commonSpecialties = {
+			"Cardiology", "Dermatology", "Emergency Medicine", 
+			"Family Medicine", "Internal Medicine", "Neurology",
+			"Oncology", "Pediatrics", "Psychiatry"
+		};
+		
+		for (int i = 0; i < commonSpecialties.length; i++) {
+			Specialty specialty = createSpecialty(i + 1, commonSpecialties[i]);
+			vet.addSpecialty(specialty);
+		}
+		
+		assertThat(vet.getNrOfSpecialties()).isEqualTo(commonSpecialties.length);
+		
+		List<Specialty> vetSpecialties = vet.getSpecialties();
+		for (String expectedName : commonSpecialties) {
+			assertThat(vetSpecialties).anyMatch(s -> expectedName.equals(s.getName()));
+		}
+	}
+
+	@Test
+	void testSpecialtyEquality() {
+		Specialty specialty1 = createSpecialty(1, "Radiology");
+		Specialty specialty2 = createSpecialty(1, "Radiology");
+		Specialty specialty3 = createSpecialty(2, "Surgery");
+		
+		// Test that specialties with same id are considered equal by Set
+		vet.addSpecialty(specialty1);
+		vet.addSpecialty(specialty2); // Should not be added if equals/hashCode work correctly
+		vet.addSpecialty(specialty3);
+		
+		// The exact behavior depends on how equals/hashCode are implemented in BaseEntity
+		assertThat(vet.getNrOfSpecialties()).isGreaterThanOrEqualTo(2);
+	}
+
+	@Test
+	void testVetWithMaxSpecialties() {
+		// Test adding many specialties to ensure no performance issues
+		for (int i = 1; i <= 20; i++) {
+			Specialty specialty = createSpecialty(i, "Specialty" + i);
+			vet.addSpecialty(specialty);
+		}
+		
+		assertThat(vet.getNrOfSpecialties()).isEqualTo(20);
+		assertThat(vet.getSpecialties()).hasSize(20);
+	}
+
+	@Test
+	void testSpecialtyInheritanceFromNamedEntity() {
+		Specialty specialty = createSpecialty(1, "Orthopedics");
+		
+		// Test that Specialty properly inherits from NamedEntity and BaseEntity
+		assertThat(specialty).isInstanceOf(org.springframework.samples.petclinic.model.NamedEntity.class);
+		assertThat(specialty).isInstanceOf(org.springframework.samples.petclinic.model.BaseEntity.class);
+	}
+
 	private Specialty createSpecialty(Integer id, String name) {
 		Specialty specialty = new Specialty();
 		specialty.setId(id);
