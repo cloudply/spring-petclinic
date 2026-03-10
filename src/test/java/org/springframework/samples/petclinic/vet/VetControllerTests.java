@@ -113,7 +113,7 @@ class VetControllerTests {
 	@Test
 	void testShowResourcesVetList() throws Exception {
 		ResultActions actions = mockMvc.perform(get("/vets").accept(MediaType.APPLICATION_JSON))
-			.andExpected(status().isOk());
+			.andExpect(status().isOk());
 		actions.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.vetList[0].id").value(1));
 	}
@@ -216,7 +216,7 @@ class VetControllerTests {
 			.andExpect(jsonPath("$.vetList", hasSize(3)))
 			.andExpect(jsonPath("$.vetList[0].id").value(1))
 			.andExpect(jsonPath("$.vetList[0].firstName").value("James"))
-			.andExpect(jsonPath("$.vetList[0].lastName").value("Carter"))
+			.andExpected(jsonPath("$.vetList[0].lastName").value("Carter"))
 			.andExpect(jsonPath("$.vetList[1].id").value(2))
 			.andExpect(jsonPath("$.vetList[1].firstName").value("Helen"))
 			.andExpect(jsonPath("$.vetList[1].lastName").value("Leary"))
