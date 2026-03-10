@@ -17,6 +17,7 @@
 package org.springframework.samples.petclinic.owner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
 import java.text.ParseException;
@@ -73,6 +74,199 @@ class PetTypeFormatterTests {
 		Assertions.assertThrows(ParseException.class, () -> {
 			petTypeFormatter.parse("Fish", Locale.ENGLISH);
 		});
+	}
+
+	@Test
+	void testPrintWithNullPetType() {
+		assertThatThrownBy(() -> petTypeFormatter.print(null, Locale.ENGLISH))
+			.isInstanceOf(NullPointerException.class);
+	}
+
+	@Test
+	void testPrintWithNullPetTypeName() {
+		PetType petType = new PetType();
+		petType.setName(null);
+		String result = petTypeFormatter.print(petType, Locale.ENGLISH);
+		assertThat(result).isNull();
+	}
+
+	@Test
+	void testPrintWithEmptyPetTypeName() {
+		PetType petType = new PetType();
+		petType.setName("");
+		String result = petTypeFormatter.print(petType, Locale.ENGLISH);
+		assertThat(result).isEmpty();
+	}
+
+	@Test
+	void testPrintWithWhitespacePetTypeName() {
+		PetType petType = new PetType();
+		petType.setName("   ");
+		String result = petTypeFormatter.print(petType, Locale.ENGLISH);
+		assertThat(result).isEqualTo("   ");
+	}
+
+	@Test
+	void testPrintWithDifferentLocales() {
+		PetType petType = new PetType();
+		petType.setName("Cat");
+		
+		String resultEnglish = petTypeFormatter.print(petType, Locale.ENGLISH);
+		String resultFrench = petTypeFormatter.print(petType, Locale.FRENCH);
+		String resultGerman = petTypeFormatter.print(petType, Locale.GERMAN);
+		
+		assertThat(resultEnglish).isEqualTo("Cat");
+		assertThat(resultFrench).isEqualTo("Cat");
+		assertThat(resultGerman).isEqualTo("Cat");
+	}
+
+	@Test
+	void testParseWithNullText() {
+		given(this.pets.findPetTypes()).willReturn(makePetTypes());
+		
+		assertThatThrownBy(() -> petTypeFormatter.parse(null, Locale.ENGLISH))
+			.isInstanceOf(ParseException.class)
+			.hasMessageContaining("type not found: null");
+	}
+
+	@Test
+	void testParseWithEmptyText() {
+		given(this.pets.findPetTypes()).willReturn(makePetTypes());
+		
+		assertThatThrownBy(() -> petTypeFormatter.parse("", Locale.ENGLISH))
+			.isInstanceOf(ParseException.class)
+			.hasMessageContaining("type not found: ");
+	}
+
+	@Test
+	void testParseWithWhitespaceText() {
+		given(this.pets.findPetTypes()).willReturn(makePetTypes());
+		
+		assertThatThrownBy(() -> petTypeFormatter.parse("   ", Locale.ENGLISH))
+			.isInstanceOf(ParseException.class)
+			.hasMessageContaining("type not found:    ");
+	}
+
+	@Test
+	void testParseCaseSensitive() {
+		given(this.pets.findPetTypes()).willReturn(makePetTypes());
+		
+		// Should not find "dog" (lowercase) when "Dog" (uppercase) exists
+		assertThatThrownBy(() -> petTypeFormatter.parse("dog", Locale.ENGLISH))
+			.isInstanceOf(ParseException.class)
+			.hasMessageContaining("type not found: dog");
+		
+		// Should not find "BIRD" (uppercase) when "Bird" (mixed case) exists
+		assertThatThrownBy(() -> petTypeFormatter.parse("BIRD", Locale.ENGLISH))
+			.isInstanceOf(ParseException.class)
+			.hasMessageContaining("type not found: BIRD");
+	}
+
+	@Test
+	void testParseWithEmptyPetTypesList() {
+		given(this.pets.findPetTypes()).willReturn(new ArrayList<>());
+		
+		assertThatThrownBy(() -> petTypeFormatter.parse("Dog", Locale.ENGLISH))
+			.isInstanceOf(ParseException.class)
+			.hasMessageContaining("type not found: Dog");
+	}
+
+	@Test
+	void testParseWithNullPetTypesList() {
+		given(this.pets.findPetTypes()).willReturn(null);
+		
+		assertThatThrownBy(() -> petTypeFormatter.parse("Dog", Locale.ENGLISH))
+			.isInstanceOf(NullPointerException.class);
+	}
+
+	@Test
+	void testParseWithPetTypeHavingNullName() throws ParseException {
+		List<PetType> petTypesWithNull = new ArrayList<>();
+		PetType petTypeWithNullName = new PetType();
+		petTypeWithNullName.setName(null);
+		petTypesWithNull.add(petTypeWithNullName);
+		
+		PetType validPetType = new PetType();
+		validPetType.setName("Cat");
+		petTypesWithNull.add(validPetType);
+		
+		given(this.pets.findPetTypes()).willReturn(petTypesWithNull);
+		
+		// Should find the valid pet type
+		PetType result = petTypeFormatter.parse("Cat", Locale.ENGLISH);
+		assertThat(result.getName()).isEqualTo("Cat");
+		
+		// Should not find a match for non-existent type
+		assertThatThrownBy(() -> petTypeFormatter.parse("Dog", Locale.ENGLISH))
+			.isInstanceOf(ParseException.class);
+	}
+
+	@Test
+	void testParseWithDifferentLocales() throws ParseException {
+		given(this.pets.findPetTypes()).willReturn(makePetTypes());
+		
+		PetType resultEnglish = petTypeFormatter.parse("Dog", Locale.ENGLISH);
+		PetType resultFrench = petTypeFormatter.parse("Dog", Locale.FRENCH);
+		PetType resultGerman = petTypeFormatter.parse("Dog", Locale.GERMAN);
+		
+		assertThat(resultEnglish.getName()).isEqualTo("Dog");
+		assertThat(resultFrench.getName()).isEqualTo("Dog");
+		assertThat(resultGerman.getName()).isEqualTo("Dog");
+	}
+
+	@Test
+	void testParseWithSpecialCharacters() {
+		List<PetType> specialPetTypes = new ArrayList<>();
+		PetType specialType = new PetType();
+		specialType.setName("Exotic-Bird");
+		specialPetTypes.add(specialType);
+		
+		given(this.pets.findPetTypes()).willReturn(specialPetTypes);
+		
+		assertThatThrownBy(() -> petTypeFormatter.parse("Exotic Bird", Locale.ENGLISH))
+			.isInstanceOf(ParseException.class);
+	}
+
+	@Test
+	void testParseExactMatch() throws ParseException {
+		List<PetType> petTypes = new ArrayList<>();
+		
+		PetType dog = new PetType();
+		dog.setName("Dog");
+		petTypes.add(dog);
+		
+		PetType doggy = new PetType();
+		doggy.setName("Doggy");
+		petTypes.add(doggy);
+		
+		given(this.pets.findPetTypes()).willReturn(petTypes);
+		
+		PetType result = petTypeFormatter.parse("Dog", Locale.ENGLISH);
+		assertThat(result.getName()).isEqualTo("Dog");
+		
+		PetType result2 = petTypeFormatter.parse("Doggy", Locale.ENGLISH);
+		assertThat(result2.getName()).isEqualTo("Doggy");
+	}
+
+	@Test
+	void testParseReturnsFirstMatchingPetType() throws ParseException {
+		List<PetType> duplicatePetTypes = new ArrayList<>();
+		
+		PetType firstDog = new PetType();
+		firstDog.setName("Dog");
+		firstDog.setId(1);
+		duplicatePetTypes.add(firstDog);
+		
+		PetType secondDog = new PetType();
+		secondDog.setName("Dog");
+		secondDog.setId(2);
+		duplicatePetTypes.add(secondDog);
+		
+		given(this.pets.findPetTypes()).willReturn(duplicatePetTypes);
+		
+		PetType result = petTypeFormatter.parse("Dog", Locale.ENGLISH);
+		assertThat(result.getName()).isEqualTo("Dog");
+		assertThat(result.getId()).isEqualTo(1); // Should return the first match
 	}
 
 	/**
