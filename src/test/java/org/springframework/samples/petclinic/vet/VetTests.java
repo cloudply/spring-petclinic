@@ -247,6 +247,158 @@ class VetTests {
 		assertThat(vetString).contains("Beeblebrox");
 	}
 
+	@Test
+	void testAddNullSpecialty() {
+		// Test adding null specialty - should handle gracefully
+		int initialCount = vet.getNrOfSpecialties();
+		vet.addSpecialty(null);
+		
+		// The Set should handle null values according to HashSet behavior
+		assertThat(vet.getNrOfSpecialties()).isEqualTo(initialCount + 1);
+	}
+
+	@Test
+	void testSpecialtiesListConsistency() {
+		Specialty surgery = createSpecialty(1, "surgery");
+		Specialty dentistry = createSpecialty(2, "dentistry");
+		
+		vet.addSpecialty(surgery);
+		vet.addSpecialty(dentistry);
+		
+		List<Specialty> specialties1 = vet.getSpecialties();
+		List<Specialty> specialties2 = vet.getSpecialties();
+		
+		// Should return consistent results each time
+		assertThat(specialties1).hasSize(specialties2.size());
+		assertThat(specialties1).containsExactlyElementsOf(specialties2);
+	}
+
+	@Test
+	void testSpecialtiesWithSameName() {
+		// Test adding specialties with same name but different IDs
+		Specialty surgery1 = createSpecialty(1, "surgery");
+		Specialty surgery2 = createSpecialty(2, "surgery");
+		
+		vet.addSpecialty(surgery1);
+		vet.addSpecialty(surgery2);
+		
+		// Both should be added since they have different IDs
+		assertThat(vet.getNrOfSpecialties()).isEqualTo(2);
+		assertThat(vet.getSpecialties()).hasSize(2);
+	}
+
+	@Test
+	void testSpecialtiesWithEmptyName() {
+		// Test specialty with empty name
+		Specialty emptyNameSpecialty = createSpecialty(1, "");
+		vet.addSpecialty(emptyNameSpecialty);
+		
+		assertThat(vet.getNrOfSpecialties()).isEqualTo(1);
+		List<Specialty> specialties = vet.getSpecialties();
+		assertThat(specialties.get(0).getName()).isEmpty();
+	}
+
+	@Test
+	void testSpecialtiesWithNullName() {
+		// Test specialty with null name
+		Specialty nullNameSpecialty = new Specialty();
+		nullNameSpecialty.setId(1);
+		nullNameSpecialty.setName(null);
+		
+		vet.addSpecialty(nullNameSpecialty);
+		
+		assertThat(vet.getNrOfSpecialties()).isEqualTo(1);
+		// The sorting should handle null names gracefully
+		List<Specialty> specialties = vet.getSpecialties();
+		assertThat(specialties).hasSize(1);
+	}
+
+	@Test
+	void testLargeNumberOfSpecialties() {
+		// Test performance with many specialties
+		for (int i = 0; i < 50; i++) {
+			Specialty specialty = createSpecialty(i, "specialty" + String.format("%02d", i));
+			vet.addSpecialty(specialty);
+		}
+		
+		assertThat(vet.getNrOfSpecialties()).isEqualTo(50);
+		List<Specialty> specialties = vet.getSpecialties();
+		assertThat(specialties).hasSize(50);
+		
+		// Verify they are sorted
+		for (int i = 1; i < specialties.size(); i++) {
+			String current = specialties.get(i).getName();
+			String previous = specialties.get(i - 1).getName();
+			assertThat(current.compareToIgnoreCase(previous)).isGreaterThanOrEqualTo(0);
+		}
+	}
+
+	@Test
+	void testSpecialtiesOrderingWithSpecialCharacters() {
+		// Test sorting with special characters
+		Specialty specialty1 = createSpecialty(1, "A-specialty");
+		Specialty specialty2 = createSpecialty(2, "B_specialty");
+		Specialty specialty3 = createSpecialty(3, "C specialty");
+		
+		vet.addSpecialty(specialty3);
+		vet.addSpecialty(specialty1);
+		vet.addSpecialty(specialty2);
+		
+		List<Specialty> specialties = vet.getSpecialties();
+		assertThat(specialties).hasSize(3);
+		// Verify alphabetical ordering
+		assertThat(specialties.get(0).getName()).isEqualTo("A-specialty");
+		assertThat(specialties.get(1).getName()).isEqualTo("B_specialty");
+		assertThat(specialties.get(2).getName()).isEqualTo("C specialty");
+	}
+
+	@Test
+	void testVetWithOnlyId() {
+		// Test vet with only ID set
+		Vet vetWithIdOnly = new Vet();
+		vetWithIdOnly.setId(999);
+		
+		assertThat(vetWithIdOnly.getId()).isEqualTo(999);
+		assertThat(vetWithIdOnly.getFirstName()).isNull();
+		assertThat(vetWithIdOnly.getLastName()).isNull();
+		assertThat(vetWithIdOnly.isNew()).isFalse();
+		assertThat(vetWithIdOnly.getNrOfSpecialties()).isZero();
+	}
+
+	@Test
+	void testVetWithOnlyNames() {
+		// Test vet with only names set
+		Vet vetWithNamesOnly = new Vet();
+		vetWithNamesOnly.setFirstName("Jane");
+		vetWithNamesOnly.setLastName("Smith");
+		
+		assertThat(vetWithNamesOnly.getId()).isNull();
+		assertThat(vetWithNamesOnly.getFirstName()).isEqualTo("Jane");
+		assertThat(vetWithNamesOnly.getLastName()).isEqualTo("Smith");
+		assertThat(vetWithNamesOnly.isNew()).isTrue();
+		assertThat(vetWithNamesOnly.getNrOfSpecialties()).isZero();
+	}
+
+	@Test
+	void testSpecialtiesImmutabilityAfterRetrieval() {
+		Specialty surgery = createSpecialty(1, "surgery");
+		vet.addSpecialty(surgery);
+		
+		List<Specialty> specialties = vet.getSpecialties();
+		int originalSize = specialties.size();
+		
+		// Try to modify the returned list
+		try {
+			specialties.clear();
+			assertThat(false).as("Expected UnsupportedOperationException").isTrue();
+		} catch (UnsupportedOperationException e) {
+			// Expected behavior
+		}
+		
+		// Verify original data is unchanged
+		assertThat(vet.getNrOfSpecialties()).isEqualTo(originalSize);
+	}
+
 	private Specialty createSpecialty(int id, String name) {
 		Specialty specialty = new Specialty();
 		specialty.setId(id);
