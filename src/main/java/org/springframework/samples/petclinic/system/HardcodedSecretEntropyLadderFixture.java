@@ -7,17 +7,17 @@ package org.springframework.samples.petclinic.system;
  * entropy_greater_than ~3.5) starts reporting findings. Values are approximate Shannon
  * entropy of the string itself (bits/char).
  * <p>
- * Ladder (local variables + fields — fields help distinguish field-only detectors):
+ * Ladder (local variables + fields; fields help distinguish field-only detectors):
  * <ul>
- * <li>~1.59 — "abc"</li>
- * <li>~0.00 — "aaaa"</li>
- * <li>~2.75 — "password"</li>
- * <li>~3.00 — "admin123"</li>
- * <li>~3.17 — "Admin123!"</li>
- * <li>~3.22 — "CorrectHorseBattery"</li>
- * <li>~3.52 — "CorrectHorseBatteryStaple" (near typical 3.5 threshold)</li>
- * <li>~3.68 — "AKIAIOSFODNN7EXAMPLE"</li>
- * <li>~4.17 — "xK9#mQ2vL8pR4nT6wY"</li>
+ * <li>~1.59 - "abc"</li>
+ * <li>~0.00 - "aaaa"</li>
+ * <li>~2.75 - "password"</li>
+ * <li>~3.00 - "admin123"</li>
+ * <li>~3.17 - "Admin123!"</li>
+ * <li>~3.22 - "CorrectHorseBattery"</li>
+ * <li>~3.52 - "CorrectHorseBatteryStaple" (near typical 3.5 threshold)</li>
+ * <li>~3.68 - "AKIAIOSFODNN7EXAMPLE"</li>
+ * <li>~4.17 - "xK9#mQ2vL8pR4nT6wY"</li>
  * </ul>
  * Safe to delete after the experiment.
  */
