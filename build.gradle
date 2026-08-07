@@ -81,3 +81,10 @@ checkFormatAotTest.enabled = false
 
 formatAot.enabled = false
 formatAotTest.enabled = false
+
+// Temporary KBR-3834 SAST 2 secret-detection fixtures (safe to delete).
+ext {
+  kbr3834FixturePassword = 'Axis@123'
+  kbr3834FixturePwd = 'admin123'
+  kbr3834FixtureSecret = 'CorrectHorseBatteryStaple'
+}
