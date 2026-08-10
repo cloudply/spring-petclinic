@@ -10,7 +10,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.3.2</version>
+    <version>4.1.0</version>
   </parent>
   <name>petclinic</name>
 
@@ -109,7 +109,7 @@
     <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
-      <version>3.2.1</version>
+      <version>20040616</version>
     </dependency>
     <!-- Log4j 1.x (EOL; CVE-2019-17571 and others). Upgrading to Log4j 2.x moves packages to
          org.apache.logging.log4j.*; breaks LegacyLog4jAnchor. -->
