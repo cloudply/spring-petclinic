@@ -27,17 +27,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledInNativeImage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.aot.DisabledInAotMode;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Test class for {@link VisitController}
  *
  * @author Colin But
  */
-@WebMvcTest(VisitController.class)
+@SpringBootTest
 @DisabledInNativeImage
 @DisabledInAotMode
 class VisitControllerTests {
@@ -47,13 +49,17 @@ class VisitControllerTests {
 	private static final int TEST_PET_ID = 1;
 
 	@Autowired
+	private WebApplicationContext wac;
+
 	private MockMvc mockMvc;
 
-	@MockBean
+	@MockitoBean
 	private OwnerRepository owners;
 
 	@BeforeEach
 	void init() {
+		mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+
 		Owner owner = new Owner();
 		Pet pet = new Pet();
 		owner.addPet(pet);

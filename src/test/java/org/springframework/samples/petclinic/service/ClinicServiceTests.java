@@ -23,10 +23,7 @@ import java.util.Collection;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.samples.petclinic.owner.Owner;
@@ -36,41 +33,13 @@ import org.springframework.samples.petclinic.owner.PetType;
 import org.springframework.samples.petclinic.owner.Visit;
 import org.springframework.samples.petclinic.vet.Vet;
 import org.springframework.samples.petclinic.vet.VetRepository;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Integration test of the Service and the Repository layer.
- * <p>
- * ClinicServiceSpringDataJpaTests subclasses benefit from the following services provided
- * by the Spring TestContext Framework:
- * </p>
- * <ul>
- * <li><strong>Spring IoC container caching</strong> which spares us unnecessary set up
- * time between test execution.</li>
- * <li><strong>Dependency Injection</strong> of test fixture instances, meaning that we
- * don't need to perform application context lookups. See the use of
- * {@link Autowired @Autowired} on the <code> </code> instance variable, which uses
- * autowiring <em>by type</em>.
- * <li><strong>Transaction management</strong>, meaning each test method is executed in
- * its own transaction, which is automatically rolled back by default. Thus, even if tests
- * insert or otherwise change database state, there is no need for a teardown or cleanup
- * script.
- * <li>An {@link org.springframework.context.ApplicationContext ApplicationContext} is
- * also inherited and can be used for explicit bean lookup if necessary.</li>
- * </ul>
- *
- * @author Ken Krebs
- * @author Rod Johnson
- * @author Juergen Hoeller
- * @author Sam Brannen
- * @author Michael Isvy
- * @author Dave Syer
  */
-@DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
-// Ensure that if the mysql profile is active we connect to the real database:
-@AutoConfigureTestDatabase(replace = Replace.NONE)
-// @TestPropertySource("/application-postgres.properties")
+@SpringBootTest
+@Transactional
 class ClinicServiceTests {
 
 	@Autowired
@@ -100,7 +69,6 @@ class ClinicServiceTests {
 	}
 
 	@Test
-	@Transactional
 	void shouldInsertOwner() {
 		Page<Owner> owners = this.owners.findByLastName("Schultz", pageable);
 		int found = (int) owners.getTotalElements();
@@ -119,7 +87,6 @@ class ClinicServiceTests {
 	}
 
 	@Test
-	@Transactional
 	void shouldUpdateOwner() {
 		Owner owner = this.owners.findById(1);
 		String oldLastName = owner.getLastName();
@@ -144,7 +111,6 @@ class ClinicServiceTests {
 	}
 
 	@Test
-	@Transactional
 	void shouldInsertPetIntoDatabaseAndGenerateId() {
 		Owner owner6 = this.owners.findById(6);
 		int found = owner6.getPets().size();
@@ -167,7 +133,6 @@ class ClinicServiceTests {
 	}
 
 	@Test
-	@Transactional
 	void shouldUpdatePetName() {
 		Owner owner6 = this.owners.findById(6);
 		Pet pet7 = owner6.getPet(7);
@@ -194,7 +159,6 @@ class ClinicServiceTests {
 	}
 
 	@Test
-	@Transactional
 	void shouldAddNewVisitForPet() {
 		Owner owner6 = this.owners.findById(6);
 		Pet pet7 = owner6.getPet(7);
