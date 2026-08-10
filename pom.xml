@@ -96,7 +96,7 @@
       <artifactId>caffeine</artifactId>
     </dependency>
 
-    <!-- HttpClient 5.x (replaces vulnerable 4.x) -->
+    <!-- HttpClient 5.x -->
     <dependency>
       <groupId>org.apache.httpcomponents.client5</groupId>
       <artifactId>httpclient5</artifactId>
@@ -126,39 +126,43 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- Known-vulnerable Commons Collections 3.x; upgrading to collections4 changes packages (org.apache.commons.collections4.*) and will break LegacyCollectionsHook -->
+    <!-- Known-vulnerable Commons Collections 3.x -->
     <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
       <version>20040616</version>
     </dependency>
 
-    <!-- Known-vulnerable Log4j 1.x; upgrading to Log4j 2.x changes packages (org.apache.logging.log4j.*) and will break LegacyLog4jAnchor -->
+    <!-- Known-vulnerable Log4j 1.x -->
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <version>1.2.17</version>
     </dependency>
 
-    <!-- Known-vulnerable Jackson 1.x; upgrading to Jackson 2.x (com.fasterxml.jackson) will break LegacyJacksonAnchor imports -->
+    <!-- Known-vulnerable Jackson 1.x -->
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-mapper-asl</artifactId>
       <version>1.9.13</version>
     </dependency>
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-docker-compose</artifactId>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>junit-jupiter</artifactId>
+      <version>1.20.1</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>mysql</artifactId>
+      <version>1.20.1</version>
       <scope>test</scope>
     </dependency>
 
@@ -288,8 +292,6 @@
         </executions>
       </plugin>
 
-      <!-- Spring Boot Actuator displays build-related information if a git.properties file is
-      present at the classpath -->
       <plugin>
         <groupId>io.github.git-commit-id</groupId>
         <artifactId>git-commit-id-maven-plugin</artifactId>
@@ -298,8 +300,6 @@
           <failOnUnableToExtractRepoInfo>false</failOnUnableToExtractRepoInfo>
         </configuration>
       </plugin>
-      <!-- Spring Boot Actuator displays sbom-related information if a CycloneDX SBOM file is
-      present at the classpath -->
       <plugin>
         <groupId>org.cyclonedx</groupId>
         <artifactId>cyclonedx-maven-plugin</artifactId>
