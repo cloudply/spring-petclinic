@@ -10,7 +10,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.3.2</version>
+    <version>4.1.0</version>
   </parent>
   <name>petclinic</name>
 
@@ -34,6 +34,7 @@
     <maven-checkstyle.version>3.3.1</maven-checkstyle.version>
     <nohttp-checkstyle.version>0.0.11</nohttp-checkstyle.version>
     <spring-format.version>0.0.41</spring-format.version>
+    <testcontainers.version>1.20.1</testcontainers.version>
 
   </properties>
 
@@ -109,7 +110,7 @@
     <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
-      <version>3.2.1</version>
+      <version>20040616</version>
     </dependency>
     <!-- Log4j 1.x (EOL; CVE-2019-17571 and others). Upgrading to Log4j 2.x moves packages to
          org.apache.logging.log4j.*; breaks LegacyLog4jAnchor. -->
@@ -156,11 +157,13 @@
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>junit-jupiter</artifactId>
+      <version>${testcontainers.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>mysql</artifactId>
+      <version>${testcontainers.version}</version>
       <scope>test</scope>
     </dependency>
 

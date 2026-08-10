@@ -26,32 +26,26 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestClient;
 
 /**
  * Integration Test for {@link CrashController}.
  *
  * @author Alex Lutz
  */
-// NOT Waiting https://github.com/spring-projects/spring-boot/issues/5574
 @SpringBootTest(webEnvironment = RANDOM_PORT,
 		properties = { "server.error.include-message=ALWAYS", "management.endpoints.enabled-by-default=false" })
 class CrashControllerIntegrationTests {
 
-	@SpringBootApplication(exclude = { DataSourceAutoConfiguration.class,
-			DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
+	@SpringBootApplication
 	static class TestConfiguration {
 
 	}
@@ -59,15 +53,17 @@ class CrashControllerIntegrationTests {
 	@Value(value = "${local.server.port}")
 	private int port;
 
-	@Autowired
-	private TestRestTemplate rest;
+	@Autowired(required = false)
+	private RestClient.Builder restClientBuilder;
 
 	@Test
 	void testTriggerExceptionJson() {
-		ResponseEntity<Map<String, Object>> resp = rest.exchange(
-				RequestEntity.get("http://localhost:" + port + "/oups").build(),
-				new ParameterizedTypeReference<Map<String, Object>>() {
-				});
+		RestClient restClient = RestClient.create();
+		ResponseEntity<Map<String, Object>> resp = restClient.get()
+			.uri("http://localhost:" + port + "/oups")
+			.retrieve()
+			.toEntity(new ParameterizedTypeReference<Map<String, Object>>() {
+			});
 		assertThat(resp).isNotNull();
 		assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		assertThat(resp.getBody()).containsKey("timestamp");
@@ -80,10 +76,14 @@ class CrashControllerIntegrationTests {
 
 	@Test
 	void testTriggerExceptionHtml() {
+		RestClient restClient = RestClient.create();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(List.of(MediaType.TEXT_HTML));
-		ResponseEntity<String> resp = rest.exchange("http://localhost:" + port + "/oups", HttpMethod.GET,
-				new HttpEntity<>(headers), String.class);
+		ResponseEntity<String> resp = restClient.get()
+			.uri("http://localhost:" + port + "/oups")
+			.headers(h -> h.addAll(headers))
+			.retrieve()
+			.toEntity(String.class);
 		assertThat(resp).isNotNull();
 		assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		assertThat(resp.getBody()).isNotNull();
