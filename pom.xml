@@ -96,6 +96,36 @@
       <artifactId>caffeine</artifactId>
     </dependency>
 
+    <!-- Known-vulnerable, pinned. Upgrading to the fixed major breaks compilation on purpose. -->
+    <!-- Apache HttpClient 4.x (CVE-2020-13956). Upgrading to httpclient5 moves packages
+         (org.apache.http.* -> org.apache.hc.client5.*) and removes getStatusLine(); breaks LegacyHttpClient. -->
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.5.13</version>
+    </dependency>
+    <!-- Commons Collections 3.x (CVE-2015-6420 / CVE-2015-7501). Upgrading to commons-collections4
+         moves packages to org.apache.commons.collections4.*; breaks LegacyCollectionsHook. -->
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+      <version>3.2.1</version>
+    </dependency>
+    <!-- Log4j 1.x (EOL; CVE-2019-17571 and others). Upgrading to Log4j 2.x moves packages to
+         org.apache.logging.log4j.*; breaks LegacyLog4jAnchor. -->
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.17</version>
+    </dependency>
+    <!-- Jackson 1.x (EOL; CVE-2019-10172 and others). Upgrading to Jackson 2.x moves packages to
+         com.fasterxml.jackson.*; breaks LegacyJacksonAnchor. -->
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-mapper-asl</artifactId>
+      <version>1.9.13</version>
+    </dependency>
+
     <!-- Webjars -->
     <dependency>
       <groupId>org.webjars.npm</groupId>
