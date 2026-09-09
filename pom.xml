@@ -35,6 +35,9 @@
     <nohttp-checkstyle.version>0.0.11</nohttp-checkstyle.version>
     <spring-format.version>0.0.41</spring-format.version>
 
+    <!-- Testcontainers version (added to fix missing version after Spring Boot 4 upgrade) -->
+    <testcontainers.version>1.19.8</testcontainers.version>
+
   </properties>
 
   <dependencies>
@@ -156,11 +159,13 @@
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>junit-jupiter</artifactId>
+      <version>${testcontainers.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>mysql</artifactId>
+      <version>${testcontainers.version}</version>
       <scope>test</scope>
     </dependency>
 
