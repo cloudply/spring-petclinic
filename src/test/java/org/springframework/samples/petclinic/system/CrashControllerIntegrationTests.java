@@ -25,12 +25,13 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.boot.autoconfigure.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.web.client.TestRestTemplateContextCustomizer;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -42,10 +43,7 @@ import org.springframework.http.ResponseEntity;
 
 /**
  * Integration Test for {@link CrashController}.
- *
- * @author Alex Lutz
  */
-// NOT Waiting https://github.com/spring-projects/spring-boot/issues/5574
 @SpringBootTest(webEnvironment = RANDOM_PORT,
 		properties = { "server.error.include-message=ALWAYS", "management.endpoints.enabled-by-default=false" })
 class CrashControllerIntegrationTests {
@@ -87,11 +85,9 @@ class CrashControllerIntegrationTests {
 		assertThat(resp).isNotNull();
 		assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		assertThat(resp.getBody()).isNotNull();
-		// html:
 		assertThat(resp.getBody()).containsSubsequence("<body>", "<h2>", "Something happened...", "</h2>", "<p>",
 				"Expected:", "controller", "used", "to", "showcase", "what", "happens", "when", "an", "exception", "is",
 				"thrown", "</p>", "</body>");
-		// Not the whitelabel error page:
 		assertThat(resp.getBody()).doesNotContain("Whitelabel Error Page",
 				"This application has no explicit mapping for");
 	}
